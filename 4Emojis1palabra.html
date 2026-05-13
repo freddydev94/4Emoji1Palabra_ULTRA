@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <style>
 :root{--bg:#0d0d1a;--surface:#131328;--accent:#e94560;--gold:#f5a623;--green:#4ecca3;--blue:#4d96ff;--purple:#c77dff;--text:#eaeaea;--muted:#7a8caa;--border:#1e2a4a;--lbg:#1e2a4a;}
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -595,12 +594,10 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;heig
 // ════════════════════════════════════════════════════
 const FB={apiKey:"AIzaSyBkZmas5U0pgZs5gtei-5wrKAcROKOyp20",authDomain:"fotos1palabraia.firebaseapp.com",databaseURL:"https://fotos1palabraia-default-rtdb.firebaseio.com",projectId:"fotos1palabraia",storageBucket:"fotos1palabraia.firebasestorage.app",messagingSenderId:"562754711486",appId:"1:562754711486:web:1bc6e656f81e7a0fc513ef"};
 
-
-
 // FIREBASE AUTH UID FIX
-let FIREBASE_UID = null;
+firebase.initializeApp(FB);
 
-//firebase.initializeApp(FB);
+let FIREBASE_UID = null;
 
 firebase.auth().onAuthStateChanged(async (user)=>{
 
@@ -620,52 +617,44 @@ firebase.auth().onAuthStateChanged(async (user)=>{
 
       const snap = await profileRef.once('value');
 
-      // AUTO CREATE PROFILE
       if(!snap.exists()){
 
          await profileRef.set({
-            name: localStorage.getItem('playerName') || 'Jugador',
-            xp: 0,
-            level: 1,
-            coins: 0,
-            rank: 'Novato',
-            wins: 0,
-            loses: 0,
-            prestige: 0,
-            wordsSolved: 0,
+            name:'Jugador',
+            xp:0,
+            level:1,
+            coins:0,
+            rank:'Novato',
+            wins:0,
+            loses:0,
+            prestige:0,
+            wordsSolved:0,
             createdAt: firebase.database.ServerValue.TIMESTAMP
          });
 
-         console.log('Perfil creado automáticamente');
       }
 
-      document.getElementById('ldMsg').textContent='Perfil cargado';
-
-      setTimeout(()=>{
-
-         document.getElementById('loadingOverlay').style.display='none';
-
-         if(typeof initGame === 'function'){
-            initGame();
-         }else if(typeof goMenu === 'function'){
-            goMenu();
-         }else{
-            const menu=document.getElementById('menuScreen');
-            if(menu) menu.classList.add('active');
-         }
-
-      },700);
+      const overlay = document.getElementById('loadingOverlay');
+      if(overlay){
+         overlay.style.display='none';
+      }
 
    }catch(err){
 
       console.error(err);
 
-      document.getElementById('ldMsg').textContent =
-         'Error Firebase: ' + err.message;
+      const msg = document.getElementById('ldMsg');
+
+      if(msg){
+         msg.textContent = 'Error Firebase: ' + err.message;
+      }
 
    }
 
 });
+
+
+
 // ════════════════════════════════════════════════════
 //  RANK SYSTEM — 20 rangos épicos
 // ════════════════════════════════════════════════════
@@ -871,7 +860,7 @@ function waitForFirebase(cb, tries=0){
 document.addEventListener('DOMContentLoaded',()=>{
   waitForFirebase(async()=>{
     try{
-      firebase.initializeApp(FB);
+      //firebase.initializeApp(FB);
       db=firebase.database();
       document.getElementById('ldMsg').textContent='Cargando perfil...';
       await loadP();
@@ -963,7 +952,7 @@ async function createRoom(){
     challengeIdx:-1,letterSeed:0,roundStartedAt:0,roundWinner:'',correctWord:'',frozenUntil:0,
     players:{[devId]:{name:myP.name,score:0,solved:false,streak:0,xpGained:0,
       level:lv,color:PCOLORS[lv%PCOLORS.length],rank:rankOf(lv).icon,
-      online:true,lastSeen:FIREBASE_UID}}};
+      online:true,lastSeen:Date.now()}}};
   try{
     await db.ref('rooms/'+roomCode).set(room);
     saveMyRoom(roomCode,rounds,fixedTime,minLv,maxPlayers,isPublic);
@@ -976,7 +965,7 @@ function saveMyRoom(code,rounds,time,minLv,maxPlayers,isPublic){
   try{
     let rooms=JSON.parse(localStorage.getItem('4e1p_myrooms')||'[]');
     rooms=rooms.filter(r=>r.code!==code);
-    rooms.unshift({code,rounds,time,minLv,maxPlayers:maxPlayers||4,isPublic:!!isPublic,created:FIREBASE_UID});
+    rooms.unshift({code,rounds,time,minLv,maxPlayers:maxPlayers||4,isPublic:!!isPublic,created:Date.now()});
     rooms=rooms.slice(0,8);
     localStorage.setItem('4e1p_myrooms',JSON.stringify(rooms));
   }catch(e){}
@@ -1041,7 +1030,7 @@ async function joinRoom(){
     const n=Object.keys(r.players||{}).length;
     if(n>=(r.maxPlayers||10)){showErr('errJoin','❌ Sala llena ('+n+'/'+(r.maxPlayers||10)+')');return;}
     await db.ref('rooms/'+roomCode+'/players/'+devId)
-      .set({name:myP.name,score:0,solved:false,streak:0,xpGained:0,level:lv,color:PCOLORS[n%PCOLORS.length],rank:rankOf(lv).icon,online:true,lastSeen:FIREBASE_UID});
+      .set({name:myP.name,score:0,solved:false,streak:0,xpGained:0,level:lv,color:PCOLORS[n%PCOLORS.length],rank:rankOf(lv).icon,online:true,lastSeen:Date.now()});
     attachLis();openLobby();
   }catch(e){showErr('errJoin','Error: '+e.message);}
 }
@@ -1056,14 +1045,14 @@ async function findPublicRoom(){
   document.getElementById('mmOverlay').style.display='flex';
 
   let attempts=0;
-  const mmStartTime=FIREBASE_UID;
+  const mmStartTime=Date.now();
   async function tryFind(){
     attempts++;
     document.getElementById('mmSubLabel').textContent='Intento '+attempts+'/6 — buscando salas abiertas...';
     const snap=await db.ref('rooms').orderByChild('status').equalTo('lobby').limitToFirst(50).once('value');
     let best=null, bestScore=-Infinity;
     const myRank=rankOf(lv).name;
-    const now=FIREBASE_UID;
+    const now=Date.now();
     snap.forEach(s=>{
       const r=s.val(), ps=Object.keys(r.players||{}).length;
       if(ps>=2) return; // 1v1 max
@@ -1106,7 +1095,7 @@ async function findPublicRoom(){
   mmInterval=setInterval(()=>{
     tryFind();
     // Update waiting message with elapsed time
-    const elapsed=Math.round((FIREBASE_UID-mmStartTime)/1000);
+    const elapsed=Math.round((Date.now()-mmStartTime)/1000);
     const el=document.getElementById('mmSubLabel');
     if(el&&el.textContent.indexOf('Sala encontrada')===-1)
       el.textContent='Buscando rival de tu rango... ('+elapsed+'s)';
@@ -1250,7 +1239,7 @@ function handleRoom(room){
         document.getElementById('diffLbl').textContent=dc.lbl;document.getElementById('diffLbl').style.color=dc.clr;
         startTimer(room.roundTime||30,room.roundStartedAt);renderPU();
       }
-      document.body.style.filter=(room.frozenUntil&&room.frozenUntil>FIREBASE_UID)?'hue-rotate(180deg) brightness(.7)':'';
+      document.body.style.filter=(room.frozenUntil&&room.frozenUntil>Date.now())?'hue-rotate(180deg) brightness(.7)':'';
       renderPlayers(room.players);break;
     case 'roundEnd':
       clearInterval(timerIv);roundOver=true;document.body.style.filter='';
@@ -1263,7 +1252,7 @@ function handleRoom(room){
       if(roomLis) db.ref('rooms/'+roomCode).off('value',roomLis);
       renderResults(room.players);showScreen('resultsScreen');break;
   }
-  if(room.lastRxn&&room.lastRxn.ts>FIREBASE_UID-2000&&room.lastRxn.by!==devId) floatEmoji(room.lastRxn.emoji);
+  if(room.lastRxn&&room.lastRxn.ts>Date.now()-2000&&room.lastRxn.by!==devId) floatEmoji(room.lastRxn.emoji);
 }
 
 // ════════════════════════════════════════════════════
@@ -1321,7 +1310,7 @@ async function submitAnswer(){
   const snap=await db.ref('rooms/'+roomCode).once('value');
   const room=snap.val();
   if(!room||room.status!=='playing'||room.roundWinner)return;
-  const el=FIREBASE_UID-room.roundStartedAt,rt=room.roundTime||30;
+  const el=Date.now()-room.roundStartedAt,rt=room.roundTime||30;
   const pct=Math.max(0,(rt*1000-el)/(rt*1000));
   const base=Math.max(10,Math.round(pct*100)),hb=hintUsed===0?25:0;
   myStreak++;
@@ -1380,7 +1369,7 @@ function giveHint(){
 }
 async function useFreeze(){
   if(roundOver||puF<=0)return;puF--;
-  await db.ref('rooms/'+roomCode).update({frozenUntil:FIREBASE_UID+8000});
+  await db.ref('rooms/'+roomCode).update({frozenUntil:Date.now()+8000});
   renderPU();showToast('🧊 Tiempo congelado 8s!','rgba(77,150,255,.9)');
 }
 function useBomb(){
@@ -1433,8 +1422,8 @@ function startTimer(total,startedAt){
   clearInterval(timerIv);const circ=2*Math.PI*18;
   function tick(){
     db.ref('rooms/'+roomCode+'/frozenUntil').once('value').then(s=>{
-      document.body.style.filter=(s.val()||0)>FIREBASE_UID?'hue-rotate(180deg) brightness(.7)':'';});
-    const left=Math.max(0,Math.ceil((startedAt+total*1000-FIREBASE_UID)/1000));
+      document.body.style.filter=(s.val()||0)>Date.now()?'hue-rotate(180deg) brightness(.7)':'';});
+    const left=Math.max(0,Math.ceil((startedAt+total*1000-Date.now())/1000));
     document.getElementById('timerNum').textContent=left;
     const pct=left/total;
     document.getElementById('timerArc').style.strokeDashoffset=circ*(1-pct);
@@ -1469,7 +1458,7 @@ function renderLobbyPlayers(ps){
   const ul=document.getElementById('lobbyPlayers');ul.innerHTML='';
   const entries=Object.entries(ps||{});
   // filter online only (lastSeen within 20s)
-  const now=FIREBASE_UID;
+  const now=Date.now();
   const onlineEntries=entries.filter(([,p])=>!p.lastSeen||(now-p.lastSeen)<20000);
   const oc=document.getElementById('onlineCount');
   if(oc) oc.textContent=onlineEntries.length+' online';
@@ -1597,7 +1586,7 @@ function runCountdown(n){
 // ════════════════════════════════════════════════════
 //  REACTIONS
 // ════════════════════════════════════════════════════
-function sendRxn(e){db.ref('rooms/'+roomCode+'/lastRxn').set({emoji:e,by:devId,ts:FIREBASE_UID});floatEmoji(e);}
+function sendRxn(e){db.ref('rooms/'+roomCode+'/lastRxn').set({emoji:e,by:devId,ts:Date.now()});floatEmoji(e);}
 function floatEmoji(e){
   const el=document.createElement('div');el.className='rxn-float';el.textContent=e;
   el.style.left=Math.random()*80+10+'vw';el.style.bottom='25%';
@@ -1679,7 +1668,7 @@ async function loadPublicRooms(){
   const lv=lvOf(myP.xp);
   const snap=await db.ref('rooms').orderByChild('status').equalTo('lobby').limitToFirst(50).once('value');
   const rooms=[];
-  const now=FIREBASE_UID;
+  const now=Date.now();
   snap.forEach(s=>{
     const r=s.val(), key=s.key;
     if(!r.isPublic) return; // skip private
@@ -1743,7 +1732,7 @@ async function joinFromBrowser(code){
   await db.ref('rooms/'+roomCode+'/players/'+devId)
     .set({name:myP.name,score:0,solved:false,streak:0,xpGained:0,
       level:lv,color:PCOLORS[n%PCOLORS.length],rank:rankOf(lv).icon,
-      online:true,lastSeen:FIREBASE_UID});
+      online:true,lastSeen:Date.now()});
   attachLis(); openLobby();
 }
 
@@ -1752,7 +1741,7 @@ let presenceIv=null;
 function pingPresence(){
   clearInterval(presenceIv);
   if(!roomCode) return;
-  const ping=()=>db.ref('rooms/'+roomCode+'/players/'+devId+'/lastSeen').set(FIREBASE_UID).catch(()=>{});
+  const ping=()=>db.ref('rooms/'+roomCode+'/players/'+devId+'/lastSeen').set(Date.now()).catch(()=>{});
   ping();
   presenceIv=setInterval(ping,8000);
 }
@@ -1761,7 +1750,7 @@ function pingPresence(){
 async function cleanStaleRooms(){
   try{
     const snap=await db.ref('rooms').once('value');
-    const now=FIREBASE_UID;
+    const now=Date.now();
     const toDelete=[];
     snap.forEach(s=>{
       const r=s.val();
@@ -1878,13 +1867,13 @@ let soloRoundStartAt=0;
 function startSoloTimer(total){
   // Solo mode: no countdown — show elapsed stopwatch instead
   clearInterval(soloTimerIv);
-  soloRoundStartAt=FIREBASE_UID;
+  soloRoundStartAt=Date.now();
   const circ=2*Math.PI*18;
   const arc=document.getElementById('timerArc');
   const num=document.getElementById('timerNum');
   if(arc){arc.style.stroke='var(--blue)';arc.style.strokeDashoffset='0';}
   function tick(){
-    const elapsed=Math.floor((FIREBASE_UID-soloRoundStartAt)/1000);
+    const elapsed=Math.floor((Date.now()-soloRoundStartAt)/1000);
     if(num) num.textContent=elapsed;
     // Spin arc continuously as a loading indicator
     if(arc){
@@ -1905,7 +1894,7 @@ async function submitSoloAnswer(){
     return;
   }
   clearInterval(soloTimerIv); roundOver=true;
-  const elapsed=Math.max(1,Math.floor((FIREBASE_UID-soloRoundStartAt)/1000));
+  const elapsed=Math.max(1,Math.floor((Date.now()-soloRoundStartAt)/1000));
   // Score: faster = more points (max 100 in 10s, min 20 after 60s+)
   const speedPct=Math.max(0,1-Math.min(1,(elapsed-5)/55));
   const base=Math.round(20+speedPct*80);
