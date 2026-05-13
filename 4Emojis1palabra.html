@@ -597,33 +597,6 @@ const FB={apiKey:"AIzaSyBkZmas5U0pgZs5gtei-5wrKAcROKOyp20",authDomain:"fotos1pal
 
 
 
-// LOAD CHALLENGES FROM FIREBASE
-async function loadChallenges(){
-
-   try{
-
-      const snap = await firebase.database()
-         .ref('challenges')
-         .once('value');
-
-      const data = snap.val();
-
-      if(!data){
-         console.error('No hay challenges en Firebase');
-         return;
-      }
-
-      CH = Object.values(data);
-
-      console.log('Challenges Firebase:', CH.length);
-
-   }catch(err){
-
-      console.error('Error cargando challenges:', err);
-
-   }
-
-}
 
 
 // FIREBASE AUTH UID FIX
@@ -636,47 +609,61 @@ firebase.auth().onAuthStateChanged(async (user)=>{
 
    try{
 
+      // WAIT AUTH
       if(!user){
+
+         console.log('Iniciando auth anónima...');
+
          await firebase.auth().signInAnonymously();
+
          return;
       }
 
       FIREBASE_UID = user.uid;
       window.PID = FIREBASE_UID;
 
-      console.log('Firebase UID:', FIREBASE_UID);
+      console.log('UID:', FIREBASE_UID);
 
-      const profileRef = firebase.database().ref('profiles/' + FIREBASE_UID);
+      const profileRef = firebase.database()
+         .ref('profiles/' + FIREBASE_UID);
 
       const snap = await profileRef.once('value');
 
+      // CREATE PROFILE IF NOT EXISTS
       if(!snap.exists()){
 
+         console.log('Creando perfil...');
+
          await profileRef.set({
-            name:'Jugador',
-            xp:0,
-            level:1,
-            coins:0,
-            rank:'Novato',
-            wins:0,
-            loses:0,
-            prestige:0,
-            wordsSolved:0,
+            name: localStorage.getItem('playerName') || 'Jugador',
+            xp: 0,
+            level: 1,
+            coins: 0,
+            rank: 'Novato',
+            wins: 0,
+            loses: 0,
             createdAt: firebase.database.ServerValue.TIMESTAMP
          });
 
       }
 
-      await loadChallenges();
+      console.log('Perfil listo');
 
+      // HIDE LOADING
       const overlay = document.getElementById('loadingOverlay');
       if(overlay){
-         overlay.style.display='none';
+         overlay.style.display = 'none';
+      }
+
+      // FORCE MENU
+      const menu = document.getElementById('menuScreen');
+      if(menu){
+         menu.classList.add('active');
       }
 
    }catch(err){
 
-      console.error(err);
+      console.error('Firebase Error:', err);
 
       const msg = document.getElementById('ldMsg');
 
@@ -687,9 +674,6 @@ firebase.auth().onAuthStateChanged(async (user)=>{
    }
 
 });
-
-
-
 // ════════════════════════════════════════════════════
 //  RANK SYSTEM — 20 rangos épicos
 // ════════════════════════════════════════════════════
@@ -722,7 +706,7 @@ function xpProg(xp){const lv=lvOf(xp),base=(lv-1)*XP_PER_LV;return{cur:xp-base,n
 // ════════════════════════════════════════════════════
 //  100 CHALLENGES — organizada por nivel requerido
 // ════════════════════════════════════════════════════
-let CH = [];
+const CH = window.CH_ORIGINAL || [];
 
 // ════════════════════════════════════════════════════
 //  STATE
