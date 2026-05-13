@@ -6,7 +6,8 @@
 <title>4 Emojis 1 Palabra ⚡ ULTRA</title>
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
 <style>
 :root{--bg:#0d0d1a;--surface:#131328;--accent:#e94560;--gold:#f5a623;--green:#4ecca3;--blue:#4d96ff;--purple:#c77dff;--text:#eaeaea;--muted:#7a8caa;--border:#1e2a4a;--lbg:#1e2a4a;}
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -589,10 +590,42 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;heig
   <div class="lu-sub" id="luSub"></div>
 </div>
 <script>
+*/
+
 // ════════════════════════════════════════════════════
 //  FIREBASE CONFIG
 // ════════════════════════════════════════════════════
 const FB={apiKey:"AIzaSyBkZmas5U0pgZs5gtei-5wrKAcROKOyp20",authDomain:"fotos1palabraia.firebaseapp.com",databaseURL:"https://fotos1palabraia-default-rtdb.firebaseio.com",projectId:"fotos1palabraia",storageBucket:"fotos1palabraia.firebasestorage.app",messagingSenderId:"562754711486",appId:"1:562754711486:web:1bc6e656f81e7a0fc513ef"};
+
+
+// SECURITY LAYER — FIREBASE CHALLENGES
+async function loadChallenges(){
+
+   const snap = await firebase.database()
+      .ref('challenges')
+      .once('value');
+
+   const data = snap.val() || {};
+
+   CH = Object.entries(data).map(([id,v])=>({
+      id,
+      ...v
+   }));
+
+   console.log('Challenges loaded:', CH.length);
+}
+
+function validateAnswerSecure(answer,current){
+
+   const playerHash = md5(
+      String(answer || '')
+      .toUpperCase()
+      .trim()
+   );
+
+   return playerHash === current.answerHash;
+}
+
 
 // ════════════════════════════════════════════════════
 //  RANK SYSTEM — 20 rangos épicos
@@ -626,7 +659,10 @@ function xpProg(xp){const lv=lvOf(xp),base=(lv-1)*XP_PER_LV;return{cur:xp-base,n
 // ════════════════════════════════════════════════════
 //  100 CHALLENGES — organizada por nivel requerido
 // ════════════════════════════════════════════════════
-const CH=[
+/* CHALLENGES MOVED TO FIREBASE */
+let CH=[];
+/* ORIGINAL CH DISABLED
+const ORIGINAL_CH=[
 // LV 1-3
 {w:"SOL",     lv:1,c:"Naturaleza",p:[{e:"☀️",l:"Amanecer",b:"#ff6b35,#f7c59f"},{e:"🌻",l:"Girasol",b:"#f5a623,#f7d460"},{e:"😎",l:"Verano",b:"#4d96ff,#74b9ff"},{e:"🌅",l:"Atardecer",b:"#e17055,#fdcb6e"}]},
 {w:"MAR",     lv:1,c:"Naturaleza",p:[{e:"🌊",l:"Ola",b:"#0984e3,#74b9ff"},{e:"🐠",l:"Pez",b:"#00b894,#55efc4"},{e:"⛵",l:"Velero",b:"#6c5ce7,#a29bfe"},{e:"🦀",l:"Cangrejo",b:"#e17055,#fab1a0"}]},
@@ -975,108 +1011,86 @@ async function joinRoom(){
 }
 // ════════════ MATCHMAKING ════════════
 let mmInterval=null, mmTimeout=null;
-const QM_REF='quickmatch_queue';
-let myQueueRef=null;
-let mmAlreadyMatched=false;
 
 async function findPublicRoom(){
   const lv=lvOf(myP.xp), rk=rankOf(lv);
-  mmAlreadyMatched=false;
+  // Show overlay
   document.getElementById('mmRankLabel').textContent=rk.icon+' '+rk.name+' — Nivel '+lv;
-  document.getElementById('mmSubLabel').textContent='🔍 Buscando rival...';
+  document.getElementById('mmSubLabel').textContent='Buscando salas compatibles con tu rango...';
   document.getElementById('mmOverlay').style.display='flex';
 
-  // Registrarse en la cola
-  myQueueRef=db.ref(QM_REF+'/'+devId);
-  await myQueueRef.set({name:myP.name,lv,joinedAt:Date.now(),status:'waiting'});
-  myQueueRef.onDisconnect().remove();
-
-  // Escuchar en tiempo real si alguien nos asignó una sala
-  myQueueRef.on('value', async snap=>{
-    if(mmAlreadyMatched) return;
-    if(!snap.exists()) return;
-    const data=snap.val();
-    if(data.status==='matched' && data.roomCode){
-      mmAlreadyMatched=true;
-      clearInterval(mmInterval);
-      myQueueRef.off();
-      document.getElementById('mmSubLabel').textContent='✅ ¡Rival encontrado!';
-      setTimeout(async()=>{
-        await myQueueRef.remove().catch(()=>{});
-        document.getElementById('mmOverlay').style.display='none';
-        roomCode=data.roomCode; isHost=false; resetPU(); usedGame=new Set();
-        await db.ref('rooms/'+roomCode+'/players/'+devId).update({
-          name:myP.name,online:true,lastSeen:Date.now(),rank:rankOf(lv).icon,level:lv
-        });
-        document.getElementById('pubPill').style.display='inline-flex';
-        attachLis(); openLobby();
-      },600);
-    }
-  });
-
-  // Cada 2s intentar emparejar con alguien en la cola
-  async function tryMatchmaking(){
-    if(mmAlreadyMatched) return;
-    const snap=await db.ref(QM_REF).once('value');
-    if(!snap.exists()) return;
-    // Recolectar todos los que esperan (excepto yo)
-    const others=[];
+  let attempts=0;
+  const mmStartTime=Date.now();
+  async function tryFind(){
+    attempts++;
+    document.getElementById('mmSubLabel').textContent='Intento '+attempts+'/6 — buscando salas abiertas...';
+    const snap=await db.ref('rooms').orderByChild('status').equalTo('lobby').limitToFirst(50).once('value');
+    let best=null, bestScore=-Infinity;
+    const myRank=rankOf(lv).name;
+    const now=Date.now();
     snap.forEach(s=>{
-      const d=s.val();
-      if(s.key!==devId && d.status==='waiting'){
-        others.push({id:s.key, name:d.name||'Jugador', lv:d.lv||1});
-      }
+      const r=s.val(), ps=Object.keys(r.players||{}).length;
+      if(ps>=2) return; // 1v1 max
+      if(ps===0) return; // empty
+      if(lv<(r.minLv||1)) return; // too low level
+      if(!(r.isPublic)) return; // not public
+      if(r.host===devId) return; // don't join own room
+      // Check host is online (lastSeen within 30s)
+      const hostP=r.players&&r.players[r.host];
+      if(hostP&&hostP.lastSeen&&(now-hostP.lastSeen)>30000) return;
+      // Prefer same rank
+      const hostLv=r.avgLv||1;
+      const sameRank=rankOf(hostLv).name===myRank;
+      const diff=Math.abs(hostLv-lv);
+      const score=(sameRank?100:0)+(10-Math.min(10,diff));
+      if(score>bestScore){bestScore=score;best=s.key;}
     });
-    if(others.length===0) return;
-
-    // Tomar el primero disponible
-    const opp=others[0];
-
-    // Marcar al oponente como 'matching' primero para evitar doble claim
-    // Si ya fue cambiado por otro, ignorar
-    const oppSnap=await db.ref(QM_REF+'/'+opp.id).once('value');
-    if(!oppSnap.exists()) return;
-    if(oppSnap.val().status!=='waiting') return;
-
-    // Marcar ambos como emparejados antes de crear sala
-    mmAlreadyMatched=true;
-    clearInterval(mmInterval);
-    myQueueRef.off();
-
-    await db.ref(QM_REF+'/'+opp.id).update({status:'matching'}).catch(()=>{});
-    await myQueueRef.update({status:'matching'}).catch(()=>{});
-
-    document.getElementById('mmSubLabel').textContent='✅ ¡Rival encontrado! Creando sala...';
-
-    // Crear sala
-    roomCode=genCode(); isHost=true; resetPU(); usedGame=new Set();
-    const room={
-      host:devId,status:'lobby',rounds:8,minLv:1,isPublic:true,
-      fixedTime:90,maxPlayers:2,currentRound:0,challengeIdx:-1,
-      letterSeed:0,roundStartedAt:0,roundWinner:'',correctWord:'',
-      frozenUntil:0,avgLv:Math.round((lv+(opp.lv||1))/2),isQuickMatch:true,
-      players:{
-        [devId]:{name:myP.name,score:0,solved:false,streak:0,xpGained:0,
-          level:lv,color:PCOLORS[0],rank:rankOf(lv).icon,online:true,lastSeen:Date.now()},
-        [opp.id]:{name:opp.name,score:0,solved:false,streak:0,xpGained:0,
-          level:opp.lv,color:PCOLORS[1],rank:rankOf(opp.lv).icon,online:true,lastSeen:Date.now()}
-      }
-    };
-    await db.ref('rooms/'+roomCode).set(room);
-
-    // Decirle al oponente a qué sala entrar
-    await db.ref(QM_REF+'/'+opp.id).update({status:'matched',roomCode}).catch(()=>{});
-    await myQueueRef.remove().catch(()=>{});
-
-    setTimeout(()=>{
-      document.getElementById('mmOverlay').style.display='none';
-      document.getElementById('pubPill').style.display='inline-flex';
-      attachLis(); openLobby();
-    },600);
+    if(best){
+      clearInterval(mmInterval);
+      document.getElementById('mmSubLabel').textContent='✅ ¡Sala encontrada!';
+      setTimeout(async()=>{
+        document.getElementById('mmOverlay').style.display='none';
+        document.getElementById('codeInp').value=best;
+        roomCode=best; isHost=false; resetPU(); usedGame=new Set();
+        const snap2=await db.ref('rooms/'+roomCode).once('value');
+        const r=snap2.val();
+        const n=Object.keys(r.players||{}).length;
+        await db.ref('rooms/'+roomCode+'/players/'+devId)
+          .set({name:myP.name,score:0,solved:false,streak:0,xpGained:0,
+            level:lv,color:PCOLORS[n%PCOLORS.length],rank:rankOf(lv).icon});
+        attachLis(); openLobby(); 
+        document.getElementById('pubPill').style.display='inline-flex';
+      },800);
+      return true;
+    }
+    return false;
   }
 
-  await tryMatchmaking();
-  mmInterval=setInterval(tryMatchmaking,2000);
+  await tryFind();
+  mmInterval=setInterval(()=>{
+    tryFind();
+    // Update waiting message with elapsed time
+    const elapsed=Math.round((Date.now()-mmStartTime)/1000);
+    const el=document.getElementById('mmSubLabel');
+    if(el&&el.textContent.indexOf('Sala encontrada')===-1)
+      el.textContent='Buscando rival de tu rango... ('+elapsed+'s)';
+  },3000);
+  // After 60s with no match, offer to create room
+  mmTimeout=setTimeout(()=>{
+    clearInterval(mmInterval);
+    document.getElementById('mmSubLabel').textContent='Sin rivales disponibles ahora';
+    document.getElementById('mmRankLabel').textContent='¿Qué quieres hacer?';
+    const overlay=document.getElementById('mmOverlay');
+    // Add choice buttons
+    const existing=overlay.querySelector('.mm-choice');
+    if(!existing){
+      const div=document.createElement('div');div.className='mm-choice';
+      div.style.cssText='display:flex;gap:10px;margin-top:8px;';
+      div.innerHTML='<button onclick="cancelMM()" style="flex:1;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:11px;color:var(--text);font-family:Nunito,sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;">← Cancelar</button>'
+        +'<button onclick="mmCreateRoom('+lv+')" style="flex:1;padding:10px;background:linear-gradient(135deg,#4ecca3,#00b894);border:none;border-radius:11px;color:#000;font-family:Nunito,sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;">🏠 Crear sala</button>';
+      overlay.appendChild(div);
+    }
+  },60000);
 }
 
 function mmCreateRoom(lv){
@@ -1093,39 +1107,7 @@ function quickJoin(){
 }
 function cancelMM(){
   clearInterval(mmInterval);clearTimeout(mmTimeout);
-  if(myQueueRef){myQueueRef.off();myQueueRef.remove().catch(()=>{});myQueueRef=null;}
   document.getElementById('mmOverlay').style.display='none';
-}
-
-// ════════ OPPONENT DISCONNECT DETECTION ════════
-let opponentWatchRef=null, opponentWatchLis=null;
-function watchOpponentLeave(players){
-  if(opponentWatchRef) opponentWatchRef.off('value',opponentWatchLis);
-  const opponentId=Object.keys(players||{}).find(id=>id!==devId);
-  if(!opponentId||!roomCode) return;
-  opponentWatchRef=db.ref('rooms/'+roomCode+'/players/'+opponentId);
-  opponentWatchLis=opponentWatchRef.on('value',s=>{
-    if(!s.exists()){
-      opponentWatchRef.off('value',opponentWatchLis);
-      opponentWatchRef=null;
-      handleOpponentLeft();
-    }
-  });
-}
-function handleOpponentLeft(){
-  clearInterval(timerIv);clearInterval(presenceIv);
-  document.body.style.filter='';
-  if(roomCode) db.ref('rooms/'+roomCode).remove().catch(()=>{});
-  if(roomLis&&roomRef) db.ref('rooms/'+roomCode).off('value',roomLis);
-  roomLis=null;roomRef=null;curCh=null;lastIdx=-99;roomCode='';
-  const ov=document.createElement('div');
-  ov.style.cssText='position:fixed;inset:0;background:rgba(10,14,26,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px;';
-  ov.innerHTML='<div style="font-size:3rem">🚪</div>'
-    +'<div style="font-size:1.2rem;font-weight:800;color:#fff;text-align:center;">El oponente abandonó la partida</div>'
-    +'<div style="font-size:.85rem;color:var(--muted);text-align:center;">La sala ha sido eliminada</div>'
-    +'<button onclick="this.parentElement.remove();renderPf();showScreen(&quot;menuScreen&quot;);" '
-    +'style="margin-top:8px;padding:12px 32px;background:linear-gradient(135deg,#4ecca3,#00b894);border:none;border-radius:12px;color:#000;font-family:Nunito,sans-serif;font-weight:800;font-size:.95rem;cursor:pointer;">← Volver al menú</button>';
-  document.body.appendChild(ov);
 }
 
 async function createPublicRoom(lv){
@@ -1195,9 +1177,6 @@ function attachLis(){
 // ════════════════════════════════════════════════════
 function handleRoom(room){
   renderLobbyPlayers(room.players);
-  // Watch for opponent leaving in quickmatch rooms
-  if(room.isQuickMatch && Object.keys(room.players||{}).length>=2)
-    watchOpponentLeave(room.players);
   switch(room.status){
     case 'lobby':
       showScreen('lobbyScreen');
@@ -1623,7 +1602,6 @@ function copyLink(){const el=document.getElementById('shareLink');el.select();do
 function leaveRoom(){
   clearInterval(timerIv);clearInterval(presenceIv);document.body.style.filter='';
   window._autoStartPending=false;
-  if(opponentWatchRef){opponentWatchRef.off('value',opponentWatchLis);opponentWatchRef=null;}
   // If host leaves lobby, delete the room
   if(isHost&&roomCode){
     db.ref('rooms/'+roomCode+'/status').once('value').then(s=>{
