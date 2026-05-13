@@ -1405,14 +1405,29 @@ function startTimer(total,startedAt){
 //  RENDER
 // ════════════════════════════════════════════════════
 function renderPhotos(blur){
-  const g=document.getElementById('photosGrid');g.innerHTML='';
-  curCh.p.forEach(p=>{
-    const[c1,c2]=p.b.split(',');
-    const cell=document.createElement('div');cell.className='photo-cell'+(blur?' blurred':'');
-    cell.innerHTML=`<div class="emoji-card" style="background:linear-gradient(135deg,${c1},${c2})"><span class="big-emoji">${p.e}</span><span class="emoji-label">${p.l}</span></div>`;
-    g.appendChild(cell);
-  });
+   const g=document.getElementById('photosGrid');
+   g.innerHTML='';
+
+   curCh.p.forEach(p=>{
+
+      const bg = p.b || '#2d3436,#636e72';
+      const [c1,c2] = bg.split(',');
+
+      const cell=document.createElement('div');
+
+      cell.className='photo-cell'+(blur?' blurred':'');
+
+      cell.innerHTML=
+      `<div class="emoji-card"
+      style="background:linear-gradient(135deg,${c1},${c2})">
+      <span class="big-emoji">${p.e}</span>
+      <span class="emoji-label">${p.l}</span>
+      </div>`;
+
+      g.appendChild(cell);
+   });
 }
+
 function renderAns(){
   const w=curCh.word,b=document.getElementById('ansBoxes');b.innerHTML='';
   for(let i=0;i<w.length;i++){const x=document.createElement('div');x.className='ab';x.id='ab_'+i;x.onclick=()=>removeAt(i);b.appendChild(x);}
