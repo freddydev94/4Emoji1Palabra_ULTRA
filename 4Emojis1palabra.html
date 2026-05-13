@@ -724,6 +724,20 @@ function xpProg(xp){const lv=lvOf(xp),base=(lv-1)*XP_PER_LV;return{cur:xp-base,n
 // ════════════════════════════════════════════════════
 let CH = [];
 
+// fallback local por si Firebase falla
+const LOCAL_CHALLENGES = [
+  {
+    word:'CASA',
+    w:'CASA',
+    category:'Objetos',
+    c:'Objetos',
+    emojis:['🏠','🛏️','🚪','🪟'],
+    p:['🏠','🛏️','🚪','🪟'],
+    level:1,
+    lv:1
+  }
+];
+
 async function loadChallenges(){
 
    try{
@@ -735,16 +749,22 @@ async function loadChallenges(){
       const data = snap.val();
 
       if(!data){
-         console.error('No hay retos');
-         return;
+         console.error('No hay retos'); CH = LOCAL_CHALLENGES; return;
       }
 
       CH = Object.values(data).map(r=>({
 
-         // compatibilidad juego viejo
+         // compatibilidad completa
+         word: r.word || '',
          w: r.word || '',
+
+         category: r.category || '',
          c: r.category || '',
+
+         emojis: r.emojis || [],
          p: r.emojis || [],
+
+         level: r.level || 1,
          lv: r.level || 1,
 
          // extras
