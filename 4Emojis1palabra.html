@@ -604,18 +604,68 @@ firebase.initializeApp(FB);
 
 firebase.auth().onAuthStateChanged(async (user)=>{
 
-   if(!user){
-      await firebase.auth().signInAnonymously();
-      return;
+   try{
+
+      if(!user){
+         await firebase.auth().signInAnonymously();
+         return;
+      }
+
+      FIREBASE_UID = user.uid;
+      window.PID = FIREBASE_UID;
+
+      console.log('Firebase UID:', FIREBASE_UID);
+
+      const profileRef = firebase.database().ref('profiles/' + FIREBASE_UID);
+
+      const snap = await profileRef.once('value');
+
+      // AUTO CREATE PROFILE
+      if(!snap.exists()){
+
+         await profileRef.set({
+            name: localStorage.getItem('playerName') || 'Jugador',
+            xp: 0,
+            level: 1,
+            coins: 0,
+            rank: 'Novato',
+            wins: 0,
+            loses: 0,
+            prestige: 0,
+            wordsSolved: 0,
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+         });
+
+         console.log('Perfil creado automáticamente');
+      }
+
+      document.getElementById('ldMsg').textContent='Perfil cargado';
+
+      setTimeout(()=>{
+
+         document.getElementById('loadingOverlay').style.display='none';
+
+         if(typeof initGame === 'function'){
+            initGame();
+         }else if(typeof goMenu === 'function'){
+            goMenu();
+         }else{
+            const menu=document.getElementById('menuScreen');
+            if(menu) menu.classList.add('active');
+         }
+
+      },700);
+
+   }catch(err){
+
+      console.error(err);
+
+      document.getElementById('ldMsg').textContent =
+         'Error Firebase: ' + err.message;
+
    }
 
-   FIREBASE_UID = user.uid;
-
-   console.log('Firebase UID:', FIREBASE_UID);
-
 });
-
-
 // ════════════════════════════════════════════════════
 //  RANK SYSTEM — 20 rangos épicos
 // ════════════════════════════════════════════════════
