@@ -566,6 +566,17 @@ body.theme-arcade .ld-msg{color:var(--ink);}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important;}
 }
 /* === CODEX VISUAL REFRESH END === */
+/* PREP OVERLAY */
+#prepOverlay{position:fixed;inset:0;z-index:320;background:rgba(0,0,0,.92);display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:20px;}
+.prep-title{font-family:'Boogaloo',cursive;font-size:2rem;color:var(--blue);}
+.prep-sub{font-size:.86rem;color:var(--muted);font-weight:800;max-width:320px;line-height:1.45;}
+.prep-list{display:flex;flex-direction:column;gap:6px;width:100%;max-width:360px;margin-top:6px;}
+.prep-player{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:7px 10px;font-size:.78rem;font-weight:800;}
+.prep-ok{color:var(--green)}.prep-wait{color:var(--gold)}
+body.theme-arcade #prepOverlay{background:rgba(255,247,232,.92);color:var(--ink);backdrop-filter:blur(10px);}
+body.theme-arcade .prep-title{font-family:'Bungee','Fredoka',cursive;color:var(--accent);text-shadow:3px 3px 0 var(--ink),6px 6px 0 var(--gold);}
+body.theme-arcade .prep-sub{color:var(--ink);}
+body.theme-arcade .prep-player{background:#fff;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);}
 </style>
 </head>
 <body>
@@ -887,7 +898,7 @@ body.theme-arcade .ld-msg{color:var(--ink);}
   <div class="mm-dots"><div class="mm-dot"></div><div class="mm-dot"></div><div class="mm-dot"></div></div>
   <button class="btn btn-outline" onclick="cancelMM()" style="max-width:200px;margin-top:8px;">✕ Cancelar</button>
 </div>
-<div id="prepOverlay">
+<div id="prepOverlay" style="display:none">
   <div class="mm-icon">⏳</div>
   <div class="prep-title">Cargando partida...</div>
   <div class="prep-sub" id="prepSub">Esperando a que todos carguen los retos.</div>
