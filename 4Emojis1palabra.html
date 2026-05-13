@@ -740,46 +740,64 @@ const LOCAL_CHALLENGES = [
 
 async function loadChallenges(){
 
-   try{
+   const snap = await firebase.database()
+      .ref('challenges')
+      .once('value');
 
-      const snap = await firebase.database()
-         .ref('challenges')
-         .once('value');
+   const data = snap.val() || {};
 
-      const data = snap.val();
+   CH = Object.values(data).map(r=>({
 
-      if(!data){
-         console.error('No hay retos'); CH = LOCAL_CHALLENGES; return;
-      }
+      word: r.word || '',
+      w: r.word || '',
 
-      CH = Object.values(data).map(r=>({
+      category: r.category || 'Casual',
+      c: r.category || 'Casual',
 
-         // compatibilidad completa
-         word: r.word || '',
-         w: r.word || '',
+      level: r.level || 1,
+      lv: r.level || 1,
 
-         category: r.category || '',
-         c: r.category || '',
+      emojis: (r.emojis || []).map(em=>{
 
-         emojis: r.emojis || [],
-         p: r.emojis || [],
+         if(typeof em === 'object'){
 
-         level: r.level || 1,
-         lv: r.level || 1,
+            return {
+               e: em.e || '❓',
+               l: em.l || 'Emoji',
+               b: em.b || '#2d3436,#636e72'
+            };
+         }
 
-         // extras
-         answerHash: r.answerHash || ''
+         return {
+            e: em,
+            l: 'Emoji',
+            b: '#2d3436,#636e72'
+         };
 
-      }));
+      }),
 
-      console.log('Retos cargados:', CH.length);
+      p: (r.emojis || []).map(em=>{
 
-   }catch(err){
+         if(typeof em === 'object'){
 
-      console.error(err);
+            return {
+               e: em.e || '❓',
+               l: em.l || 'Emoji',
+               b: em.b || '#2d3436,#636e72'
+            };
+         }
 
-   }
+         return {
+            e: em,
+            l: 'Emoji',
+            b: '#2d3436,#636e72'
+         };
 
+      })
+
+   }));
+
+   console.log('Challenges cargados:', CH.length);
 }
 
 // ════════════════════════════════════════════════════
