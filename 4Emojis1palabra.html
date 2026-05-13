@@ -1784,9 +1784,44 @@ async function doSoloRound(){
   if(soloCurrentRound>soloRoundsTotal){endSolo();return;}
   const pct=soloCurrentRound/soloRoundsTotal;
   const lv=Math.min(50,Math.round(soloStartLv+pct*8));
-  const ch=pickChSolo(lv);
-  soloUsed.add(ch.word);
-  curCh={...ch}; hintUsed=0; roundOver=false;
+  const ch = pickChSolo(lv);
+
+if(!ch){
+   console.error('No se encontró reto para nivel:', lv);
+
+   showToast('❌ No hay retos disponibles','rgba(233,69,96,.95)');
+
+   curCh = {
+      word:'CASA',
+      w:'CASA',
+      category:'Objetos',
+      c:'Objetos',
+      emojis:['🏠','🚪','🛏️','🪟'],
+      p:['🏠','🚪','🛏️','🪟'],
+      level:1,
+      lv:1
+   };
+
+}else{
+
+   soloUsed.add(ch.word || ch.w || '');
+
+   curCh = {
+      ...ch,
+
+      word: ch.word || ch.w || '',
+      w: ch.word || ch.w || '',
+
+      category: ch.category || ch.c || '',
+      c: ch.category || ch.c || '',
+
+      emojis: ch.emojis || ch.p || [],
+      p: ch.emojis || ch.p || [],
+
+      level: ch.level || ch.lv || 1,
+      lv: ch.level || ch.lv || 1
+   };
+} hintUsed=0; roundOver=false;
   const dc=diffCfg(lv);
   // No time limit in solo — just start stopwatch
 
