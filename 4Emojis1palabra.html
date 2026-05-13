@@ -1119,7 +1119,7 @@ let myP={name:'Jugador',xp:0,seen:[],prestige:0};
 let roomCode='',isHost=false,roomRef=null,roomLis=null;
 let curCh=null,inpLetters=[],lkeys=[];
 let hintUsed=0,roundOver=false,timerIv=null;
-let usedGame=new Set(),lastIdx=-99;
+let usedGame=new Set(),lastIdx=-99,lastCountdownKey='',roundEndAdvanceKey='';
 let puH=2,puF=1,puB=1,myStreak=0,cdRunning=false;
 
 // ════════════════════════════════════════════════════
@@ -1199,16 +1199,64 @@ function renderPf(){
 // ════════════════════════════════════════════════════
 //  CHALLENGE SELECTOR
 // ════════════════════════════════════════════════════
-function pickCh(avgLv,round,total){
+function pickCh(avgLv,round,total,minAllowed=1){
   const pct=round/total;
-  const minLv=Math.max(1,avgLv-4);
+  const minLv=Math.max(1,minAllowed||1,avgLv-4);
   const maxLv=Math.min(50,Math.round(avgLv+pct*12));
   // try unseen first
   let pool=CH.filter(c=>c.lv>=minLv&&c.lv<=maxLv&&!usedGame.has(c.word)&&!myP.seen.includes(c.word));
   if(!pool.length) pool=CH.filter(c=>c.lv>=minLv&&c.lv<=maxLv&&!usedGame.has(c.word));
-  if(!pool.length) pool=CH.filter(c=>!usedGame.has(c.word));
+  if(!pool.length) pool=CH.filter(c=>c.lv>=Math.max(1,minAllowed||1)&&!usedGame.has(c.word));
+  if(!pool.length) pool=CH.filter(c=>c.lv>=Math.max(1,minAllowed||1));
   if(!pool.length) pool=[...CH];
-  return pool[Math.floor(Math.random()*pool.length)];
+  return normalizeChallenge(pool[Math.floor(Math.random()*pool.length)] || LOCAL_CHALLENGES[0]);
+}
+function normalizeEmojiItem(em){
+  if(em&&typeof em==='object') return {
+    e: em.e || em.emoji || em.icon || '?',
+    l: em.l || em.label || em.name || em.nombre || em.text || em.title || em.titulo || em.desc || 'Emoji',
+    b: em.b || em.bg || em.background || '#2d3436,#636e72'
+  };
+  return {e:em||'?',l:'Emoji',b:'#2d3436,#636e72'};
+}
+function normalizeChallenge(raw){
+  raw=raw||{};
+  const word=(raw.word||raw.w||'').toString().trim().toUpperCase();
+  const stored=word?CH.find(c=>(c.word||c.w||'').toString().toUpperCase()===word):null;
+  const src=stored?{...stored,...raw}:raw;
+  const rawPics=src.p||src.emojis||src.photos||[];
+  const storedPics=stored?(stored.p||stored.emojis||[]):[];
+  const rawList=Array.isArray(rawPics)?rawPics:Object.values(rawPics);
+  const storedList=Array.isArray(storedPics)?storedPics:Object.values(storedPics);
+  const normalizedPics=rawList.map((em,i)=>{
+    const pic=normalizeEmojiItem(em);
+    const backup=normalizeEmojiItem(storedList[i]);
+    if((!pic.l||pic.l==='Emoji')&&backup.l&&backup.l!=='Emoji') pic.l=backup.l;
+    if((!pic.b||pic.b==='#2d3436,#636e72')&&backup.b) pic.b=backup.b;
+    return pic;
+  });
+  if(!normalizedPics.length&&storedList.length){
+    storedList.forEach(em=>normalizedPics.push(normalizeEmojiItem(em)));
+  }
+  return {
+    ...src,
+    word:(src.word||src.w||word||'CASA').toString().trim().toUpperCase(),
+    w:(src.word||src.w||word||'CASA').toString().trim().toUpperCase(),
+    category:src.category||src.c||'Casual',
+    c:src.category||src.c||'Casual',
+    level:parseInt(src.level||src.lv||1)||1,
+    lv:parseInt(src.level||src.lv||1)||1,
+    emojis:normalizedPics,
+    p:normalizedPics
+  };
+}function challengeForFirebase(ch){
+  ch=normalizeChallenge(ch);
+  return {
+    word:ch.word,w:ch.word,
+    category:ch.category,c:ch.category,
+    level:ch.lv,lv:ch.lv,
+    emojis:ch.p,p:ch.p
+  };
 }
 
 // ════════════════════════════════════════════════════
@@ -1494,6 +1542,7 @@ function handleRoom(room){
   renderLobbyPlayers(room.players);
   switch(room.status){
     case 'lobby':
+      lastCountdownKey='';
       showScreen('lobbyScreen');
       const ps_count=Object.keys(room.players||{}).length;
       const maxP_room=room.maxPlayers||4;
@@ -1513,12 +1562,18 @@ function handleRoom(room){
       }
       break;
     case 'countdown':
-      showScreen('gameScreen');runCountdown(3);break;
+      showScreen('gameScreen');
+      const cdKey=roomCode+':'+(room.currentRound||0)+':'+(room.challengeIdx||-1);
+      if(lastCountdownKey!==cdKey){lastCountdownKey=cdKey;runCountdown(3);}
+      break;
     case 'playing':
+      roundEndAdvanceKey='';
+      document.getElementById('cdOverlay').style.display='none';cdRunning=false;
       showScreen('gameScreen');
       document.getElementById('solvedBanner').style.display='none';
       if(room.challengeIdx!==lastIdx&&room.cData){
-        lastIdx=room.challengeIdx;curCh={...room.cData};
+        lastIdx=room.challengeIdx;curCh=normalizeChallenge(room.cData);
+        if(!curCh.p||curCh.p.length<4){console.warn('Reto multiplayer sin imagenes validas',room.cData);return;}
         roundOver=false;hintUsed=0;
         const dc=diffCfg(curCh.lv||1);
         buildKB(room.letterSeed,dc.xtr);renderPhotos(dc.blur);renderAns();checkVetBanner(curCh.word);
@@ -1535,7 +1590,7 @@ function handleRoom(room){
       clearInterval(timerIv);roundOver=true;document.body.style.filter='';
       renderPlayers(room.players);
       showBanner(room.roundWinner,room.players,room.correctWord,room.roundPts,room.roundXp);
-      if(isHost) setTimeout(()=>db.ref('rooms/'+roomCode).once('value').then(s=>{const r=s.val();if(r&&r.status==='roundEnd')doNextRound(r);}),4200);
+      if(isHost){const advKey=roomCode+':'+(room.currentRound||0)+':'+(room.challengeIdx||0);if(roundEndAdvanceKey!==advKey){roundEndAdvanceKey=advKey;setTimeout(()=>db.ref('rooms/'+roomCode).once('value').then(s=>{const r=s.val();if(r&&r.status==='roundEnd'&&(r.currentRound||0)===(room.currentRound||0))doNextRound(r);}),4200);}}
       break;
     case 'finished':
       clearInterval(timerIv);document.body.style.filter='';
@@ -1558,7 +1613,7 @@ async function doNextRound(room){
   if(next>room.rounds){await db.ref('rooms/'+roomCode).update({status:'finished'});return;}
   const ps=room.players||{};
   const avgLv=Math.round(Object.values(ps).reduce((a,p)=>a+(p.level||1),0)/Math.max(1,Object.keys(ps).length));
-  const ch=pickCh(avgLv,next,room.rounds);
+  const ch=pickCh(avgLv,next,room.rounds,room.minLv||1);
   usedGame.add(ch.word);
   const dc=diffCfg(ch.lv||1);
   const rndPct=next/room.rounds;
@@ -1570,7 +1625,7 @@ async function doNextRound(room){
   Object.assign(u,{status:'playing',currentRound:next,challengeIdx:next,avgLv,letterSeed:seed,
     roundStartedAt:firebase.database.ServerValue.TIMESTAMP,
     roundWinner:'',correctWord:ch.word,roundPts:0,roundXp:0,frozenUntil:0,roundTime,
-    cData:{w:ch.word,c:ch.c,p:ch.p,lv:ch.lv||1}});
+    cData:challengeForFirebase(ch)});
   await db.ref('rooms/'+roomCode).update(u);
 }
 async function playAgain(){
@@ -1606,11 +1661,14 @@ async function submitAnswer(){
   myStreak++;
   const sb=myStreak>=3?40:myStreak>=2?20:0,mult=myStreak>=3?2:1;
   const pts=Math.round((base+hb+sb)*mult);
-  const xg=Math.round((curCh.lv||1)*2+(pct*20)+(hintUsed===0?10:0)+(myStreak>=2?15:0));
+  const rawXp=Math.round((curCh.lv||1)*2+(pct*20)+(hintUsed===0?10:0)+(myStreak>=2?15:0));
   const prev=(room.players[devId]&&room.players[devId].score)||0;
   const prevX=(room.players[devId]&&room.players[devId].xpGained)||0;
   const oldLv=lvOf(myP.xp);
-  myP.xp+=xg;
+  const isNew=!(myP.seen||[]).includes(curCh.word);
+  const rankXpOk=isNew&&(curCh.lv||1)>=oldLv;
+  const xg=rankXpOk?rawXp:0;
+  if(xg>0) myP.xp+=xg;
   if(!myP.seen.includes(curCh.word))myP.seen.push(curCh.word);
   if(lvOf(myP.xp)>=50&&oldLv<50){myP.prestige=(myP.prestige||0)+1;myP.xp=0;myP.seen=[];}
   await saveP();
@@ -1734,8 +1792,15 @@ function startTimer(total,startedAt){
 function renderPhotos(blur){
    const g=document.getElementById('photosGrid');
    g.innerHTML='';
+   curCh=normalizeChallenge(curCh);
+   const pics=(curCh.p||[]).map(normalizeEmojiItem).slice(0,4);
+   if(!pics.length){
+      console.warn('No hay imagenes para renderizar',curCh);
+      g.innerHTML='<div class="cat-tag" style="grid-column:1/-1;text-align:center;padding:12px;">Cargando imagenes...</div>';
+      return;
+   }
 
-   curCh.p.forEach(p=>{
+   pics.forEach(p=>{
 
       const bg = p.b || '#2d3436,#636e72';
       const [c1,c2] = bg.split(',');
@@ -1746,7 +1811,7 @@ function renderPhotos(blur){
 
       cell.innerHTML=
       `<div class="emoji-card"
-      style="background:linear-gradient(135deg,${c1},${c2})">
+      style="background:linear-gradient(135deg,${c1},${c2||c1})">
       <span class="big-emoji">${p.e}</span>
       <span class="emoji-label">${p.l}</span>
       </div>`;
@@ -2112,7 +2177,7 @@ function openSolo(){
 async function startSolo(){
   soloMode=true; soloUsed=new Set();
   soloRoundsTotal=parseInt(document.getElementById('soloRounds').value)||10;
-  soloStartLv=parseInt(document.getElementById('soloStartLv').value)||lvOf(myP.xp);
+  soloStartLv=Math.min(lvOf(myP.xp),parseInt(document.getElementById('soloStartLv').value)||lvOf(myP.xp));
   soloCurrentRound=0; soloScore=0; soloNewWords=0; soloSeenWords=0;
   soloXpGained=0; soloRankXpGained=0;
   resetPU(); myStreak=0;
@@ -2125,7 +2190,7 @@ async function doSoloRound(){
   soloCurrentRound++;
   if(soloCurrentRound>soloRoundsTotal){endSolo();return;}
   const pct=soloCurrentRound/soloRoundsTotal;
-  const lv=Math.min(50,Math.round(soloStartLv+pct*8));
+  const lv=Math.min(lvOf(myP.xp),50,Math.round(soloStartLv+pct*8));
   const ch = pickChSolo(lv);
 
 if(!ch){
@@ -2146,24 +2211,8 @@ if(!ch){
 
 }else{
 
-   soloUsed.add(ch.word || ch.w || '');
-
-   curCh = {
-      ...ch,
-
-      word: ch.word || ch.w || '',
-      w: ch.word || ch.w || '',
-
-      category: ch.category || ch.c || '',
-      c: ch.category || ch.c || '',
-
-      emojis: ch.emojis || ch.p || [],
-      p: ch.emojis || ch.p || [],
-
-      level: ch.level || ch.lv || 1,
-      lv: ch.level || ch.lv || 1
-   };
-} hintUsed=0; roundOver=false;
+   curCh=normalizeChallenge(ch);
+   soloUsed.add(curCh.word || curCh.w || '');} hintUsed=0; roundOver=false;
   const dc=diffCfg(lv);
   // No time limit in solo — just start stopwatch
 
@@ -2171,7 +2220,7 @@ if(!ch){
   document.getElementById('roundPill').textContent='Ronda '+soloCurrentRound+'/'+soloRoundsTotal;
   // Show stopwatch icon in timer area for solo
   const tn=document.getElementById('timerNum');if(tn)tn.textContent='0';
-  document.getElementById('catTag').textContent=ch.c;
+  document.getElementById('catTag').textContent=curCh.c;
   document.getElementById('solvedBanner').style.display='none';
   const dfill=document.getElementById('diffFill');
   dfill.style.width=Math.min(100,Math.round(lv/50*100))+'%';
@@ -2182,7 +2231,7 @@ if(!ch){
     '<div class="sc me">'+myP.name+': <strong>'+soloScore+'</strong></div>';
 
   // Vet/new notice
-  const isNew=!(myP.seen||[]).includes(ch.word);
+  const isNew=!(myP.seen||[]).includes(curCh.word);
   document.getElementById('xpNewOnly').style.display=isNew?'flex':'none';
   document.getElementById('vetBanner').style.display=isNew?'none':'flex';
 
@@ -2199,7 +2248,7 @@ function pickChSolo(targetLv){
   if(!pool.length) pool=CH.filter(c=>c.lv>=minLv&&c.lv<=maxLv&&!soloUsed.has(c.word));
   if(!pool.length) pool=CH.filter(c=>!soloUsed.has(c.word));
   if(!pool.length) pool=[...CH];
-  return pool[Math.floor(Math.random()*pool.length)];
+  return normalizeChallenge(pool[Math.floor(Math.random()*pool.length)] || LOCAL_CHALLENGES[0]);
 }
 
 let soloTimerIv=null;
@@ -2243,12 +2292,14 @@ async function submitSoloAnswer(){
   soloScore+=pts;
 
   const isNew=!(myP.seen||[]).includes(curCh.word);
-  const xg=Math.round((curCh.lv||1)*2+(speedPct*20)+(hintUsed===0?10:0)+(myStreak>=2?15:0));
+  const oldLv=lvOf(myP.xp);
+  const rawXp=Math.round((curCh.lv||1)*2+(speedPct*20)+(hintUsed===0?10:0)+(myStreak>=2?15:0));
+  const rankXpOk=isNew&&(curCh.lv||1)>=oldLv;
+  const xg=rankXpOk?rawXp:0;
   if(isNew){ soloNewWords++; soloRankXpGained+=xg; } else { soloSeenWords++; }
   soloXpGained+=xg;
 
-  const oldLv=lvOf(myP.xp);
-  myP.xp+=xg;
+  if(xg>0) myP.xp+=xg;
   if(!myP.seen.includes(curCh.word)) myP.seen.push(curCh.word);
   if(lvOf(myP.xp)>=50&&oldLv<50){myP.prestige=(myP.prestige||0)+1;myP.xp=0;myP.seen=[];}
   await saveP();
