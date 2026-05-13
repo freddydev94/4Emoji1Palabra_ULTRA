@@ -1032,6 +1032,7 @@ function xpProg(xp){const lv=lvOf(xp),base=(lv-1)*XP_PER_LV;return{cur:xp-base,n
 //  100 CHALLENGES — organizada por nivel requerido
 // ════════════════════════════════════════════════════
 let CH = [];
+let challengesReady=false, challengesLoading=null;
 
 // fallback local por si Firebase falla
 const LOCAL_CHALLENGES = [
@@ -1047,68 +1048,56 @@ const LOCAL_CHALLENGES = [
   }
 ];
 
-async function loadChallenges(){
+async function loadChallenges(force=false){
+   if(challengesReady&&!force) return CH;
+   if(challengesLoading&&!force) return challengesLoading;
 
-   const snap = await firebase.database()
-      .ref('challenges')
-      .once('value');
-
-   const data = snap.val() || {};
-
-   CH = Object.values(data).map(r=>({
-
-      word: r.word || '',
-      w: r.word || '',
-
-      category: r.category || 'Casual',
-      c: r.category || 'Casual',
-
-      level: r.level || 1,
-      lv: r.level || 1,
-
-      emojis: (r.emojis || []).map(em=>{
-
-         if(typeof em === 'object'){
-
-            return {
-               e: em.e || '❓',
-               l: em.l || 'Emoji',
-               b: em.b || '#2d3436,#636e72'
-            };
+   challengesLoading=(async()=>{
+      let lastErr=null;
+      for(let attempt=1;attempt<=4;attempt++){
+         try{
+            const msg=document.getElementById('ldMsg');
+            if(msg) msg.textContent='Cargando retos... '+attempt+'/4';
+            const snap = await firebase.database().ref('challenges').once('value');
+            const data = snap.val() || {};
+            const loaded = Object.values(data).map(r=>normalizeChallenge({
+               word: r.word || r.w || '',
+               w: r.word || r.w || '',
+               category: r.category || r.c || 'Casual',
+               c: r.category || r.c || 'Casual',
+               level: r.level || r.lv || 1,
+               lv: r.level || r.lv || 1,
+               emojis: r.emojis || r.p || [],
+               p: r.emojis || r.p || []
+            })).filter(c=>c.word&&c.p&&c.p.length>=4);
+            if(loaded.length){
+               CH=loaded;
+               challengesReady=true;
+               console.log('Challenges cargados:',CH.length);
+               return CH;
+            }
+            lastErr=new Error('No hay retos en Firebase');
+         }catch(e){
+            lastErr=e;
+            console.warn('Error cargando retos, intento',attempt,e);
          }
+         await new Promise(r=>setTimeout(r,700));
+      }
+      challengesReady=false;
+      throw lastErr||new Error('No se pudieron cargar los retos');
+   })();
 
-         return {
-            e: em,
-            l: 'Emoji',
-            b: '#2d3436,#636e72'
-         };
-
-      }),
-
-      p: (r.emojis || []).map(em=>{
-
-         if(typeof em === 'object'){
-
-            return {
-               e: em.e || '❓',
-               l: em.l || 'Emoji',
-               b: em.b || '#2d3436,#636e72'
-            };
-         }
-
-         return {
-            e: em,
-            l: 'Emoji',
-            b: '#2d3436,#636e72'
-         };
-
-      })
-
-   }));
-
-   console.log('Challenges cargados:', CH.length);
+   try{return await challengesLoading;}
+   finally{challengesLoading=null;}
 }
-
+async function ensureChallengesReady(){
+  try{
+    await loadChallenges();
+    if(CH.length) return true;
+  }catch(e){console.warn(e);}
+  showToast('⚠️ No se pudieron cargar los retos de Firebase. Revisa la conexión y recarga.','rgba(233,69,96,.95)');
+  return false;
+}
 // ════════════════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════════════════
@@ -1209,7 +1198,7 @@ function pickCh(avgLv,round,total,minAllowed=1){
   if(!pool.length) pool=CH.filter(c=>c.lv>=Math.max(1,minAllowed||1)&&!usedGame.has(c.word));
   if(!pool.length) pool=CH.filter(c=>c.lv>=Math.max(1,minAllowed||1));
   if(!pool.length) pool=[...CH];
-  return normalizeChallenge(pool[Math.floor(Math.random()*pool.length)] || LOCAL_CHALLENGES[0]);
+  return pool.length?normalizeChallenge(pool[Math.floor(Math.random()*pool.length)]):null;
 }
 function normalizeEmojiItem(em){
   if(em&&typeof em==='object') return {
@@ -1376,6 +1365,7 @@ async function joinRoom(){
 let mmInterval=null, mmTimeout=null, mmOwnRoom='';
 
 async function findPublicRoom(){
+  if(!(await ensureChallengesReady()))return;
   const lv=lvOf(myP.xp), rk=rankOf(lv);
   clearInterval(mmInterval);clearTimeout(mmTimeout);mmOwnRoom='';
   document.getElementById('mmRankLabel').textContent=rk.icon+' '+rk.name+' — Nivel '+lv;
@@ -1485,6 +1475,7 @@ function cancelMM(){
 }
 
 async function createPublicRoom(lv){
+  if(!(await ensureChallengesReady()))return;
   roomCode=genCode(); isHost=true; resetPU(); usedGame=new Set();
   const rk=rankOf(lv);
   const room={host:devId,status:'lobby',rounds:8,minLv:rk.min,isPublic:true,quickMatch:true,matchRank:rk.name,fixedTime:90,maxPlayers:2,
@@ -1616,16 +1607,18 @@ function handleRoom(room){
 //  HOST FLOW
 // ════════════════════════════════════════════════════
 async function startGame(){
-  if(!isHost)return;usedGame=new Set();
+  if(!isHost)return;if(!(await ensureChallengesReady()))return;usedGame=new Set();
   await db.ref('rooms/'+roomCode).update({status:'countdown'});
   setTimeout(()=>db.ref('rooms/'+roomCode).once('value').then(s=>doNextRound(s.val())),3600);
 }
 async function doNextRound(room){
+  if(!(await ensureChallengesReady()))return;
   const next=(room.currentRound||0)+1;
   if(next>room.rounds){await db.ref('rooms/'+roomCode).update({status:'finished'});return;}
   const ps=room.players||{};
   const avgLv=Math.round(Object.values(ps).reduce((a,p)=>a+(p.level||1),0)/Math.max(1,Object.keys(ps).length));
   const ch=pickCh(avgLv,next,room.rounds,room.minLv||1);
+  if(!ch){showToast('⚠️ No hay retos disponibles para esta sala','rgba(233,69,96,.95)');return;}
   usedGame.add(ch.word);
   const dc=diffCfg(ch.lv||1);
   const rndPct=next/room.rounds;
@@ -2187,6 +2180,7 @@ function openSolo(){
 }
 
 async function startSolo(){
+  if(!(await ensureChallengesReady()))return;
   soloMode=true; soloUsed=new Set();
   soloRoundsTotal=parseInt(document.getElementById('soloRounds').value)||10;
   soloStartLv=Math.min(lvOf(myP.xp),parseInt(document.getElementById('soloStartLv').value)||lvOf(myP.xp));
@@ -2207,22 +2201,9 @@ async function doSoloRound(){
 
 if(!ch){
    console.error('No se encontró reto para nivel:', lv);
-
-   showToast('❌ No hay retos disponibles','rgba(233,69,96,.95)');
-
-   curCh = {
-      word:'CASA',
-      w:'CASA',
-      category:'Objetos',
-      c:'Objetos',
-      emojis:['🏠','🚪','🛏️','🪟'],
-      p:['🏠','🚪','🛏️','🪟'],
-      level:1,
-      lv:1
-   };
-
+   showToast('⚠️ No hay retos disponibles para tu nivel','rgba(233,69,96,.95)');
+   endSolo();return;
 }else{
-
    curCh=normalizeChallenge(ch);
    soloUsed.add(curCh.word || curCh.w || '');} hintUsed=0; roundOver=false;
   const dc=diffCfg(lv);
@@ -2260,7 +2241,7 @@ function pickChSolo(targetLv){
   if(!pool.length) pool=CH.filter(c=>c.lv>=minLv&&c.lv<=maxLv&&!soloUsed.has(c.word));
   if(!pool.length) pool=CH.filter(c=>!soloUsed.has(c.word));
   if(!pool.length) pool=[...CH];
-  return normalizeChallenge(pool[Math.floor(Math.random()*pool.length)] || LOCAL_CHALLENGES[0]);
+  return pool.length?normalizeChallenge(pool[Math.floor(Math.random()*pool.length)]):null;
 }
 
 let soloTimerIv=null;
