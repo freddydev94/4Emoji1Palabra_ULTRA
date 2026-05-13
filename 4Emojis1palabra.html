@@ -735,19 +735,28 @@ async function loadChallenges(){
       const data = snap.val();
 
       if(!data){
-
-         console.error('No hay retos en Firebase');
-
+         console.error('No hay retos');
          return;
       }
 
-      CH = Object.values(data);
+      CH = Object.values(data).map(r=>({
 
-      console.log('Challenges cargados:', CH.length);
+         // compatibilidad juego viejo
+         w: r.word || '',
+         c: r.category || '',
+         p: r.emojis || [],
+         lv: r.level || 1,
+
+         // extras
+         answerHash: r.answerHash || ''
+
+      }));
+
+      console.log('Retos cargados:', CH.length);
 
    }catch(err){
 
-      console.error('Error cargando retos:', err);
+      console.error(err);
 
    }
 
