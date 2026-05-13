@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <style>
 :root{--bg:#0d0d1a;--surface:#131328;--accent:#e94560;--gold:#f5a623;--green:#4ecca3;--blue:#4d96ff;--purple:#c77dff;--text:#eaeaea;--muted:#7a8caa;--border:#1e2a4a;--lbg:#1e2a4a;}
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -595,6 +596,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;heig
 const FB={apiKey:"AIzaSyBkZmas5U0pgZs5gtei-5wrKAcROKOyp20",authDomain:"fotos1palabraia.firebaseapp.com",databaseURL:"https://fotos1palabraia-default-rtdb.firebaseio.com",projectId:"fotos1palabraia",storageBucket:"fotos1palabraia.firebasestorage.app",messagingSenderId:"562754711486",appId:"1:562754711486:web:1bc6e656f81e7a0fc513ef"};
 
 // FIREBASE AUTH UID FIX
+// FIREBASE INIT
 firebase.initializeApp(FB);
 
 let FIREBASE_UID = null;
