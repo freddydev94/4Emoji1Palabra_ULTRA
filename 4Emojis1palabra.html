@@ -887,6 +887,12 @@ body.theme-arcade .ld-msg{color:var(--ink);}
   <div class="mm-dots"><div class="mm-dot"></div><div class="mm-dot"></div><div class="mm-dot"></div></div>
   <button class="btn btn-outline" onclick="cancelMM()" style="max-width:200px;margin-top:8px;">✕ Cancelar</button>
 </div>
+<div id="prepOverlay">
+  <div class="mm-icon">⏳</div>
+  <div class="prep-title">Cargando partida...</div>
+  <div class="prep-sub" id="prepSub">Esperando a que todos carguen los retos.</div>
+  <div class="prep-list" id="prepList"></div>
+</div>
 <!-- OVERLAYS -->
 <div id="cdOverlay">
   <div class="cd-num" id="cdNum">3</div>
@@ -1108,7 +1114,7 @@ let myP={name:'Jugador',xp:0,seen:[],prestige:0};
 let roomCode='',isHost=false,roomRef=null,roomLis=null;
 let curCh=null,inpLetters=[],lkeys=[];
 let hintUsed=0,roundOver=false,timerIv=null;
-let usedGame=new Set(),lastIdx=-99,lastCountdownKey='',roundEndAdvanceKey='';
+let usedGame=new Set(),lastIdx=-99,lastCountdownKey='',roundEndAdvanceKey='',prepMarkedKey='',lastNoticeTs=0;
 let puH=2,puF=1,puB=1,myStreak=0,cdRunning=false;
 
 // ════════════════════════════════════════════════════
@@ -1541,10 +1547,85 @@ function attachLis(){
 // ════════════════════════════════════════════════════
 //  STATE MACHINE
 // ════════════════════════════════════════════════════
+function onlinePlayerEntries(ps,limit=25000){
+  const now=Date.now();
+  return Object.entries(ps||{}).filter(([,p])=>!p.lastSeen||(now-p.lastSeen)<limit);
+}
+function showPrep(room){
+  const ol=document.getElementById('prepOverlay'),list=document.getElementById('prepList'),sub=document.getElementById('prepSub');
+  if(!ol||!list) return;
+  const ps=room.players||{};
+  const entries=Object.entries(ps);
+  const ready=entries.filter(([,p])=>p.readyForRound===room.prepareKey).length;
+  ol.style.display='flex';
+  if(sub) sub.textContent='Cargando retos en jugadores: '+ready+'/'+entries.length;
+  list.innerHTML='';
+  entries.forEach(([pid,p])=>{
+    const row=document.createElement('div');row.className='prep-player';
+    const ok=p.readyForRound===room.prepareKey;
+    row.innerHTML='<span>'+((p&&p.name)||'Jugador')+(pid===devId?' (tú)':'')+'</span><span class="'+(ok?'prep-ok':'prep-wait')+'">'+(ok?'Listo':'Cargando')+'</span>';
+    list.appendChild(row);
+  });
+}
+async function markPrepared(room){
+  if(!roomCode||!room||!room.prepareKey) return;
+  if(prepMarkedKey===room.prepareKey) return;
+  const ok=await ensureChallengesReady();
+  if(!ok) return;
+  prepMarkedKey=room.prepareKey;
+  await db.ref('rooms/'+roomCode+'/players/'+devId).update({readyForRound:room.prepareKey,lastSeen:Date.now(),online:true}).catch(()=>{});
+}
+function allPrepared(room){
+  const entries=Object.entries(room.players||{});
+  return entries.length>0&&entries.every(([,p])=>p.readyForRound===room.prepareKey);
+}
+function hostPresenceGuard(room){
+  if(!isHost||!room||!room.players||['finished'].includes(room.status)) return;
+  const now=Date.now(), updates={};
+  const activeStatuses=['preparing','countdown','playing','roundEnd'];
+  Object.entries(room.players).forEach(([pid,p])=>{
+    if(pid===devId) return;
+    const offline=p.lastSeen&&(now-p.lastSeen)>18000;
+    if(!offline){
+      if(p.disconnectTries) updates['players/'+pid+'/disconnectTries']=0;if(p.disconnectCheckAt) updates['players/'+pid+'/disconnectCheckAt']=0;
+      return;
+    }
+    const lastCheck=p.disconnectCheckAt||0;
+    if(now-lastCheck<7000) return;
+    const tries=(p.disconnectTries||0)+1;
+    if(tries<=2){
+      updates['players/'+pid+'/disconnectTries']=tries;
+      updates['players/'+pid+'/disconnectCheckAt']=now;
+      updates.lastNotice={ts:now,msg:(p.name||'Jugador')+' perdió conexión. Reintentando '+tries+'/2...'};
+    }else{
+      updates['players/'+pid]=null;
+      updates.lastNotice={ts:now,msg:(p.name||'Jugador')+' fue expulsado por desconexión.'};
+    }
+  });
+  const remaining=Object.entries(room.players).filter(([pid,p])=>{
+    if(updates['players/'+pid]===null) return false;
+    return !p.lastSeen||(now-p.lastSeen)<=26000||pid===devId;
+  });
+  if(activeStatuses.includes(room.status)&&remaining.length<=1){
+    updates.status='finished';
+    updates.endReason='Jugador desconectado. Partida terminada.';
+    updates.lastNotice={ts:now,msg:'La partida terminó porque solo queda un jugador.'};
+  }
+  if(Object.keys(updates).length) db.ref('rooms/'+roomCode).update(updates).catch(()=>{});
+}
+function showRoomNotice(room){
+  if(room&&room.lastNotice&&room.lastNotice.ts&&room.lastNotice.ts!==lastNoticeTs){
+    lastNoticeTs=room.lastNotice.ts;
+    showToast(room.lastNotice.msg||'Actualización de sala','rgba(245,166,35,.95)');
+  }
+}
 function handleRoom(room){
+  showRoomNotice(room);
+  hostPresenceGuard(room);
   renderLobbyPlayers(room.players);
   switch(room.status){
     case 'lobby':
+      document.getElementById('prepOverlay').style.display='none';prepMarkedKey='';
       lastCountdownKey='';
       showScreen('lobbyScreen');
       const ps_count=Object.keys(room.players||{}).length;
@@ -1564,12 +1645,22 @@ function handleRoom(room){
         document.getElementById('waitHost').style.display=isHost?'none':'flex';
       }
       break;
+    case 'preparing':
+      showScreen('gameScreen');
+      showPrep(room);
+      markPrepared(room);
+      if(isHost&&allPrepared(room)){
+        db.ref('rooms/'+roomCode).update({status:'countdown',countdownStartedAt:firebase.database.ServerValue.TIMESTAMP,lastNotice:{ts:Date.now(),msg:'Todos listos. Iniciando partida...'}}).catch(()=>{});
+      }
+      break;
     case 'countdown':
+      document.getElementById('prepOverlay').style.display='none';
       showScreen('gameScreen');
       const cdKey=roomCode+':'+(room.currentRound||0)+':'+(room.challengeIdx||-1);
-      if(lastCountdownKey!==cdKey){lastCountdownKey=cdKey;runCountdown(3);}
+      if(lastCountdownKey!==cdKey){lastCountdownKey=cdKey;runCountdown(3);if(isHost)setTimeout(()=>db.ref('rooms/'+roomCode).once('value').then(s=>{const r=s.val();if(r&&r.status==='countdown')doNextRound(r);}),3600);}
       break;
     case 'playing':
+      document.getElementById('prepOverlay').style.display='none';
       roundEndAdvanceKey='';
       document.getElementById('cdOverlay').style.display='none';cdRunning=false;
       showScreen('gameScreen');
@@ -1608,8 +1699,12 @@ function handleRoom(room){
 // ════════════════════════════════════════════════════
 async function startGame(){
   if(!isHost)return;if(!(await ensureChallengesReady()))return;usedGame=new Set();
-  await db.ref('rooms/'+roomCode).update({status:'countdown'});
-  setTimeout(()=>db.ref('rooms/'+roomCode).once('value').then(s=>doNextRound(s.val())),3600);
+  const snap=await db.ref('rooms/'+roomCode).once('value');
+  const room=snap.val()||{};
+  const prepareKey=Date.now()+'_'+Math.floor(Math.random()*9999);
+  const u={status:'preparing',prepareKey,lastNotice:{ts:Date.now(),msg:'Cargando retos para todos los jugadores...'}};
+  Object.keys(room.players||{}).forEach(pid=>u['players/'+pid+'/readyForRound']='');
+  await db.ref('rooms/'+roomCode).update(u);
 }
 async function doNextRound(room){
   if(!(await ensureChallengesReady()))return;
@@ -1999,23 +2094,30 @@ function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classL
 function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
 function shake(id){const el=document.getElementById(id);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),500);}
 function copyLink(){const el=document.getElementById('shareLink');el.select();document.execCommand('copy');const b=document.getElementById('copyBtn');b.textContent='✓ ¡Copiado!';setTimeout(()=>b.textContent='📋 Copiar',2000);}
-function leaveRoom(){
+async function leaveRoom(){
   clearInterval(timerIv);clearInterval(presenceIv);document.body.style.filter='';
   window._autoStartPending=false;
-  // If host leaves lobby, delete the room
-  if(isHost&&roomCode){
-    db.ref('rooms/'+roomCode+'/status').once('value').then(s=>{
-      if(s.val()==='lobby') db.ref('rooms/'+roomCode).remove().catch(()=>{});
-    });
-  } else if(roomCode){
-    // Non-host: remove self from players
-    db.ref('rooms/'+roomCode+'/players/'+devId).remove().catch(()=>{});
+  const code=roomCode;
+  const wasHost=isHost;
+  let status='';
+  try{
+    if(code){const snap=await db.ref('rooms/'+code).once('value');if(snap.exists())status=snap.val().status||'';}
+  }catch(e){}
+  const active=['preparing','countdown','playing','roundEnd'].includes(status);
+
+  if(wasHost&&code){
+    if(status==='lobby') db.ref('rooms/'+code).remove().catch(()=>{});
+    else if(active) db.ref('rooms/'+code).update({status:'finished',endReason:'El anfitrión salió de la partida.',lastNotice:{ts:Date.now(),msg:'El anfitrión salió. Partida terminada.'}}).catch(()=>{});
+  } else if(code){
+    db.ref('rooms/'+code).update({lastNotice:{ts:Date.now(),msg:(myP.name||'Jugador')+' salió de la partida.'}}).catch(()=>{});
+    db.ref('rooms/'+code+'/players/'+devId).remove().catch(()=>{});
   }
-  if(roomLis&&roomRef)db.ref('rooms/'+roomCode).off('value',roomLis);
-  roomLis=null;roomRef=null;roomCode='';curCh=null;lastIdx=-99;
+
+  if(roomLis&&roomRef)db.ref('rooms/'+code).off('value',roomLis);
+  roomLis=null;roomRef=null;roomCode='';curCh=null;lastIdx=-99;prepMarkedKey='';
+  document.getElementById('prepOverlay').style.display='none';
   showScreen('menuScreen');renderPf();
-}
-function confetti(n){
+}function confetti(n){
   const cols=['#e94560','#f5a623','#4ecca3','#4d96ff','#c77dff','#ff9f43','#fd79a8'];
   for(let i=0;i<n;i++){setTimeout(()=>{const c=document.createElement('div');c.className='cp';const s=Math.random()*12+5;c.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;background:${cols[Math.floor(Math.random()*cols.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${Math.random()*2+1}s;`;document.body.appendChild(c);c.addEventListener('animationend',()=>c.remove());},i*18);}
 }
