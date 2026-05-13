@@ -722,7 +722,36 @@ function xpProg(xp){const lv=lvOf(xp),base=(lv-1)*XP_PER_LV;return{cur:xp-base,n
 // ════════════════════════════════════════════════════
 //  100 CHALLENGES — organizada por nivel requerido
 // ════════════════════════════════════════════════════
-const CH = window.CH_ORIGINAL || [];
+let CH = [];
+
+async function loadChallenges(){
+
+   try{
+
+      const snap = await firebase.database()
+         .ref('challenges')
+         .once('value');
+
+      const data = snap.val();
+
+      if(!data){
+
+         console.error('No hay retos en Firebase');
+
+         return;
+      }
+
+      CH = Object.values(data);
+
+      console.log('Challenges cargados:', CH.length);
+
+   }catch(err){
+
+      console.error('Error cargando retos:', err);
+
+   }
+
+}
 
 // ════════════════════════════════════════════════════
 //  STATE
@@ -768,6 +797,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       db=firebase.database();
       document.getElementById('ldMsg').textContent='Cargando perfil...';
       await loadP();
+      await loadChallenges();
       document.getElementById('ldMsg').textContent='✅ ¡Listo!';
       setTimeout(()=>{
         document.getElementById('loadingOverlay').style.display='none';
@@ -818,9 +848,9 @@ function pickCh(avgLv,round,total){
   const minLv=Math.max(1,avgLv-4);
   const maxLv=Math.min(50,Math.round(avgLv+pct*12));
   // try unseen first
-  let pool=CH.filter(c=>c.lv>=minLv&&c.lv<=maxLv&&!usedGame.has(c.w)&&!myP.seen.includes(c.w));
-  if(!pool.length) pool=CH.filter(c=>c.lv>=minLv&&c.lv<=maxLv&&!usedGame.has(c.w));
-  if(!pool.length) pool=CH.filter(c=>!usedGame.has(c.w));
+  let pool=CH.filter(c=>c.lv>=minLv&&c.lv<=maxLv&&!usedGame.has(c.word)&&!myP.seen.includes(c.word));
+  if(!pool.length) pool=CH.filter(c=>c.lv>=minLv&&c.lv<=maxLv&&!usedGame.has(c.word));
+  if(!pool.length) pool=CH.filter(c=>!usedGame.has(c.word));
   if(!pool.length) pool=[...CH];
   return pool[Math.floor(Math.random()*pool.length)];
 }
@@ -1135,7 +1165,7 @@ function handleRoom(room){
         lastIdx=room.challengeIdx;curCh={...room.cData};
         roundOver=false;hintUsed=0;
         const dc=diffCfg(curCh.lv||1);
-        buildKB(room.letterSeed,dc.xtr);renderPhotos(dc.blur);renderAns();checkVetBanner(curCh.w);
+        buildKB(room.letterSeed,dc.xtr);renderPhotos(dc.blur);renderAns();checkVetBanner(curCh.word);
         document.getElementById('roundPill').textContent='Ronda '+room.currentRound+'/'+room.rounds;
         document.getElementById('catTag').textContent=curCh.c;
         const pct=Math.min(100,Math.round((curCh.lv||1)/50*100));
@@ -1173,7 +1203,7 @@ async function doNextRound(room){
   const ps=room.players||{};
   const avgLv=Math.round(Object.values(ps).reduce((a,p)=>a+(p.level||1),0)/Math.max(1,Object.keys(ps).length));
   const ch=pickCh(avgLv,next,room.rounds);
-  usedGame.add(ch.w);
+  usedGame.add(ch.word);
   const dc=diffCfg(ch.lv||1);
   const rndPct=next/room.rounds;
   const baseTime=room.fixedTime||dc.tBase;
@@ -1183,8 +1213,8 @@ async function doNextRound(room){
   Object.keys(ps).forEach(pid=>u['players/'+pid+'/solved']=false);
   Object.assign(u,{status:'playing',currentRound:next,challengeIdx:next,avgLv,letterSeed:seed,
     roundStartedAt:firebase.database.ServerValue.TIMESTAMP,
-    roundWinner:'',correctWord:ch.w,roundPts:0,roundXp:0,frozenUntil:0,roundTime,
-    cData:{w:ch.w,c:ch.c,p:ch.p,lv:ch.lv||1}});
+    roundWinner:'',correctWord:ch.word,roundPts:0,roundXp:0,frozenUntil:0,roundTime,
+    cData:{w:ch.word,c:ch.c,p:ch.p,lv:ch.lv||1}});
   await db.ref('rooms/'+roomCode).update(u);
 }
 async function playAgain(){
@@ -1204,7 +1234,7 @@ function goMenu(){leaveRoom();renderPf();showScreen('menuScreen');}
 async function submitAnswer(){
   if(roundOver)return;
   const typed=inpLetters.map(l=>l?l.letter:'').join('');
-  if(typed!==curCh.w){
+  if(typed!==curCh.word){
     document.querySelectorAll('.ab').forEach(b=>{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),450);});
     playS('wrong');
     setTimeout(()=>{inpLetters.forEach((_,i)=>{if(inpLetters[i]){lkeys[inpLetters[i].ki].used=false;inpLetters[i]=null;}});renderAns();renderKB();},500);
@@ -1225,7 +1255,7 @@ async function submitAnswer(){
   const prevX=(room.players[devId]&&room.players[devId].xpGained)||0;
   const oldLv=lvOf(myP.xp);
   myP.xp+=xg;
-  if(!myP.seen.includes(curCh.w))myP.seen.push(curCh.w);
+  if(!myP.seen.includes(curCh.word))myP.seen.push(curCh.word);
   if(lvOf(myP.xp)>=50&&oldLv<50){myP.prestige=(myP.prestige||0)+1;myP.xp=0;myP.seen=[];}
   await saveP();
   const newLv=lvOf(myP.xp);
@@ -1261,7 +1291,7 @@ function renderPU(){
   document.getElementById('btnBomb').disabled=puB<=0;
 }
 function giveHint(){
-  if(roundOver||!curCh||puH<=0)return;const word=curCh.w;
+  if(roundOver||!curCh||puH<=0)return;const word=curCh.word;
   if(hintUsed>=word.length)return;puH--;
   const slot=hintUsed++,letter=word[slot];
   if(inpLetters[slot]){lkeys[inpLetters[slot].ki].used=false;inpLetters[slot]=null;}
@@ -1278,7 +1308,7 @@ async function useFreeze(){
 }
 function useBomb(){
   if(roundOver||puB<=0||!curCh)return;puB--;
-  const w=curCh.w;lkeys.filter(k=>!k.used&&!w.includes(k.letter)).slice(0,4).forEach(k=>k.used=true);
+  const w=curCh.word;lkeys.filter(k=>!k.used&&!w.includes(k.letter)).slice(0,4).forEach(k=>k.used=true);
   renderKB();renderPU();showToast('💣 4 letras eliminadas!','rgba(199,125,255,.9)');
 }
 
@@ -1286,7 +1316,7 @@ function useBomb(){
 //  KEYBOARD
 // ════════════════════════════════════════════════════
 function buildKB(seed,extras){
-  const word=curCh.w,needed=word.split(''),alpha='ABCDEFGHIJKLMNOPRSTUVZ',ex=[],rng=m32(seed);
+  const word=curCh.word,needed=word.split(''),alpha='ABCDEFGHIJKLMNOPRSTUVZ',ex=[],rng=m32(seed);
   while(ex.length<extras){const c=alpha[Math.floor(rng()*alpha.length)];if(!ex.includes(c)&&!needed.includes(c))ex.push(c);}
   const pool=[...needed,...ex];
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
@@ -1336,7 +1366,7 @@ function startTimer(total,startedAt){
     if(left<=0){clearInterval(timerIv);myStreak=0;
       if(isHost&&!roundOver){db.ref('rooms/'+roomCode).once('value').then(s=>{
         const r=s.val();if(r&&r.status==='playing')
-          db.ref('rooms/'+roomCode).update({status:'roundEnd',roundWinner:'',correctWord:curCh.w});});}
+          db.ref('rooms/'+roomCode).update({status:'roundEnd',roundWinner:'',correctWord:curCh.word});});}
     }
   }
   tick();timerIv=setInterval(tick,500);
@@ -1355,7 +1385,7 @@ function renderPhotos(blur){
   });
 }
 function renderAns(){
-  const w=curCh.w,b=document.getElementById('ansBoxes');b.innerHTML='';
+  const w=curCh.word,b=document.getElementById('ansBoxes');b.innerHTML='';
   for(let i=0;i<w.length;i++){const x=document.createElement('div');x.className='ab';x.id='ab_'+i;x.onclick=()=>removeAt(i);b.appendChild(x);}
 }
 function renderLobbyPlayers(ps){
@@ -1726,7 +1756,7 @@ async function doSoloRound(){
   const pct=soloCurrentRound/soloRoundsTotal;
   const lv=Math.min(50,Math.round(soloStartLv+pct*8));
   const ch=pickChSolo(lv);
-  soloUsed.add(ch.w);
+  soloUsed.add(ch.word);
   curCh={...ch}; hintUsed=0; roundOver=false;
   const dc=diffCfg(lv);
   // No time limit in solo — just start stopwatch
@@ -1746,7 +1776,7 @@ async function doSoloRound(){
     '<div class="sc me">'+myP.name+': <strong>'+soloScore+'</strong></div>';
 
   // Vet/new notice
-  const isNew=!(myP.seen||[]).includes(ch.w);
+  const isNew=!(myP.seen||[]).includes(ch.word);
   document.getElementById('xpNewOnly').style.display=isNew?'flex':'none';
   document.getElementById('vetBanner').style.display=isNew?'none':'flex';
 
@@ -1759,9 +1789,9 @@ async function doSoloRound(){
 
 function pickChSolo(targetLv){
   const minLv=Math.max(1,targetLv-3), maxLv=Math.min(50,targetLv+3);
-  let pool=CH.filter(c=>c.lv>=minLv&&c.lv<=maxLv&&!soloUsed.has(c.w)&&!myP.seen.includes(c.w));
-  if(!pool.length) pool=CH.filter(c=>c.lv>=minLv&&c.lv<=maxLv&&!soloUsed.has(c.w));
-  if(!pool.length) pool=CH.filter(c=>!soloUsed.has(c.w));
+  let pool=CH.filter(c=>c.lv>=minLv&&c.lv<=maxLv&&!soloUsed.has(c.word)&&!myP.seen.includes(c.word));
+  if(!pool.length) pool=CH.filter(c=>c.lv>=minLv&&c.lv<=maxLv&&!soloUsed.has(c.word));
+  if(!pool.length) pool=CH.filter(c=>!soloUsed.has(c.word));
   if(!pool.length) pool=[...CH];
   return pool[Math.floor(Math.random()*pool.length)];
 }
@@ -1791,7 +1821,7 @@ function startSoloTimer(total){
 async function submitSoloAnswer(){
   if(roundOver)return;
   const typed=inpLetters.map(l=>l?l.letter:'').join('');
-  if(typed!==curCh.w){
+  if(typed!==curCh.word){
     document.querySelectorAll('.ab').forEach(b=>{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),450);});
     playS('wrong');
     setTimeout(()=>{inpLetters.forEach((_,i)=>{if(inpLetters[i]){lkeys[inpLetters[i].ki].used=false;inpLetters[i]=null;}});renderAns();renderKB();},500);
@@ -1806,21 +1836,21 @@ async function submitSoloAnswer(){
   const pts=Math.round((base+(hintUsed===0?25:0)+sb)*mult);
   soloScore+=pts;
 
-  const isNew=!(myP.seen||[]).includes(curCh.w);
+  const isNew=!(myP.seen||[]).includes(curCh.word);
   const xg=Math.round((curCh.lv||1)*2+(speedPct*20)+(hintUsed===0?10:0)+(myStreak>=2?15:0));
   if(isNew){ soloNewWords++; soloRankXpGained+=xg; } else { soloSeenWords++; }
   soloXpGained+=xg;
 
   const oldLv=lvOf(myP.xp);
   myP.xp+=xg;
-  if(!myP.seen.includes(curCh.w)) myP.seen.push(curCh.w);
+  if(!myP.seen.includes(curCh.word)) myP.seen.push(curCh.word);
   if(lvOf(myP.xp)>=50&&oldLv<50){myP.prestige=(myP.prestige||0)+1;myP.xp=0;myP.seen=[];}
   await saveP();
   const newLv=lvOf(myP.xp);
   if(newLv>oldLv) showLvlUp(newLv);
 
   playS('correct'); confetti(myStreak>=3?80:40); ptsPopup(pts,myStreak);
-  showSoloBanner(true,curCh.w,pts,xg,isNew);
+  showSoloBanner(true,curCh.word,pts,xg,isNew);
   setTimeout(()=>doSoloRound(),3500);
 }
 
@@ -1830,7 +1860,7 @@ function showSoloBanner(solved,word,pts,xp,isNew){
   const t=document.getElementById('sbTitle');
   t.textContent=solved?'🎉 ¡Correcto!':'⏰ Tiempo agotado';
   t.style.color=solved?'var(--green)':'var(--accent)';
-  document.getElementById('sbWord').textContent=word||curCh.w||'';
+  document.getElementById('sbWord').textContent=word||curCh.word||'';
   document.getElementById('sbPts').textContent=solved?'+'+pts+' pts'+(myStreak>=3?' 🔥':''):'';
   document.getElementById('sbXp').textContent=solved?(isNew?'⭐ +'+xp+' XP (cuenta para rango)':'👁️ +'+xp+' XP (no cuenta para rango)'):'';
 }
