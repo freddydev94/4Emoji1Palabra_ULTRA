@@ -595,6 +595,37 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;heig
 // ════════════════════════════════════════════════════
 const FB={apiKey:"AIzaSyBkZmas5U0pgZs5gtei-5wrKAcROKOyp20",authDomain:"fotos1palabraia.firebaseapp.com",databaseURL:"https://fotos1palabraia-default-rtdb.firebaseio.com",projectId:"fotos1palabraia",storageBucket:"fotos1palabraia.firebasestorage.app",messagingSenderId:"562754711486",appId:"1:562754711486:web:1bc6e656f81e7a0fc513ef"};
 
+
+
+// LOAD CHALLENGES FROM FIREBASE
+async function loadChallenges(){
+
+   try{
+
+      const snap = await firebase.database()
+         .ref('challenges')
+         .once('value');
+
+      const data = snap.val();
+
+      if(!data){
+         console.error('No hay challenges en Firebase');
+         return;
+      }
+
+      CH = Object.values(data);
+
+      console.log('Challenges Firebase:', CH.length);
+
+   }catch(err){
+
+      console.error('Error cargando challenges:', err);
+
+   }
+
+}
+
+
 // FIREBASE AUTH UID FIX
 // FIREBASE INIT
 firebase.initializeApp(FB);
@@ -635,6 +666,8 @@ firebase.auth().onAuthStateChanged(async (user)=>{
          });
 
       }
+
+      await loadChallenges();
 
       const overlay = document.getElementById('loadingOverlay');
       if(overlay){
@@ -689,138 +722,7 @@ function xpProg(xp){const lv=lvOf(xp),base=(lv-1)*XP_PER_LV;return{cur:xp-base,n
 // ════════════════════════════════════════════════════
 //  100 CHALLENGES — organizada por nivel requerido
 // ════════════════════════════════════════════════════
-const CH=[
-// LV 1-3
-{w:"SOL",     lv:1,c:"Naturaleza",p:[{e:"☀️",l:"Amanecer",b:"#ff6b35,#f7c59f"},{e:"🌻",l:"Girasol",b:"#f5a623,#f7d460"},{e:"😎",l:"Verano",b:"#4d96ff,#74b9ff"},{e:"🌅",l:"Atardecer",b:"#e17055,#fdcb6e"}]},
-{w:"MAR",     lv:1,c:"Naturaleza",p:[{e:"🌊",l:"Ola",b:"#0984e3,#74b9ff"},{e:"🐠",l:"Pez",b:"#00b894,#55efc4"},{e:"⛵",l:"Velero",b:"#6c5ce7,#a29bfe"},{e:"🦀",l:"Cangrejo",b:"#e17055,#fab1a0"}]},
-{w:"LUNA",    lv:1,c:"Espacio",p:[{e:"🌕",l:"Llena",b:"#2d3436,#636e72"},{e:"🔭",l:"Telescopio",b:"#0984e3,#2d3436"},{e:"🦉",l:"Noche",b:"#1e272e,#485460"},{e:"🌙",l:"Creciente",b:"#2d3436,#4a4a8a"}]},
-{w:"AGUA",    lv:1,c:"Elementos",p:[{e:"💧",l:"Gota",b:"#0984e3,#74b9ff"},{e:"🏊",l:"Piscina",b:"#00cec9,#55efc4"},{e:"🐟",l:"Pez",b:"#6c5ce7,#74b9ff"},{e:"🚿",l:"Ducha",b:"#b2bec3,#dfe6e9"}]},
-{w:"FUEGO",   lv:1,c:"Elementos",p:[{e:"🔥",l:"Llamas",b:"#e17055,#d63031"},{e:"🕯️",l:"Vela",b:"#fdcb6e,#e17055"},{e:"🌋",l:"Volcán",b:"#d63031,#2d3436"},{e:"🍖",l:"Asado",b:"#a29bfe,#6c5ce7"}]},
-{w:"PERRO",   lv:1,c:"Animales",p:[{e:"🐕",l:"Perro",b:"#a0522d,#fdcb6e"},{e:"🦴",l:"Hueso",b:"#dfe6e9,#b2bec3"},{e:"🐾",l:"Huellas",b:"#636e72,#b2bec3"},{e:"🎾",l:"Pelota",b:"#00b894,#fdcb6e"}]},
-{w:"GATO",    lv:1,c:"Animales",p:[{e:"🐈",l:"Gatito",b:"#fdcb6e,#a29bfe"},{e:"🧶",l:"Ovillo",b:"#e94560,#fd79a8"},{e:"😸",l:"Cara",b:"#fdcb6e,#ffd700"},{e:"🐟",l:"Pescado",b:"#0984e3,#74b9ff"}]},
-{w:"CASA",    lv:1,c:"Lugares",p:[{e:"🏠",l:"Hogar",b:"#e17055,#fdcb6e"},{e:"🛋️",l:"Sofá",b:"#6c5ce7,#a29bfe"},{e:"🪴",l:"Planta",b:"#00b894,#55efc4"},{e:"🔑",l:"Llave",b:"#fdcb6e,#a0522d"}]},
-{w:"AMOR",    lv:2,c:"Emociones",p:[{e:"❤️",l:"Corazón",b:"#e94560,#d63031"},{e:"💑",l:"Pareja",b:"#fd79a8,#ffeaa7"},{e:"💐",l:"Flores",b:"#00b894,#fd79a8"},{e:"🕊️",l:"Paloma",b:"#dfe6e9,#b2bec3"}]},
-{w:"LIBRO",   lv:2,c:"Cultura",p:[{e:"📚",l:"Biblioteca",b:"#a0522d,#fdcb6e"},{e:"✏️",l:"Escritura",b:"#fdcb6e,#ffeaa7"},{e:"🔖",l:"Marcador",b:"#e94560,#fd79a8"},{e:"🦉",l:"Sabiduría",b:"#2d3436,#636e72"}]},
-// LV 4-8
-{w:"PLAYA",   lv:4,c:"Lugares",p:[{e:"🏖️",l:"Arena",b:"#fdcb6e,#ffeaa7"},{e:"🍹",l:"Cóctel",b:"#e17055,#fab1a0"},{e:"🩴",l:"Sandalias",b:"#fd79a8,#fab1a0"},{e:"🐚",l:"Concha",b:"#00b894,#55efc4"}]},
-{w:"MUSICA",  lv:4,c:"Arte",p:[{e:"🎸",l:"Guitarra",b:"#6c5ce7,#a29bfe"},{e:"🎹",l:"Piano",b:"#2d3436,#636e72"},{e:"🎤",l:"Micrófono",b:"#e94560,#fd79a8"},{e:"🎵",l:"Nota",b:"#4d96ff,#a29bfe"}]},
-{w:"NIEVE",   lv:4,c:"Clima",p:[{e:"❄️",l:"Copo",b:"#a8d8ea,#dfe6e9"},{e:"☃️",l:"Muñeco",b:"#dfe6e9,#b2bec3"},{e:"🎿",l:"Esquí",b:"#0984e3,#74b9ff"},{e:"🏔️",l:"Montaña",b:"#636e72,#b2bec3"}]},
-{w:"FIESTA",  lv:4,c:"Social",p:[{e:"🎉",l:"Confeti",b:"#6c5ce7,#fd79a8"},{e:"🎂",l:"Pastel",b:"#e17055,#fdcb6e"},{e:"🍾",l:"Champán",b:"#fdcb6e,#ffd700"},{e:"🎊",l:"Globos",b:"#e94560,#a29bfe"}]},
-{w:"COMIDA",  lv:5,c:"Gastronomía",p:[{e:"🍕",l:"Pizza",b:"#e17055,#fdcb6e"},{e:"🍣",l:"Sushi",b:"#2d3436,#e94560"},{e:"🥗",l:"Ensalada",b:"#00b894,#55efc4"},{e:"🍰",l:"Pastel",b:"#fd79a8,#ffeaa7"}]},
-{w:"VERANO",  lv:5,c:"Clima",p:[{e:"🌞",l:"Sol",b:"#fdcb6e,#e17055"},{e:"🍦",l:"Helado",b:"#fd79a8,#ffeaa7"},{e:"👙",l:"Traje baño",b:"#e94560,#4d96ff"},{e:"🏄",l:"Surf",b:"#0984e3,#00cec9"}]},
-{w:"BOSQUE",  lv:5,c:"Naturaleza",p:[{e:"🌲",l:"Árbol",b:"#00b894,#55efc4"},{e:"🍄",l:"Seta",b:"#e17055,#fab1a0"},{e:"🦌",l:"Ciervo",b:"#fdcb6e,#a29bfe"},{e:"🪵",l:"Madera",b:"#a0522d,#d4a96a"}]},
-{w:"VIAJE",   lv:6,c:"Aventura",p:[{e:"✈️",l:"Avión",b:"#0984e3,#74b9ff"},{e:"🧳",l:"Maleta",b:"#6c5ce7,#a29bfe"},{e:"🗺️",l:"Mapa",b:"#fdcb6e,#ffeaa7"},{e:"🏨",l:"Hotel",b:"#00b894,#2d3436"}]},
-{w:"CIUDAD",  lv:6,c:"Lugares",p:[{e:"🏙️",l:"Skyline",b:"#2d3436,#4d96ff"},{e:"🚦",l:"Semáforo",b:"#e94560,#fdcb6e"},{e:"🚇",l:"Metro",b:"#0984e3,#2d3436"},{e:"🏢",l:"Edificio",b:"#636e72,#b2bec3"}]},
-{w:"DEPORTE", lv:6,c:"Actividad",p:[{e:"⚽",l:"Fútbol",b:"#00b894,#55efc4"},{e:"🏃",l:"Correr",b:"#e17055,#fdcb6e"},{e:"🥇",l:"Medalla",b:"#fdcb6e,#ffd700"},{e:"💪",l:"Fuerza",b:"#e94560,#d63031"}]},
-{w:"GRANJA",  lv:7,c:"Campo",p:[{e:"🐄",l:"Vaca",b:"#dfe6e9,#b2bec3"},{e:"🌾",l:"Trigo",b:"#fdcb6e,#f7d460"},{e:"🚜",l:"Tractor",b:"#00b894,#fdcb6e"},{e:"🐓",l:"Gallo",b:"#e17055,#fdcb6e"}]},
-{w:"CIRCO",   lv:7,c:"Entretenimiento",p:[{e:"🎪",l:"Carpa",b:"#e94560,#fdcb6e"},{e:"🤹",l:"Malabarista",b:"#6c5ce7,#fd79a8"},{e:"🦁",l:"León",b:"#fdcb6e,#a0522d"},{e:"🎠",l:"Carrusel",b:"#fd79a8,#a29bfe"}]},
-{w:"PIRATA",  lv:8,c:"Aventura",p:[{e:"🏴‍☠️",l:"Bandera",b:"#2d3436,#636e72"},{e:"⚓",l:"Ancla",b:"#0984e3,#2d3436"},{e:"🗡️",l:"Espada",b:"#b2bec3,#636e72"},{e:"🦜",l:"Loro",b:"#e94560,#00b894"}]},
-// LV 9-15
-{w:"ESPACIO", lv:9,c:"Ciencia",p:[{e:"🌌",l:"Galaxia",b:"#2d3436,#6c5ce7"},{e:"🌠",l:"Estrella",b:"#2d3436,#4d96ff"},{e:"👨‍🚀",l:"Astronauta",b:"#2d3436,#b2bec3"},{e:"🚀",l:"Cohete",b:"#e94560,#2d3436"}]},
-{w:"JUNGLA",  lv:9,c:"Naturaleza",p:[{e:"🌴",l:"Palmera",b:"#00b894,#27ae60"},{e:"🦁",l:"León",b:"#fdcb6e,#a0522d"},{e:"🦜",l:"Loro",b:"#e94560,#00b894"},{e:"🐍",l:"Serpiente",b:"#00b894,#2d3436"}]},
-{w:"ARTE",    lv:9,c:"Cultura",p:[{e:"🎨",l:"Pintura",b:"#a29bfe,#fd79a8"},{e:"🖌️",l:"Pincel",b:"#e17055,#fdcb6e"},{e:"🖼️",l:"Cuadro",b:"#6c5ce7,#2d3436"},{e:"✨",l:"Creatividad",b:"#fdcb6e,#ffd700"}]},
-{w:"ROBOT",   lv:10,c:"Tecnología",p:[{e:"🤖",l:"Robot",b:"#2d3436,#4d96ff"},{e:"⚙️",l:"Engranaje",b:"#636e72,#b2bec3"},{e:"💻",l:"Computadora",b:"#0984e3,#2d3436"},{e:"🔧",l:"Herramienta",b:"#b2bec3,#636e72"}]},
-{w:"MAGIA",   lv:10,c:"Fantasía",p:[{e:"🪄",l:"Varita",b:"#6c5ce7,#a29bfe"},{e:"⭐",l:"Estrella",b:"#fdcb6e,#ffd700"},{e:"🎩",l:"Sombrero",b:"#2d3436,#6c5ce7"},{e:"🔮",l:"Bola mágica",b:"#6c5ce7,#fd79a8"}]},
-{w:"OCEANO",  lv:10,c:"Naturaleza",p:[{e:"🌊",l:"Olas",b:"#0984e3,#2d3436"},{e:"🐋",l:"Ballena",b:"#6c5ce7,#0984e3"},{e:"🏝️",l:"Isla",b:"#fdcb6e,#00b894"},{e:"🧭",l:"Brújula",b:"#e17055,#2d3436"}]},
-{w:"SAFARI",  lv:11,c:"Animales",p:[{e:"🦒",l:"Jirafa",b:"#fdcb6e,#a0522d"},{e:"🐘",l:"Elefante",b:"#b2bec3,#636e72"},{e:"🌅",l:"Sabana",b:"#e17055,#fdcb6e"},{e:"📷",l:"Foto",b:"#2d3436,#636e72"}]},
-{w:"VUELO",   lv:11,c:"Transporte",p:[{e:"✈️",l:"Avión",b:"#0984e3,#74b9ff"},{e:"🦅",l:"Águila",b:"#fdcb6e,#2d3436"},{e:"🎈",l:"Globo",b:"#e94560,#fdcb6e"},{e:"🪂",l:"Paracaídas",b:"#6c5ce7,#74b9ff"}]},
-{w:"VOLCAN",  lv:12,c:"Naturaleza",p:[{e:"🌋",l:"Volcán",b:"#d63031,#2d3436"},{e:"🔥",l:"Lava",b:"#e17055,#d63031"},{e:"💨",l:"Humo",b:"#636e72,#b2bec3"},{e:"🌡️",l:"Calor",b:"#e17055,#fdcb6e"}]},
-{w:"AURORA",  lv:12,c:"Naturaleza",p:[{e:"🌌",l:"Cielo",b:"#1a1a4e,#00b894"},{e:"❄️",l:"Frío",b:"#a8d8ea,#dfe6e9"},{e:"🏔️",l:"Montaña",b:"#636e72,#0984e3"},{e:"🦌",l:"Reno",b:"#fdcb6e,#a0522d"}]},
-{w:"OLIMPICO",lv:13,c:"Deporte",p:[{e:"🥇",l:"Oro",b:"#fdcb6e,#ffd700"},{e:"🏋️",l:"Peso",b:"#e17055,#2d3436"},{e:"🏊",l:"Natación",b:"#0984e3,#74b9ff"},{e:"🔥",l:"Antorcha",b:"#e17055,#fdcb6e"}]},
-{w:"PIRAMIDE",lv:13,c:"Historia",p:[{e:"🏺",l:"Vasija",b:"#fdcb6e,#a0522d"},{e:"🐫",l:"Camello",b:"#a0522d,#fdcb6e"},{e:"👁️",l:"Ojo Ra",b:"#fdcb6e,#e17055"},{e:"🌅",l:"Desierto",b:"#e17055,#fdcb6e"}]},
-{w:"CASTILLO",lv:14,c:"Historia",p:[{e:"🏰",l:"Torres",b:"#636e72,#b2bec3"},{e:"⚔️",l:"Espadas",b:"#b2bec3,#2d3436"},{e:"🐉",l:"Dragón",b:"#e94560,#00b894"},{e:"🔮",l:"Magia",b:"#6c5ce7,#fd79a8"}]},
-{w:"TORNADO", lv:14,c:"Clima",p:[{e:"🌪️",l:"Viento",b:"#636e72,#b2bec3"},{e:"🌩️",l:"Tormenta",b:"#2d3436,#6c5ce7"},{e:"🏚️",l:"Daño",b:"#636e72,#2d3436"},{e:"🌬️",l:"Huracán",b:"#74b9ff,#2d3436"}]},
-{w:"DESIERTO",lv:15,c:"Naturaleza",p:[{e:"🏜️",l:"Dunas",b:"#fdcb6e,#e17055"},{e:"🐪",l:"Camello",b:"#a0522d,#fdcb6e"},{e:"🌵",l:"Cactus",b:"#00b894,#fdcb6e"},{e:"☀️",l:"Calor",b:"#e17055,#ffd700"}]},
-// LV 16-25
-{w:"INVIERNO",lv:16,c:"Clima",p:[{e:"🧣",l:"Bufanda",b:"#e94560,#a29bfe"},{e:"☃️",l:"Muñeco",b:"#dfe6e9,#74b9ff"},{e:"🏔️",l:"Montaña",b:"#b2bec3,#636e72"},{e:"🌨️",l:"Nevada",b:"#a8d8ea,#dfe6e9"}]},
-{w:"AVENTURA",lv:16,c:"Aventura",p:[{e:"🧗",l:"Escalada",b:"#e17055,#fdcb6e"},{e:"🗺️",l:"Mapa",b:"#fdcb6e,#a0522d"},{e:"⛺",l:"Tienda",b:"#00b894,#2d3436"},{e:"🌄",l:"Amanecer",b:"#e17055,#4d96ff"}]},
-{w:"CIENCIA", lv:17,c:"Educación",p:[{e:"🔬",l:"Micro",b:"#0984e3,#2d3436"},{e:"⚗️",l:"Probeta",b:"#00b894,#6c5ce7"},{e:"🧬",l:"ADN",b:"#e94560,#4d96ff"},{e:"🧪",l:"Tubo",b:"#00cec9,#2d3436"}]},
-{w:"SUBMARIN",lv:17,c:"Ciencia",p:[{e:"🤿",l:"Buceo",b:"#0984e3,#2d3436"},{e:"🐙",l:"Pulpo",b:"#e94560,#6c5ce7"},{e:"🔦",l:"Linterna",b:"#fdcb6e,#2d3436"},{e:"⚓",l:"Ancla",b:"#0984e3,#636e72"}]},
-{w:"SAMURAI", lv:18,c:"Historia",p:[{e:"⚔️",l:"Katana",b:"#2d3436,#b2bec3"},{e:"🎭",l:"Máscara",b:"#e94560,#2d3436"},{e:"🌸",l:"Sakura",b:"#fd79a8,#ffeaa7"},{e:"🏯",l:"Castillo",b:"#636e72,#2d3436"}]},
-{w:"MANDALA", lv:19,c:"Arte",p:[{e:"🎨",l:"Colores",b:"#a29bfe,#fd79a8"},{e:"⭕",l:"Círculo",b:"#e17055,#fdcb6e"},{e:"🧘",l:"Meditación",b:"#6c5ce7,#00b894"},{e:"🌸",l:"Flor",b:"#fd79a8,#a29bfe"}]},
-{w:"FARO",    lv:20,c:"Lugares",p:[{e:"🗼",l:"Torre",b:"#fdcb6e,#b2bec3"},{e:"🌊",l:"Mar",b:"#0984e3,#2d3436"},{e:"💡",l:"Luz",b:"#fdcb6e,#ffd700"},{e:"⛵",l:"Barco",b:"#6c5ce7,#74b9ff"}]},
-{w:"KRAKEN",  lv:21,c:"Mitología",p:[{e:"🐙",l:"Tentáculos",b:"#1a1a4e,#6c5ce7"},{e:"🌊",l:"Océano",b:"#0984e3,#1a1a4e"},{e:"⛵",l:"Barco",b:"#fdcb6e,#2d3436"},{e:"💀",l:"Peligro",b:"#2d3436,#e94560"}]},
-{w:"MINOTAUR",lv:22,c:"Mitología",p:[{e:"🐂",l:"Toro",b:"#a0522d,#2d3436"},{e:"🏛️",l:"Laberinto",b:"#b2bec3,#636e72"},{e:"⚔️",l:"Batalla",b:"#636e72,#2d3436"},{e:"🌿",l:"Creta",b:"#00b894,#fdcb6e"}]},
-{w:"GALAXIA", lv:23,c:"Espacio",p:[{e:"🌌",l:"Nebulosa",b:"#1a1a4e,#6c5ce7"},{e:"🪐",l:"Saturno",b:"#6c5ce7,#fdcb6e"},{e:"⭐",l:"Estrella",b:"#fdcb6e,#ffd700"},{e:"🔭",l:"Telescopio",b:"#0984e3,#2d3436"}]},
-{w:"ECLIPSE", lv:24,c:"Espacio",p:[{e:"🌑",l:"Luna",b:"#2d3436,#1a1a4e"},{e:"☀️",l:"Sol",b:"#fdcb6e,#e17055"},{e:"🌒",l:"Sombra",b:"#2d3436,#4a4a8a"},{e:"👁️",l:"Visión",b:"#636e72,#2d3436"}]},
-{w:"TIFON",   lv:25,c:"Clima",p:[{e:"🌀",l:"Espiral",b:"#0984e3,#2d3436"},{e:"🌊",l:"Maremoto",b:"#0984e3,#1a1a4e"},{e:"🏚️",l:"Daño",b:"#636e72,#2d3436"},{e:"⛵",l:"Barco",b:"#6c5ce7,#0984e3"}]},
-// LV 26-35 (hard, blur)
-{w:"COSMOS",  lv:26,c:"Ciencia",p:[{e:"🌌",l:"???",b:"#1a1a4e,#6c5ce7"},{e:"☄️",l:"???",b:"#e17055,#2d3436"},{e:"🔭",l:"???",b:"#0984e3,#1a1a4e"},{e:"🧬",l:"???",b:"#e94560,#6c5ce7"}]},
-{w:"LABERINT",lv:27,c:"Fantasía",p:[{e:"🏰",l:"???",b:"#636e72,#2d3436"},{e:"🗺️",l:"???",b:"#fdcb6e,#a0522d"},{e:"🤔",l:"???",b:"#6c5ce7,#2d3436"},{e:"🚪",l:"???",b:"#00b894,#2d3436"}]},
-{w:"QUIMERA", lv:28,c:"Mitología",p:[{e:"🦁",l:"???",b:"#fdcb6e,#a0522d"},{e:"🐐",l:"???",b:"#dfe6e9,#b2bec3"},{e:"🐍",l:"???",b:"#00b894,#2d3436"},{e:"🔥",l:"???",b:"#e17055,#d63031"}]},
-{w:"FENOMENO",lv:28,c:"Ciencia",p:[{e:"⚡",l:"???",b:"#fdcb6e,#6c5ce7"},{e:"🔬",l:"???",b:"#0984e3,#2d3436"},{e:"🌪️",l:"???",b:"#636e72,#6c5ce7"},{e:"🤯",l:"???",b:"#e94560,#6c5ce7"}]},
-{w:"OBSIDIANA",lv:29,c:"Minerales",p:[{e:"🖤",l:"???",b:"#2d3436,#1a1a4e"},{e:"🌋",l:"???",b:"#d63031,#2d3436"},{e:"💎",l:"???",b:"#636e72,#2d3436"},{e:"⚔️",l:"???",b:"#b2bec3,#2d3436"}]},
-{w:"NIRVANA", lv:30,c:"Filosofía",p:[{e:"🧘",l:"???",b:"#6c5ce7,#1a1a4e"},{e:"☯️",l:"???",b:"#2d3436,#dfe6e9"},{e:"🌸",l:"???",b:"#fd79a8,#ffeaa7"},{e:"💫",l:"???",b:"#fdcb6e,#6c5ce7"}]},
-{w:"ALQUIMIA",lv:30,c:"Historia",p:[{e:"⚗️",l:"???",b:"#fdcb6e,#e17055"},{e:"🔄",l:"???",b:"#00b894,#6c5ce7"},{e:"💎",l:"???",b:"#fdcb6e,#ffd700"},{e:"🌟",l:"???",b:"#ffd700,#6c5ce7"}]},
-{w:"ESCARCHA",lv:31,c:"Clima",p:[{e:"❄️",l:"???",b:"#a8d8ea,#74b9ff"},{e:"🌿",l:"???",b:"#00b894,#a8d8ea"},{e:"🌅",l:"???",b:"#fdcb6e,#a8d8ea"},{e:"🪟",l:"???",b:"#dfe6e9,#636e72"}]},
-{w:"TSUNAMI", lv:32,c:"Ciencia",p:[{e:"🌊",l:"???",b:"#0984e3,#1a1a4e"},{e:"🌋",l:"???",b:"#d63031,#2d3436"},{e:"🏚️",l:"???",b:"#636e72,#2d3436"},{e:"🌍",l:"???",b:"#00b894,#0984e3"}]},
-{w:"EFIMERO", lv:33,c:"Filosofía",p:[{e:"🦋",l:"???",b:"#fd79a8,#ffeaa7"},{e:"🌸",l:"???",b:"#fd79a8,#a29bfe"},{e:"⏳",l:"???",b:"#636e72,#fdcb6e"},{e:"🕯️",l:"???",b:"#fdcb6e,#2d3436"}]},
-{w:"CREPUSC", lv:34,c:"Naturaleza",p:[{e:"🌅",l:"???",b:"#e17055,#fdcb6e"},{e:"🌆",l:"???",b:"#6c5ce7,#e17055"},{e:"🌙",l:"???",b:"#2d3436,#6c5ce7"},{e:"🦇",l:"???",b:"#2d3436,#e94560"}]},
-{w:"ESTOICO", lv:35,c:"Filosofía",p:[{e:"🏛️",l:"???",b:"#b2bec3,#636e72"},{e:"🧘",l:"???",b:"#6c5ce7,#b2bec3"},{e:"📜",l:"???",b:"#fdcb6e,#a0522d"},{e:"🦅",l:"???",b:"#fdcb6e,#2d3436"}]},
-// LV 36-45 (expert)
-{w:"PARADOJA",lv:36,c:"Filosofía",p:[{e:"🤯",l:"???",b:"#6c5ce7,#e94560"},{e:"♾️",l:"???",b:"#0984e3,#6c5ce7"},{e:"🔄",l:"???",b:"#00b894,#0984e3"},{e:"❓",l:"???",b:"#636e72,#a29bfe"}]},
-{w:"EFLUVI",  lv:37,c:"Arte",p:[{e:"🌸",l:"???",b:"#fd79a8,#ffeaa7"},{e:"💨",l:"???",b:"#dfe6e9,#74b9ff"},{e:"🕯️",l:"???",b:"#fdcb6e,#2d3436"},{e:"🌿",l:"???",b:"#00b894,#fdcb6e"}]},
-{w:"SIMETRIA",lv:38,c:"Ciencia",p:[{e:"🦋",l:"???",b:"#a29bfe,#fd79a8"},{e:"🔬",l:"???",b:"#0984e3,#2d3436"},{e:"⚖️",l:"???",b:"#fdcb6e,#b2bec3"},{e:"🪞",l:"???",b:"#dfe6e9,#6c5ce7"}]},
-{w:"ENTROP",  lv:38,c:"Ciencia",p:[{e:"🌀",l:"???",b:"#636e72,#2d3436"},{e:"💥",l:"???",b:"#e94560,#fdcb6e"},{e:"🔬",l:"???",b:"#0984e3,#2d3436"},{e:"⏳",l:"???",b:"#636e72,#fdcb6e"}]},
-{w:"CUANTUM", lv:40,c:"Ciencia",p:[{e:"⚛️",l:"???",b:"#0984e3,#6c5ce7"},{e:"🌀",l:"???",b:"#6c5ce7,#e94560"},{e:"💡",l:"???",b:"#fdcb6e,#0984e3"},{e:"🔬",l:"???",b:"#0984e3,#2d3436"}]},
-{w:"AXIOMA",  lv:41,c:"Filosofía",p:[{e:"📐",l:"???",b:"#0984e3,#2d3436"},{e:"📜",l:"???",b:"#fdcb6e,#a0522d"},{e:"🧮",l:"???",b:"#b2bec3,#2d3436"},{e:"🏛️",l:"???",b:"#b2bec3,#636e72"}]},
-{w:"EMPATIA", lv:42,c:"Filosofía",p:[{e:"❤️",l:"???",b:"#e94560,#fd79a8"},{e:"🤝",l:"???",b:"#00b894,#0984e3"},{e:"👁️",l:"???",b:"#6c5ce7,#2d3436"},{e:"🧠",l:"???",b:"#e94560,#6c5ce7"}]},
-{w:"FRACTAL", lv:43,c:"Matemáticas",p:[{e:"🌀",l:"???",b:"#6c5ce7,#0984e3"},{e:"🔬",l:"???",b:"#0984e3,#2d3436"},{e:"♾️",l:"???",b:"#6c5ce7,#e94560"},{e:"🌿",l:"???",b:"#00b894,#6c5ce7"}]},
-{w:"SINTESI", lv:44,c:"Filosofía",p:[{e:"🔄",l:"???",b:"#00b894,#6c5ce7"},{e:"🧩",l:"???",b:"#4d96ff,#6c5ce7"},{e:"💡",l:"???",b:"#fdcb6e,#ffd700"},{e:"🌐",l:"???",b:"#0984e3,#00b894"}]},
-{w:"EFICACIA",lv:45,c:"Filosofía",p:[{e:"🎯",l:"???",b:"#e94560,#fdcb6e"},{e:"⚡",l:"???",b:"#fdcb6e,#ffd700"},{e:"🏆",l:"???",b:"#fdcb6e,#e67e00"},{e:"📊",l:"???",b:"#0984e3,#2d3436"}]},
-// LV 46-50 (legendary)
-{w:"OMNISCIEN",lv:46,c:"Legendario",p:[{e:"🧠",l:"???",b:"#e94560,#6c5ce7"},{e:"👁️",l:"???",b:"#2d3436,#6c5ce7"},{e:"📚",l:"???",b:"#fdcb6e,#a0522d"},{e:"🌌",l:"???",b:"#1a1a4e,#6c5ce7"}]},
-{w:"TRANSMUT",lv:47,c:"Alquimia",p:[{e:"⚗️",l:"???",b:"#fdcb6e,#e17055"},{e:"🔄",l:"???",b:"#00b894,#6c5ce7"},{e:"💎",l:"???",b:"#fdcb6e,#ffd700"},{e:"🌟",l:"???",b:"#ffd700,#6c5ce7"}]},
-{w:"PARADIGMA",lv:48,c:"Filosofía",p:[{e:"🌍",l:"???",b:"#00b894,#0984e3"},{e:"🔄",l:"???",b:"#6c5ce7,#e94560"},{e:"💡",l:"???",b:"#fdcb6e,#ffd700"},{e:"🧩",l:"???",b:"#0984e3,#6c5ce7"}]},
-{w:"RELATIVID",lv:49,c:"Ciencia",p:[{e:"⚡",l:"???",b:"#fdcb6e,#ffd700"},{e:"🌌",l:"???",b:"#1a1a4e,#6c5ce7"},{e:"⏱️",l:"???",b:"#636e72,#2d3436"},{e:"🧮",l:"???",b:"#0984e3,#2d3436"}]},
-{w:"SINGULARI",lv:50,c:"Legendario",p:[{e:"⚫",l:"???",b:"#1a1a4e,#000"},{e:"🌌",l:"???",b:"#1a1a4e,#6c5ce7"},{e:"♾️",l:"???",b:"#6c5ce7,#e94560"},{e:"💥",l:"???",b:"#e94560,#fdcb6e"}]},
-
-// ── NUEVAS PALABRAS ──
-// LV 1-5 nuevas
-{w:"NUBE",    lv:1,c:"Clima",p:[{e:"☁️",l:"Nube",b:"#dfe6e9,#b2bec3"},{e:"🌦️",l:"Lluvia",b:"#74b9ff,#dfe6e9"},{e:"✈️",l:"Avión",b:"#0984e3,#dfe6e9"},{e:"🌤️",l:"Cielo",b:"#74b9ff,#fdcb6e"}]},
-{w:"PATO",    lv:1,c:"Animales",p:[{e:"🦆",l:"Pato",b:"#fdcb6e,#00b894"},{e:"💧",l:"Agua",b:"#0984e3,#74b9ff"},{e:"🌊",l:"Lago",b:"#0984e3,#55efc4"},{e:"🥚",l:"Huevo",b:"#ffeaa7,#fdcb6e"}]},
-{w:"LECHE",   lv:2,c:"Comida",p:[{e:"🥛",l:"Vaso",b:"#dfe6e9,#ffeaa7"},{e:"🐄",l:"Vaca",b:"#dfe6e9,#b2bec3"},{e:"☕",l:"Café",b:"#a0522d,#fdcb6e"},{e:"🧀",l:"Queso",b:"#fdcb6e,#ffd700"}]},
-{w:"ARBOL",   lv:2,c:"Naturaleza",p:[{e:"🌳",l:"Grande",b:"#00b894,#27ae60"},{e:"🍂",l:"Hojas",b:"#e17055,#fdcb6e"},{e:"🌰",l:"Fruto",b:"#a0522d,#fdcb6e"},{e:"🪓",l:"Madera",b:"#a0522d,#636e72"}]},
-{w:"PIZZA",   lv:2,c:"Comida",p:[{e:"🍕",l:"Slice",b:"#e17055,#fdcb6e"},{e:"🧀",l:"Queso",b:"#fdcb6e,#ffd700"},{e:"🍅",l:"Tomate",b:"#e94560,#fdcb6e"},{e:"🫕",l:"Horno",b:"#e17055,#636e72"}]},
-{w:"NOCHE",   lv:2,c:"Tiempo",p:[{e:"🌙",l:"Luna",b:"#2d3436,#4a4a8a"},{e:"⭐",l:"Estrellas",b:"#2d3436,#fdcb6e"},{e:"🦉",l:"Búho",b:"#636e72,#2d3436"},{e:"🕯️",l:"Vela",b:"#fdcb6e,#2d3436"}]},
-{w:"VIENTO",  lv:3,c:"Clima",p:[{e:"💨",l:"Aire",b:"#dfe6e9,#74b9ff"},{e:"🌬️",l:"Soplo",b:"#a8d8ea,#dfe6e9"},{e:"🍃",l:"Hojas",b:"#00b894,#55efc4"},{e:"🪁",l:"Cometa",b:"#e94560,#fdcb6e"}]},
-{w:"CAMINO",  lv:3,c:"Lugares",p:[{e:"🛤️",l:"Ruta",b:"#fdcb6e,#636e72"},{e:"🚶",l:"Caminata",b:"#2d3436,#636e72"},{e:"🗺️",l:"Mapa",b:"#fdcb6e,#a0522d"},{e:"🌄",l:"Paisaje",b:"#e17055,#fdcb6e"}]},
-{w:"REGALO",  lv:3,c:"Social",p:[{e:"🎁",l:"Caja",b:"#e94560,#fd79a8"},{e:"🎀",l:"Lazo",b:"#fd79a8,#ffeaa7"},{e:"🎂",l:"Cumple",b:"#fdcb6e,#e17055"},{e:"😍",l:"Sorpresa",b:"#e94560,#fdcb6e"}]},
-{w:"TIERRA",  lv:3,c:"Naturaleza",p:[{e:"🌍",l:"Planeta",b:"#00b894,#0984e3"},{e:"🌱",l:"Planta",b:"#00b894,#55efc4"},{e:"⛏️",l:"Excavar",b:"#a0522d,#636e72"},{e:"🪨",l:"Roca",b:"#636e72,#b2bec3"}]},
-// LV 4-8 nuevas
-{w:"BARCO",   lv:4,c:"Transporte",p:[{e:"🚢",l:"Crucero",b:"#0984e3,#dfe6e9"},{e:"⚓",l:"Ancla",b:"#0984e3,#2d3436"},{e:"🌊",l:"Mar",b:"#0984e3,#1a1a4e"},{e:"🧭",l:"Brújula",b:"#e17055,#2d3436"}]},
-{w:"TREN",    lv:4,c:"Transporte",p:[{e:"🚆",l:"Locomotora",b:"#636e72,#2d3436"},{e:"🛤️",l:"Rieles",b:"#636e72,#b2bec3"},{e:"🏔️",l:"Montaña",b:"#636e72,#b2bec3"},{e:"💨",l:"Vapor",b:"#dfe6e9,#b2bec3"}]},
-{w:"GLOBO",   lv:4,c:"Social",p:[{e:"🎈",l:"Globo",b:"#e94560,#fd79a8"},{e:"🎉",l:"Fiesta",b:"#6c5ce7,#fd79a8"},{e:"🌬️",l:"Inflar",b:"#74b9ff,#dfe6e9"},{e:"🎊",l:"Celebrar",b:"#fdcb6e,#e94560"}]},
-{w:"COHETE",  lv:5,c:"Espacio",p:[{e:"🚀",l:"Lanzamiento",b:"#e94560,#2d3436"},{e:"🌌",l:"Espacio",b:"#1a1a4e,#6c5ce7"},{e:"🔥",l:"Propulsor",b:"#e17055,#d63031"},{e:"⭐",l:"Estrellas",b:"#fdcb6e,#2d3436"}]},
-{w:"PALOMA",  lv:5,c:"Animales",p:[{e:"🕊️",l:"Paz",b:"#dfe6e9,#b2bec3"},{e:"✉️",l:"Mensaje",b:"#fdcb6e,#dfe6e9"},{e:"🏛️",l:"Ciudad",b:"#b2bec3,#636e72"},{e:"🌿",l:"Rama",b:"#00b894,#fdcb6e"}]},
-{w:"DULCE",   lv:5,c:"Comida",p:[{e:"🍬",l:"Caramelo",b:"#e94560,#fd79a8"},{e:"🍫",l:"Chocolate",b:"#a0522d,#2d3436"},{e:"🍰",l:"Pastel",b:"#fd79a8,#ffeaa7"},{e:"😋",l:"Rico",b:"#fdcb6e,#e17055"}]},
-{w:"BRUJA",   lv:6,c:"Fantasía",p:[{e:"🧙",l:"Maga",b:"#6c5ce7,#2d3436"},{e:"🧹",l:"Escoba",b:"#a0522d,#2d3436"},{e:"🎃",l:"Halloween",b:"#e17055,#2d3436"},{e:"🔮",l:"Bola",b:"#6c5ce7,#fd79a8"}]},
-{w:"DRAGON",  lv:6,c:"Fantasía",p:[{e:"🐉",l:"Dragón",b:"#e94560,#2d3436"},{e:"🔥",l:"Fuego",b:"#e17055,#d63031"},{e:"🏰",l:"Castillo",b:"#636e72,#2d3436"},{e:"⚔️",l:"Espada",b:"#b2bec3,#2d3436"}]},
-{w:"TESORO",  lv:7,c:"Aventura",p:[{e:"💎",l:"Diamante",b:"#74b9ff,#0984e3"},{e:"🗺️",l:"Mapa",b:"#fdcb6e,#a0522d"},{e:"🏴‍☠️",l:"Pirata",b:"#2d3436,#636e72"},{e:"⛏️",l:"Excavar",b:"#a0522d,#636e72"}]},
-{w:"NINJA",   lv:7,c:"Historia",p:[{e:"🥷",l:"Ninja",b:"#2d3436,#636e72"},{e:"⭐",l:"Shuriken",b:"#b2bec3,#2d3436"},{e:"🌙",l:"Noche",b:"#1a1a4e,#2d3436"},{e:"🏯",l:"Castillo",b:"#636e72,#2d3436"}]},
-{w:"MONEDA",  lv:8,c:"Economía",p:[{e:"🪙",l:"Moneda",b:"#fdcb6e,#ffd700"},{e:"💰",l:"Dinero",b:"#00b894,#fdcb6e"},{e:"🏦",l:"Banco",b:"#636e72,#2d3436"},{e:"🛒",l:"Compras",b:"#4d96ff,#2d3436"}]},
-{w:"SOMBRA",  lv:8,c:"Naturaleza",p:[{e:"🌑",l:"Oscuro",b:"#2d3436,#1a1a4e"},{e:"☀️",l:"Sol",b:"#fdcb6e,#e17055"},{e:"🌳",l:"Árbol",b:"#2d3436,#00b894"},{e:"🕶️",l:"Gafas",b:"#2d3436,#636e72"}]},
-// LV 9-15 nuevas  
-{w:"MEDUSA",  lv:9,c:"Animales",p:[{e:"🪼",l:"Mar",b:"#6c5ce7,#0984e3"},{e:"⚡",l:"Veneno",b:"#fdcb6e,#6c5ce7"},{e:"🌊",l:"Océano",b:"#0984e3,#1a1a4e"},{e:"🔵",l:"Transparente",b:"#74b9ff,#0984e3"}]},
-{w:"CARBON",  lv:9,c:"Ciencia",p:[{e:"🖤",l:"Negro",b:"#2d3436,#1a1a4e"},{e:"🔥",l:"Combustión",b:"#e17055,#2d3436"},{e:"💎",l:"Diamante",b:"#74b9ff,#dfe6e9"},{e:"⛏️",l:"Mina",b:"#636e72,#2d3436"}]},
-{w:"ESPEJO",  lv:10,c:"Objetos",p:[{e:"🪞",l:"Reflejo",b:"#dfe6e9,#6c5ce7"},{e:"👁️",l:"Mirar",b:"#2d3436,#6c5ce7"},{e:"✨",l:"Brillo",b:"#fdcb6e,#ffd700"},{e:"🧙",l:"Magia",b:"#6c5ce7,#2d3436"}]},
-{w:"COMETA",  lv:11,c:"Espacio",p:[{e:"☄️",l:"Cometa",b:"#e17055,#2d3436"},{e:"🌌",l:"Galaxia",b:"#1a1a4e,#6c5ce7"},{e:"💨",l:"Cola",b:"#dfe6e9,#6c5ce7"},{e:"🔭",l:"Telescopio",b:"#0984e3,#2d3436"}]},
-{w:"PIRAMID", lv:12,c:"Historia",p:[{e:"🏺",l:"Egipto",b:"#fdcb6e,#a0522d"},{e:"🐫",l:"Desierto",b:"#a0522d,#fdcb6e"},{e:"🌅",l:"Arena",b:"#e17055,#fdcb6e"},{e:"👁️",l:"Ojo Ra",b:"#fdcb6e,#e17055"}]},
-{w:"MAZMORRA",lv:13,c:"Fantasía",p:[{e:"⛓️",l:"Cadenas",b:"#636e72,#2d3436"},{e:"🏰",l:"Castillo",b:"#636e72,#2d3436"},{e:"🔦",l:"Oscuridad",b:"#fdcb6e,#2d3436"},{e:"🐀",l:"Ratas",b:"#636e72,#b2bec3"}]},
-{w:"ARMADURA",lv:14,c:"Historia",p:[{e:"🛡️",l:"Escudo",b:"#636e72,#b2bec3"},{e:"⚔️",l:"Espada",b:"#b2bec3,#2d3436"},{e:"🏰",l:"Caballero",b:"#636e72,#2d3436"},{e:"👑",l:"Rey",b:"#fdcb6e,#ffd700"}]},
-{w:"CUEVA",   lv:15,c:"Naturaleza",p:[{e:"🦇",l:"Murciélago",b:"#2d3436,#636e72"},{e:"🔦",l:"Oscuridad",b:"#fdcb6e,#2d3436"},{e:"🪨",l:"Roca",b:"#636e72,#b2bec3"},{e:"💎",l:"Cristal",b:"#74b9ff,#6c5ce7"}]},
-// LV 16-25 nuevas
-{w:"GLACIAR", lv:16,c:"Naturaleza",p:[{e:"🧊",l:"Hielo",b:"#a8d8ea,#74b9ff"},{e:"🌊",l:"Agua",b:"#0984e3,#a8d8ea"},{e:"🐧",l:"Pingüino",b:"#2d3436,#dfe6e9"},{e:"🏔️",l:"Montaña",b:"#b2bec3,#a8d8ea"}]},
-{w:"IMPERIO", lv:17,c:"Historia",p:[{e:"🏛️",l:"Roma",b:"#b2bec3,#fdcb6e"},{e:"👑",l:"César",b:"#fdcb6e,#ffd700"},{e:"⚔️",l:"Legión",b:"#636e72,#b2bec3"},{e:"🌍",l:"Conquista",b:"#00b894,#0984e3"}]},
-{w:"NOMADA",  lv:17,c:"Historia",p:[{e:"⛺",l:"Tienda",b:"#a0522d,#fdcb6e"},{e:"🐪",l:"Camello",b:"#a0522d,#fdcb6e"},{e:"🏜️",l:"Desierto",b:"#fdcb6e,#e17055"},{e:"🌅",l:"Viaje",b:"#e17055,#fdcb6e"}]},
-{w:"HURACAN", lv:18,c:"Clima",p:[{e:"🌀",l:"Espiral",b:"#0984e3,#1a1a4e"},{e:"🌊",l:"Maremoto",b:"#0984e3,#2d3436"},{e:"💨",l:"Vientos",b:"#dfe6e9,#0984e3"},{e:"🛰️",l:"Satélite",b:"#2d3436,#4d96ff"}]},
-{w:"PERGAMIN",lv:19,c:"Historia",p:[{e:"📜",l:"Rollo",b:"#fdcb6e,#a0522d"},{e:"✍️",l:"Escritura",b:"#a0522d,#fdcb6e"},{e:"🏛️",l:"Antiguo",b:"#b2bec3,#fdcb6e"},{e:"🔍",l:"Descifrar",b:"#fdcb6e,#2d3436"}]},
-{w:"CENIZA",  lv:21,c:"Naturaleza",p:[{e:"🌋",l:"Volcán",b:"#d63031,#2d3436"},{e:"💨",l:"Nube",b:"#636e72,#b2bec3"},{e:"🖤",l:"Negro",b:"#2d3436,#636e72"},{e:"☠️",l:"Destrucción",b:"#2d3436,#636e72"}]},
-{w:"MISTERIO",lv:22,c:"Cultura",p:[{e:"🔍",l:"Investigar",b:"#2d3436,#6c5ce7"},{e:"❓",l:"Pregunta",b:"#6c5ce7,#2d3436"},{e:"🕵️",l:"Detective",b:"#2d3436,#636e72"},{e:"🌑",l:"Oscuro",b:"#1a1a4e,#2d3436"}]},
-{w:"VALIENTE",lv:23,c:"Valores",p:[{e:"🦁",l:"León",b:"#fdcb6e,#a0522d"},{e:"💪",l:"Fuerza",b:"#e94560,#d63031"},{e:"🛡️",l:"Proteger",b:"#636e72,#b2bec3"},{e:"⭐",l:"Héroe",b:"#fdcb6e,#ffd700"}]},
-{w:"ABISMO",  lv:24,c:"Naturaleza",p:[{e:"🌊",l:"Profundo",b:"#0984e3,#1a1a4e"},{e:"🕳️",l:"Agujero",b:"#1a1a4e,#2d3436"},{e:"😨",l:"Miedo",b:"#6c5ce7,#2d3436"},{e:"🔦",l:"Oscuridad",b:"#fdcb6e,#1a1a4e"}]},
-{w:"PROFECIA",lv:25,c:"Misterio",p:[{e:"🔮",l:"Bola",b:"#6c5ce7,#fd79a8"},{e:"📜",l:"Pergamino",b:"#fdcb6e,#a0522d"},{e:"🌌",l:"Visión",b:"#1a1a4e,#6c5ce7"},{e:"⭐",l:"Destino",b:"#fdcb6e,#6c5ce7"}]},
-];
+let CH = [];
 
 // ════════════════════════════════════════════════════
 //  STATE
