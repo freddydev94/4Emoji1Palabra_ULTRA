@@ -609,10 +609,16 @@ firebase.auth().onAuthStateChanged(async (user)=>{
 
    try{
 
-      // WAIT AUTH
+      // KEEP LOADING UNTIL EVERYTHING READY
+      const overlay = document.getElementById('loadingOverlay');
+
+      if(overlay){
+         overlay.style.display = 'flex';
+      }
+
       if(!user){
 
-         console.log('Iniciando auth anónima...');
+         console.log('Esperando auth Firebase...');
 
          await firebase.auth().signInAnonymously();
 
@@ -629,41 +635,52 @@ firebase.auth().onAuthStateChanged(async (user)=>{
 
       const snap = await profileRef.once('value');
 
-      // CREATE PROFILE IF NOT EXISTS
+      // DO NOT AUTO CREATE PROFILE
+      // ONLY CHECK IF EXISTS
+
       if(!snap.exists()){
 
-         console.log('Creando perfil...');
+         console.log('Perfil no existe aún');
 
-         await profileRef.set({
-            name: localStorage.getItem('playerName') || 'Jugador',
-            xp: 0,
-            level: 1,
-            coins: 0,
-            rank: 'Novato',
-            wins: 0,
-            loses: 0,
-            createdAt: firebase.database.ServerValue.TIMESTAMP
-         });
+         // FORCE NAME SCREEN
+         const overlay = document.getElementById('loadingOverlay');
+         if(overlay){
+            overlay.style.display = 'none';
+         }
+
+         if(typeof showScreen === 'function'){
+            showScreen('nameScreen');
+         }
+
+         return;
 
       }
 
-      console.log('Perfil listo');
+      // WAIT SMALL DELAY FOR UI
+      await new Promise(r=>setTimeout(r,300));
 
-      // HIDE LOADING
-      const overlay = document.getElementById('loadingOverlay');
+      // LOAD PROFILE UI IF EXISTS
+      if(typeof loadProfile === 'function'){
+         await loadProfile();
+      }
+
+      // HIDE LOADING ONLY AFTER PROFILE READY
       if(overlay){
          overlay.style.display = 'none';
       }
 
       // FORCE MENU
       const menu = document.getElementById('menuScreen');
+
       if(menu){
          menu.classList.add('active');
       }
 
+      console.log('Juego listo');
+
    }catch(err){
 
-      console.error('Firebase Error:', err);
+      console.error('Firebase Startup Error:', err);
 
       const msg = document.getElementById('ldMsg');
 
@@ -673,8 +690,7 @@ firebase.auth().onAuthStateChanged(async (user)=>{
 
    }
 
-});
-// ════════════════════════════════════════════════════
+});// ════════════════════════════════════════════════════
 //  RANK SYSTEM — 20 rangos épicos
 // ════════════════════════════════════════════════════
 const RANKS=[
@@ -776,7 +792,7 @@ async function saveP(){
     color:PCOLORS[lvOf(myP.xp)%PCOLORS.length]
   });
 }
-function saveName(){
+async function saveName(){
   const n=document.getElementById('nameInp').value.trim();
   if(!n){shake('nameInp');return;}
   myP.name=n; saveP().then(()=>{renderPf();showScreen('menuScreen');});
