@@ -1547,6 +1547,10 @@ function attachLis(){
 // ════════════════════════════════════════════════════
 //  STATE MACHINE
 // ════════════════════════════════════════════════════
+function hideMatchmakingOverlay(){
+  const mm=document.getElementById('mmOverlay');
+  if(mm) mm.style.display='none';
+}
 function onlinePlayerEntries(ps,limit=25000){
   const now=Date.now();
   return Object.entries(ps||{}).filter(([,p])=>!p.lastSeen||(now-p.lastSeen)<limit);
@@ -1632,6 +1636,8 @@ function handleRoom(room){
       const maxP_room=room.maxPlayers||4;
       // Auto-start for 1v1 matchmaking rooms when full
       if(isHost && room.isPublic && maxP_room===2 && ps_count>=2){
+        const mmSub=document.getElementById('mmSubLabel');
+        if(mmSub&&document.getElementById('mmOverlay').style.display!=='none')mmSub.textContent='✅ Rival encontrado. Preparando partida...';
         document.getElementById('startBtn').style.display='none';
         document.getElementById('waitHost').style.display='none';
         // Auto-start after 3 seconds so both players see each other
@@ -1646,6 +1652,7 @@ function handleRoom(room){
       }
       break;
     case 'preparing':
+      hideMatchmakingOverlay();
       showScreen('gameScreen');
       showPrep(room);
       markPrepared(room);
@@ -1654,12 +1661,14 @@ function handleRoom(room){
       }
       break;
     case 'countdown':
+      hideMatchmakingOverlay();
       document.getElementById('prepOverlay').style.display='none';
       showScreen('gameScreen');
       const cdKey=roomCode+':'+(room.currentRound||0)+':'+(room.challengeIdx||-1);
       if(lastCountdownKey!==cdKey){lastCountdownKey=cdKey;runCountdown(3);if(isHost)setTimeout(()=>db.ref('rooms/'+roomCode).once('value').then(s=>{const r=s.val();if(r&&r.status==='countdown')doNextRound(r);}),3600);}
       break;
     case 'playing':
+      hideMatchmakingOverlay();
       document.getElementById('prepOverlay').style.display='none';
       roundEndAdvanceKey='';
       document.getElementById('cdOverlay').style.display='none';cdRunning=false;
@@ -1681,12 +1690,14 @@ function handleRoom(room){
       document.body.style.filter=(room.frozenUntil&&room.frozenUntil>Date.now())?'hue-rotate(180deg) brightness(.7)':'';
       renderPlayers(room.players);break;
     case 'roundEnd':
+      hideMatchmakingOverlay();
       clearInterval(timerIv);roundOver=true;document.body.style.filter='';
       renderPlayers(room.players);
       showBanner(room.roundWinner,room.players,room.correctWord,room.roundPts,room.roundXp);
       if(isHost){const advKey=roomCode+':'+(room.currentRound||0)+':'+(room.challengeIdx||0);if(roundEndAdvanceKey!==advKey){roundEndAdvanceKey=advKey;setTimeout(()=>db.ref('rooms/'+roomCode).once('value').then(s=>{const r=s.val();if(r&&r.status==='roundEnd'&&(r.currentRound||0)===(room.currentRound||0))doNextRound(r);}),4200);}}
       break;
     case 'finished':
+      hideMatchmakingOverlay();
       clearInterval(timerIv);document.body.style.filter='';
       if(roomLis) db.ref('rooms/'+roomCode).off('value',roomLis);
       renderResults(room.players);showScreen('resultsScreen');break;
