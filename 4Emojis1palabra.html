@@ -1121,6 +1121,9 @@ async function ensureChallengesReady(){
 // ════════════════════════════════════════════════════
 const PCOLORS=['#e94560','#f5a623','#4ecca3','#4d96ff','#c77dff','#ff9f43'];
 let db;
+let serverTimeOffset=0;
+function serverNow(){return Date.now()+serverTimeOffset;}
+function serverTs(){return firebase.database.ServerValue.TIMESTAMP;}
 const devId=localStorage.getItem('4e1p_id')||(()=>{const id='d_'+Math.random().toString(36).substr(2,12);localStorage.setItem('4e1p_id',id);return id;})();
 let myP={name:'Jugador',xp:0,seen:[],prestige:0};
 let roomCode='',isHost=false,roomRef=null,roomLis=null;
@@ -1158,6 +1161,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     try{
       //firebase.initializeApp(FB);
       db=firebase.database();
+      db.ref('.info/serverTimeOffset').on('value',s=>{serverTimeOffset=s.val()||0;});
       document.getElementById('ldMsg').textContent='Cargando perfil...';
       await loadP();
       await loadChallenges();
@@ -1297,7 +1301,7 @@ async function createRoom(){
     challengeIdx:-1,letterSeed:0,roundStartedAt:0,roundWinner:'',correctWord:'',frozenUntil:0,
     players:{[devId]:{name:myP.name,score:0,solved:false,streak:0,xpGained:0,
       level:lv,color:PCOLORS[lv%PCOLORS.length],rank:rankOf(lv).icon,
-      online:true,lastSeen:Date.now()}}};
+      online:true,lastSeen:serverTs()}}};
   try{
     await db.ref('rooms/'+roomCode).set(room);
     saveMyRoom(roomCode,rounds,fixedTime,minLv,maxPlayers,isPublic);
@@ -1375,7 +1379,7 @@ async function joinRoom(){
     const n=Object.keys(r.players||{}).length;
     if(n>=(r.maxPlayers||10)){showErr('errJoin','❌ Sala llena ('+n+'/'+(r.maxPlayers||10)+')');return;}
     await db.ref('rooms/'+roomCode+'/players/'+devId)
-      .set({name:myP.name,score:0,solved:false,streak:0,xpGained:0,level:lv,color:PCOLORS[n%PCOLORS.length],rank:rankOf(lv).icon,online:true,lastSeen:Date.now()});
+      .set({name:myP.name,score:0,solved:false,streak:0,xpGained:0,level:lv,color:PCOLORS[n%PCOLORS.length],rank:rankOf(lv).icon,online:true,lastSeen:serverTs()});
     attachLis();openLobby();
   }catch(e){showErr('errJoin','Error: '+e.message);}
 }
@@ -1414,7 +1418,7 @@ async function findPublicRoom(){
       await db.ref('rooms/'+roomCode+'/players/'+devId)
         .set({name:myP.name,score:0,solved:false,streak:0,xpGained:0,
           level:lv,color:PCOLORS[n%PCOLORS.length],rank:rankOf(lv).icon,
-          online:true,lastSeen:Date.now()});
+          online:true,lastSeen:serverTs()});
       document.getElementById('mmOverlay').style.display='none';
       attachLis(); openLobby();
       document.getElementById('pubPill').style.display='inline-flex';
@@ -1431,10 +1435,10 @@ async function findPublicRoom(){
     roomCode=genCode(); isHost=true; resetPU(); usedGame=new Set(); mmOwnRoom=roomCode;
     const room={host:devId,status:'lobby',rounds:8,minLv:rk.min,isPublic:true,quickMatch:true,matchRank:myRank,
       fixedTime:90,maxPlayers:2,currentRound:0,challengeIdx:-1,letterSeed:0,roundStartedAt:0,
-      roundWinner:'',correctWord:'',frozenUntil:0,avgLv:lv,hostName:myP.name,createdAt:Date.now(),
+      roundWinner:'',correctWord:'',frozenUntil:0,avgLv:lv,hostName:myP.name,createdAt:serverTs(),
       players:{[devId]:{name:myP.name,score:0,solved:false,streak:0,xpGained:0,
         level:lv,color:PCOLORS[lv%PCOLORS.length],rank:rankOf(lv).icon,
-        online:true,lastSeen:Date.now()}}};
+        online:true,lastSeen:serverTs()}}};
     await db.ref('rooms/'+roomCode).set(room);
     attachLis(); openLobby();
     document.getElementById('mmOverlay').style.display='flex';
@@ -1444,7 +1448,7 @@ async function findPublicRoom(){
   async function tryFind(){
     const snap=await db.ref('rooms').orderByChild('status').equalTo('lobby').limitToFirst(80).once('value');
     let best=null, bestCreated=Infinity;
-    const now=Date.now();
+    const now=serverNow();
     snap.forEach(s=>{
       const r=s.val()||{}, ps=Object.keys(r.players||{}).length;
       if(!r.isPublic||!r.quickMatch) return;
@@ -1498,9 +1502,9 @@ async function createPublicRoom(lv){
   const rk=rankOf(lv);
   const room={host:devId,status:'lobby',rounds:8,minLv:rk.min,isPublic:true,quickMatch:true,matchRank:rk.name,fixedTime:90,maxPlayers:2,
     currentRound:0,challengeIdx:-1,letterSeed:0,roundStartedAt:0,
-    roundWinner:'',correctWord:'',frozenUntil:0,avgLv:lv,hostName:myP.name,createdAt:Date.now(),
+    roundWinner:'',correctWord:'',frozenUntil:0,avgLv:lv,hostName:myP.name,createdAt:serverTs(),
     players:{[devId]:{name:myP.name,score:0,solved:false,streak:0,xpGained:0,
-      level:lv,color:PCOLORS[lv%PCOLORS.length],rank:rankOf(lv).icon,online:true,lastSeen:Date.now()}}};
+      level:lv,color:PCOLORS[lv%PCOLORS.length],rank:rankOf(lv).icon,online:true,lastSeen:serverTs()}}};
   await db.ref('rooms/'+roomCode).set(room);
   attachLis(); openLobby();
   document.getElementById('pubPill').style.display='inline-flex';
@@ -1564,7 +1568,7 @@ function hideMatchmakingOverlay(){
   if(mm) mm.style.display='none';
 }
 function onlinePlayerEntries(ps,limit=25000){
-  const now=Date.now();
+  const now=serverNow();
   return Object.entries(ps||{}).filter(([,p])=>!p.lastSeen||(now-p.lastSeen)<limit);
 }
 function showPrep(room){
@@ -1588,15 +1592,15 @@ async function markPrepared(room){
   const ok=await ensureChallengesReady();
   if(!ok) return;
   prepMarkedKey=room.prepareKey;
-  await db.ref('rooms/'+roomCode+'/players/'+devId).update({readyForRound:room.prepareKey,lastSeen:Date.now(),online:true}).catch(()=>{});
+  await db.ref('rooms/'+roomCode+'/players/'+devId).update({readyForRound:room.prepareKey,lastSeen:serverTs(),online:true}).catch(()=>{});
 }
 function allPrepared(room){
-  const now=Date.now();
+  const now=serverNow();
   const entries=Object.entries(room.players||{}).filter(([,p])=>!p.lastSeen||(now-p.lastSeen)<90000);
   if(!entries.length) return false;
   if(entries.every(([,p])=>p.readyForRound===room.prepareKey)) return true;
   const started=room.prepareStartedAt||0;
-  return started&&Date.now()-started>12000;
+  return started&&serverNow()-started>12000;
 }
 function isRoomHost(room){return !!room&&room.host===devId;}
 async function getCurrentRoom(){
@@ -1621,12 +1625,12 @@ async function finishRoundLocked(reason,winner){
   const key='finish:'+(room.currentRound||0)+':'+(room.challengeIdx||0);
   const tx=await db.ref('rooms/'+roomCode+'/roundFinishLock').transaction(cur=>cur?undefined:key);
   if(!tx.committed) return;
-  await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundWinner:winner||'',correctWord:curCh&&curCh.word?curCh.word:(room.correctWord||''),lastNotice:reason?{ts:Date.now(),msg:reason}:null});
+  await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundWinner:winner||'',correctWord:curCh&&curCh.word?curCh.word:(room.correctWord||''),lastNotice:reason?{ts:serverNow(),msg:reason}:null});
 }
 function hostPresenceGuard(room){
   const activeStatuses=['playing','roundEnd'];
   if(!isRoomHost(room)||!room||!room.players||!activeStatuses.includes(room.status)) return;
-  const now=Date.now(), updates={};
+  const now=serverNow(), updates={};
   Object.entries(room.players).forEach(([pid,p])=>{
     if(pid===devId) return;
     const offline=p.lastSeen&&(now-p.lastSeen)>90000;
@@ -1698,7 +1702,7 @@ function handleRoom(room){
       markPrepared(room);
       if(isRoomHost(room)){
         const prepKey=roomCode+':'+room.prepareKey;
-        const startCountdown=()=>db.ref('rooms/'+roomCode).update({status:'countdown',countdownStartedAt:firebase.database.ServerValue.TIMESTAMP,lastNotice:{ts:Date.now(),msg:'Todos listos. Iniciando partida...'}}).catch(()=>{});
+        const startCountdown=()=>db.ref('rooms/'+roomCode).update({status:'countdown',countdownStartedAt:serverTs(),lastNotice:{ts:serverNow(),msg:'Todos listos. Iniciando partida...'}}).catch(()=>{});
         if(allPrepared(room)) startCountdown();
         else if(prepAdvanceKey!==prepKey){
           prepAdvanceKey=prepKey;
@@ -1736,7 +1740,7 @@ function handleRoom(room){
         document.getElementById('diffLbl').textContent=dc.lbl;document.getElementById('diffLbl').style.color=dc.clr;
         startTimer(room.roundTime||30,room.roundStartedAt);renderPU();
       }
-      document.body.style.filter=(room.frozenUntil&&room.frozenUntil>Date.now())?'hue-rotate(180deg) brightness(.7)':'';
+      document.body.style.filter=(room.frozenUntil&&room.frozenUntil>serverNow())?'hue-rotate(180deg) brightness(.7)':'';
       renderPlayers(room.players);break;
     case 'roundEnd':
       hideMatchmakingOverlay();
@@ -1751,7 +1755,7 @@ function handleRoom(room){
       if(roomLis) db.ref('rooms/'+roomCode).off('value',roomLis);
       renderResults(room.players);showScreen('resultsScreen');break;
   }
-  if(room.lastRxn&&room.lastRxn.ts>Date.now()-2000&&room.lastRxn.by!==devId) floatEmoji(room.lastRxn.emoji);
+  if(room.lastRxn&&room.lastRxn.ts>serverNow()-2000&&room.lastRxn.by!==devId) floatEmoji(room.lastRxn.emoji);
 }
 
 // ════════════════════════════════════════════════════
@@ -1763,7 +1767,7 @@ async function startGame(){
   const room=snap.val()||{};
   if(!isRoomHost(room))return;
   const prepareKey=Date.now()+'_'+Math.floor(Math.random()*9999);
-  const u={status:'preparing',prepareKey,prepareStartedAt:Date.now(),lastNotice:{ts:Date.now(),msg:'Cargando retos para todos los jugadores...'}};
+  const u={status:'preparing',prepareKey,prepareStartedAt:serverTs(),lastNotice:{ts:serverNow(),msg:'Cargando retos para todos los jugadores...'}};
   Object.keys(room.players||{}).forEach(pid=>u['players/'+pid+'/readyForRound']='');
   await db.ref('rooms/'+roomCode).update(u);
 }
@@ -1784,8 +1788,8 @@ async function doNextRound(room){
   const seed=Math.floor(Math.random()*999999);
   const u={};
   Object.keys(ps).forEach(pid=>u['players/'+pid+'/solved']=false);
-  Object.assign(u,{status:'playing',currentRound:next,challengeIdx:next,roundKey:Date.now()+'_'+next,roundAdvanceLock:null,roundFinishLock:null,avgLv,letterSeed:seed,
-    roundStartedAt:firebase.database.ServerValue.TIMESTAMP,
+  Object.assign(u,{status:'playing',currentRound:next,challengeIdx:next,roundKey:serverNow()+'_'+next,roundAdvanceLock:null,roundFinishLock:null,avgLv,letterSeed:seed,
+    roundStartedAt:serverTs(),
     roundWinner:'',correctWord:ch.word,roundPts:0,roundXp:0,frozenUntil:0,roundTime,
     cData:challengeForFirebase(ch)});
   await db.ref('rooms/'+roomCode).update(u);
@@ -1817,7 +1821,7 @@ async function submitAnswer(){
   const snap=await db.ref('rooms/'+roomCode).once('value');
   const room=snap.val();
   if(!room||room.status!=='playing'||room.roundWinner)return;
-  const el=Date.now()-room.roundStartedAt,rt=room.roundTime||30;
+  const el=serverNow()-room.roundStartedAt,rt=room.roundTime||30;
   const pct=Math.max(0,(rt*1000-el)/(rt*1000));
   const base=Math.max(10,Math.round(pct*100)),hb=hintUsed===0?25:0;
   myStreak++;
@@ -1882,7 +1886,7 @@ function giveHint(){
 }
 async function useFreeze(){
   if(roundOver||puF<=0)return;puF--;
-  await db.ref('rooms/'+roomCode).update({frozenUntil:Date.now()+8000});
+  await db.ref('rooms/'+roomCode).update({frozenUntil:serverNow()+8000});
   renderPU();showToast('🧊 Tiempo congelado 8s!','rgba(77,150,255,.9)');
 }
 function useBomb(){
@@ -1935,8 +1939,8 @@ function startTimer(total,startedAt){
   clearInterval(timerIv);const circ=2*Math.PI*18;
   function tick(){
     db.ref('rooms/'+roomCode+'/frozenUntil').once('value').then(s=>{
-      document.body.style.filter=(s.val()||0)>Date.now()?'hue-rotate(180deg) brightness(.7)':'';});
-    const left=Math.max(0,Math.ceil((startedAt+total*1000-Date.now())/1000));
+      document.body.style.filter=(s.val()||0)>serverNow()?'hue-rotate(180deg) brightness(.7)':'';});
+    const left=Math.max(0,Math.ceil((startedAt+total*1000-serverNow())/1000));
     document.getElementById('timerNum').textContent=left;
     const pct=left/total;
     document.getElementById('timerArc').style.strokeDashoffset=circ*(1-pct);
@@ -1993,7 +1997,7 @@ function renderLobbyPlayers(ps){
   const ul=document.getElementById('lobbyPlayers');ul.innerHTML='';
   const entries=Object.entries(ps||{});
   // filter online only (mobile-friendly grace window)
-  const now=Date.now();
+  const now=serverNow();
   const onlineEntries=entries.filter(([,p])=>!p.lastSeen||(now-p.lastSeen)<90000);
   const oc=document.getElementById('onlineCount');
   if(oc) oc.textContent=onlineEntries.length+' online';
@@ -2121,7 +2125,7 @@ function runCountdown(n){
 // ════════════════════════════════════════════════════
 //  REACTIONS
 // ════════════════════════════════════════════════════
-function sendRxn(e){db.ref('rooms/'+roomCode+'/lastRxn').set({emoji:e,by:devId,ts:Date.now()});floatEmoji(e);}
+function sendRxn(e){db.ref('rooms/'+roomCode+'/lastRxn').set({emoji:e,by:devId,ts:serverNow()});floatEmoji(e);}
 function floatEmoji(e){
   const el=document.createElement('div');el.className='rxn-float';el.textContent=e;
   el.style.left=Math.random()*80+10+'vw';el.style.bottom='25%';
@@ -2159,7 +2163,15 @@ function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classL
 function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
 function shake(id){const el=document.getElementById(id);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),500);}
 function copyLink(){const el=document.getElementById('shareLink');el.select();document.execCommand('copy');const b=document.getElementById('copyBtn');b.textContent='✓ ¡Copiado!';setTimeout(()=>b.textContent='📋 Copiar',2000);}
-async function leaveRoom(){
+async function cleanupRoomIfEmpty(code){
+  if(!code) return;
+  try{
+    const snap=await db.ref('rooms/'+code).once('value');
+    if(!snap.exists()) return;
+    const room=snap.val()||{};
+    if(Object.keys(room.players||{}).length===0) await db.ref('rooms/'+code).remove();
+  }catch(e){}
+}async function leaveRoom(){
   clearInterval(timerIv);clearInterval(presenceIv);document.body.style.filter='';
   window._autoStartPending=false;
   const code=roomCode;
@@ -2172,10 +2184,11 @@ async function leaveRoom(){
 
   if(wasHost&&code){
     if(status==='lobby') db.ref('rooms/'+code).remove().catch(()=>{});
-    else if(active) db.ref('rooms/'+code).update({status:'finished',endReason:'El anfitrión salió de la partida.',lastNotice:{ts:Date.now(),msg:'El anfitrión salió. Partida terminada.'}}).catch(()=>{});
+    else if(active) db.ref('rooms/'+code).update({status:'finished',endReason:'El anfitrión salió de la partida.',lastNotice:{ts:serverNow(),msg:'El anfitrión salió. Partida terminada.'}}).catch(()=>{});
   } else if(code){
-    db.ref('rooms/'+code).update({lastNotice:{ts:Date.now(),msg:(myP.name||'Jugador')+' salió de la partida.'}}).catch(()=>{});
-    db.ref('rooms/'+code+'/players/'+devId).remove().catch(()=>{});
+    db.ref('rooms/'+code).update({lastNotice:{ts:serverNow(),msg:(myP.name||'Jugador')+' salió de la partida.'}}).catch(()=>{});
+    await db.ref('rooms/'+code+'/players/'+devId).remove().catch(()=>{});
+    cleanupRoomIfEmpty(code);
   }
 
   if(roomLis&&roomRef)db.ref('rooms/'+code).off('value',roomLis);
@@ -2210,7 +2223,7 @@ async function loadPublicRooms(){
   const lv=lvOf(myP.xp);
   const snap=await db.ref('rooms').orderByChild('status').equalTo('lobby').limitToFirst(50).once('value');
   const rooms=[];
-  const now=Date.now();
+  const now=serverNow();
   snap.forEach(s=>{
     const r=s.val(), key=s.key;
     if(!r.isPublic) return; // skip private
@@ -2274,7 +2287,7 @@ async function joinFromBrowser(code){
   await db.ref('rooms/'+roomCode+'/players/'+devId)
     .set({name:myP.name,score:0,solved:false,streak:0,xpGained:0,
       level:lv,color:PCOLORS[n%PCOLORS.length],rank:rankOf(lv).icon,
-      online:true,lastSeen:Date.now()});
+      online:true,lastSeen:serverTs()});
   attachLis(); openLobby();
 }
 
@@ -2283,9 +2296,10 @@ let presenceIv=null;
 function pingPresence(){
   clearInterval(presenceIv);
   if(!roomCode) return;
-  const ping=()=>db.ref('rooms/'+roomCode+'/players/'+devId).update({lastSeen:Date.now(),online:true,disconnectTries:0,disconnectCheckAt:0}).catch(()=>{});
+  const ping=()=>db.ref('rooms/'+roomCode+'/players/'+devId).update({lastSeen:serverTs(),online:true,disconnectTries:0,disconnectCheckAt:0}).catch(()=>{});
   ping();
   presenceIv=setInterval(ping,5000);
+  window.__emojiPingPresence=ping;
 }
 
 
@@ -2297,7 +2311,7 @@ window.addEventListener('online',()=>{if(window.__emojiPingPresence)window.__emo
 async function cleanStaleRooms(){
   try{
     const snap=await db.ref('rooms').once('value');
-    const now=Date.now();
+    const now=serverNow();
     const toDelete=[];
     snap.forEach(s=>{
       const r=s.val();
