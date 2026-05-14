@@ -1738,7 +1738,8 @@ async function advanceRoundLocked(expectedStatus,expectedRound){
   const tx=await lockRef.transaction(cur=>{
     if(!cur) return {key:lockKey,ts:now,by:devId,token};
     if(typeof cur==='string') return {key:lockKey,ts:now,by:devId,token};
-    if(cur.key===lockKey&&cur.ts&&now-cur.ts>8500) return {key:lockKey,ts:now,by:devId,token};
+    if(cur.key!==lockKey) return {key:lockKey,ts:now,by:devId,token};
+    if(cur.ts&&now-cur.ts>8500) return {key:lockKey,ts:now,by:devId,token};
     return undefined;
   });
   if(!tx.committed) return;
@@ -1762,7 +1763,7 @@ async function finishRoundLocked(reason,winner){
   const key='finish:'+(room.currentRound||0)+':'+(room.challengeIdx||0);
   const tx=await db.ref('rooms/'+roomCode+'/roundFinishLock').transaction(cur=>cur?undefined:key);
   if(!tx.committed) return;
-  await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundEndStartedAt:serverTs(),roundWinner:winner||'',correctWord:curCh&&curCh.word?curCh.word:(room.correctWord||''),lastNotice:reason?{ts:serverNow(),msg:reason}:null});
+  await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundAdvanceLock:null,roundEndStartedAt:serverTs(),roundWinner:winner||'',correctWord:curCh&&curCh.word?curCh.word:(room.correctWord||''),lastNotice:reason?{ts:serverNow(),msg:reason}:null});
 }
 function hostPresenceGuard(room){
   const activeStatuses=['playing','roundEnd'];
@@ -2004,7 +2005,7 @@ async function submitAnswer(){
   const finishKey='finish:'+(room.currentRound||0)+':'+(room.challengeIdx||0);
   const tx=await db.ref('rooms/'+roomCode+'/roundFinishLock').transaction(cur=>cur?undefined:finishKey);
   if(!tx.committed)return;
-  await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundEndStartedAt:serverTs(),roundWinner:devId,roundPts:pts,roundXp:xg,
+  await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundAdvanceLock:null,roundEndStartedAt:serverTs(),roundWinner:devId,roundPts:pts,roundXp:xg,
     ['players/'+devId+'/score']:prev+pts,['players/'+devId+'/solved']:true,
     ['players/'+devId+'/streak']:myStreak,['players/'+devId+'/xpGained']:prevX+xg});
   playS('correct');confetti(myStreak>=3?90:50);ptsPopup(pts,myStreak);
