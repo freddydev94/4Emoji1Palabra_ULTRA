@@ -1594,8 +1594,33 @@ function allPrepared(room){
   const entries=Object.entries(room.players||{});
   return entries.length>0&&entries.every(([,p])=>p.readyForRound===room.prepareKey);
 }
+function isRoomHost(room){return !!room&&room.host===devId;}
+async function getCurrentRoom(){
+  if(!roomCode) return null;
+  const snap=await db.ref('rooms/'+roomCode).once('value');
+  return snap.exists()?snap.val():null;
+}
+async function advanceRoundLocked(expectedStatus,expectedRound){
+  if(!roomCode) return;
+  const lockRef=db.ref('rooms/'+roomCode+'/roundAdvanceLock');
+  const lockVal=expectedStatus+':'+expectedRound;
+  const tx=await lockRef.transaction(cur=>cur?undefined:lockVal);
+  if(!tx.committed) return;
+  const room=await getCurrentRoom();
+  if(!room||room.host!==devId||room.status!==expectedStatus||(room.currentRound||0)!==expectedRound) return;
+  await doNextRound(room);
+}
+async function finishRoundLocked(reason,winner){
+  if(!roomCode) return;
+  const room=await getCurrentRoom();
+  if(!room||room.host!==devId||room.status!=='playing') return;
+  const key='finish:'+(room.currentRound||0)+':'+(room.challengeIdx||0);
+  const tx=await db.ref('rooms/'+roomCode+'/roundFinishLock').transaction(cur=>cur?undefined:key);
+  if(!tx.committed) return;
+  await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundWinner:winner||'',correctWord:curCh&&curCh.word?curCh.word:(room.correctWord||''),lastNotice:reason?{ts:Date.now(),msg:reason}:null});
+}
 function hostPresenceGuard(room){
-  if(!isHost||!room||!room.players||['finished'].includes(room.status)) return;
+  if(!isRoomHost(room)||!room||!room.players||['finished'].includes(room.status)) return;
   const now=Date.now(), updates={};
   const activeStatuses=['preparing','countdown','playing','roundEnd'];
   Object.entries(room.players).forEach(([pid,p])=>{
@@ -1646,7 +1671,7 @@ function handleRoom(room){
       const ps_count=Object.keys(room.players||{}).length;
       const maxP_room=room.maxPlayers||4;
       // Auto-start for 1v1 matchmaking rooms when full
-      if(isHost && room.isPublic && maxP_room===2 && ps_count>=2){
+      if(isRoomHost(room) && room.isPublic && maxP_room===2 && ps_count>=2){
         const mmSub=document.getElementById('mmSubLabel');
         if(mmSub&&document.getElementById('mmOverlay').style.display!=='none')mmSub.textContent='✅ Rival encontrado. Preparando partida...';
         document.getElementById('startBtn').style.display='none';
@@ -1658,8 +1683,8 @@ function handleRoom(room){
           setTimeout(()=>{window._autoStartPending=false; startGame();},3000);
         }
       } else {
-        document.getElementById('startBtn').style.display=isHost?'block':'none';
-        document.getElementById('waitHost').style.display=isHost?'none':'flex';
+        document.getElementById('startBtn').style.display=isRoomHost(room)?'block':'none';
+        document.getElementById('waitHost').style.display=isRoomHost(room)?'none':'flex';
       }
       break;
     case 'preparing':
@@ -1667,7 +1692,7 @@ function handleRoom(room){
       showScreen('gameScreen');
       showPrep(room);
       markPrepared(room);
-      if(isHost&&allPrepared(room)){
+      if(isRoomHost(room)&&allPrepared(room)){
         db.ref('rooms/'+roomCode).update({status:'countdown',countdownStartedAt:firebase.database.ServerValue.TIMESTAMP,lastNotice:{ts:Date.now(),msg:'Todos listos. Iniciando partida...'}}).catch(()=>{});
       }
       break;
@@ -1676,7 +1701,7 @@ function handleRoom(room){
       document.getElementById('prepOverlay').style.display='none';
       showScreen('gameScreen');
       const cdKey=roomCode+':'+(room.currentRound||0)+':'+(room.challengeIdx||-1);
-      if(lastCountdownKey!==cdKey){lastCountdownKey=cdKey;runCountdown(3);if(isHost)setTimeout(()=>db.ref('rooms/'+roomCode).once('value').then(s=>{const r=s.val();if(r&&r.status==='countdown')doNextRound(r);}),3600);}
+      if(lastCountdownKey!==cdKey){lastCountdownKey=cdKey;runCountdown(3);if(isRoomHost(room))setTimeout(()=>advanceRoundLocked('countdown',room.currentRound||0),3600);}
       break;
     case 'playing':
       hideMatchmakingOverlay();
@@ -1705,7 +1730,7 @@ function handleRoom(room){
       clearInterval(timerIv);roundOver=true;document.body.style.filter='';
       renderPlayers(room.players);
       showBanner(room.roundWinner,room.players,room.correctWord,room.roundPts,room.roundXp);
-      if(isHost){const advKey=roomCode+':'+(room.currentRound||0)+':'+(room.challengeIdx||0);if(roundEndAdvanceKey!==advKey){roundEndAdvanceKey=advKey;setTimeout(()=>db.ref('rooms/'+roomCode).once('value').then(s=>{const r=s.val();if(r&&r.status==='roundEnd'&&(r.currentRound||0)===(room.currentRound||0))doNextRound(r);}),4200);}}
+      if(isRoomHost(room)){const advKey=roomCode+':'+(room.currentRound||0)+':'+(room.challengeIdx||0);if(roundEndAdvanceKey!==advKey){roundEndAdvanceKey=advKey;setTimeout(()=>advanceRoundLocked('roundEnd',room.currentRound||0),4200);}}
       break;
     case 'finished':
       hideMatchmakingOverlay();
@@ -1720,15 +1745,17 @@ function handleRoom(room){
 //  HOST FLOW
 // ════════════════════════════════════════════════════
 async function startGame(){
-  if(!isHost)return;if(!(await ensureChallengesReady()))return;usedGame=new Set();
+  if(!(await ensureChallengesReady()))return;usedGame=new Set();
   const snap=await db.ref('rooms/'+roomCode).once('value');
   const room=snap.val()||{};
+  if(!isRoomHost(room))return;
   const prepareKey=Date.now()+'_'+Math.floor(Math.random()*9999);
   const u={status:'preparing',prepareKey,lastNotice:{ts:Date.now(),msg:'Cargando retos para todos los jugadores...'}};
   Object.keys(room.players||{}).forEach(pid=>u['players/'+pid+'/readyForRound']='');
   await db.ref('rooms/'+roomCode).update(u);
 }
 async function doNextRound(room){
+  if(!isRoomHost(room))return;
   if(!(await ensureChallengesReady()))return;
   const next=(room.currentRound||0)+1;
   if(next>room.rounds){await db.ref('rooms/'+roomCode).update({status:'finished'});return;}
@@ -1744,7 +1771,7 @@ async function doNextRound(room){
   const seed=Math.floor(Math.random()*999999);
   const u={};
   Object.keys(ps).forEach(pid=>u['players/'+pid+'/solved']=false);
-  Object.assign(u,{status:'playing',currentRound:next,challengeIdx:next,avgLv,letterSeed:seed,
+  Object.assign(u,{status:'playing',currentRound:next,challengeIdx:next,roundKey:Date.now()+'_'+next,roundAdvanceLock:null,roundFinishLock:null,avgLv,letterSeed:seed,
     roundStartedAt:firebase.database.ServerValue.TIMESTAMP,
     roundWinner:'',correctWord:ch.word,roundPts:0,roundXp:0,frozenUntil:0,roundTime,
     cData:challengeForFirebase(ch)});
@@ -1796,6 +1823,9 @@ async function submitAnswer(){
   await saveP();
   const newLv=lvOf(myP.xp);
   if(newLv>oldLv)showLvlUp(newLv);
+  const finishKey='finish:'+(room.currentRound||0)+':'+(room.challengeIdx||0);
+  const tx=await db.ref('rooms/'+roomCode+'/roundFinishLock').transaction(cur=>cur?undefined:finishKey);
+  if(!tx.committed)return;
   await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundWinner:devId,roundPts:pts,roundXp:xg,
     ['players/'+devId+'/score']:prev+pts,['players/'+devId+'/solved']:true,
     ['players/'+devId+'/streak']:myStreak,['players/'+devId+'/xpGained']:prevX+xg});
