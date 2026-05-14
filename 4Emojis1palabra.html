@@ -1171,8 +1171,21 @@ async function pickBufferedChallenge(avgLv,round,total,minAllowed=1){
   const win=levelWindow(avgLv,round,total,minAllowed);
   let idx=challengeBuffer.findIndex(c=>c.lv>=win.minLv&&c.lv<=win.maxLv&&!usedGame.has(c.word)&&!myP.seen.includes(c.word));
   if(idx<0) idx=challengeBuffer.findIndex(c=>c.lv>=win.minLv&&!usedGame.has(c.word));
-  if(idx<0) return null;
-  const ch=challengeBuffer.splice(idx,1)[0];
+  if(idx<0){
+    await fetchChallengeBatch(minAllowed,50,80).catch(()=>{});
+    challengeBuffer=challengeBuffer.filter(c=>c&&c.word&&c.lv>=minAllowed);
+    idx=challengeBuffer.findIndex(c=>!usedGame.has(c.word)&&c.lv>=minAllowed);
+  }
+  let ch=idx>=0?challengeBuffer.splice(idx,1)[0]:null;
+  if(!ch){
+    const fallback=CH.filter(c=>c&&c.word&&c.lv>=minAllowed&&!usedGame.has(c.word));
+    if(fallback.length) ch=fallback[Math.floor(Math.random()*fallback.length)];
+  }
+  if(!ch){
+    const any=CH.filter(c=>c&&c.word&&c.lv>=minAllowed);
+    if(any.length) ch=any[Math.floor(Math.random()*any.length)];
+  }
+  if(!ch) return null;
   fillChallengeBuffer(avgLv,(round||1)+1,total,minAllowed,3).catch(()=>{});
   return normalizeChallenge(ch);
 }
@@ -1711,15 +1724,36 @@ async function roomWatchdogTick(){
   }catch(e){console.warn('room watchdog',e);}
   finally{roomWatchBusy=false;}
 }
+async function clearAdvanceLockToken(token){
+  if(!roomCode||!token) return;
+  const ref=db.ref('rooms/'+roomCode+'/roundAdvanceLock');
+  await ref.transaction(cur=>cur&&cur.token===token?null:undefined).catch(()=>{});
+}
 async function advanceRoundLocked(expectedStatus,expectedRound){
   if(!roomCode) return;
   const lockRef=db.ref('rooms/'+roomCode+'/roundAdvanceLock');
-  const lockVal=expectedStatus+':'+expectedRound;
-  const tx=await lockRef.transaction(cur=>cur?undefined:lockVal);
+  const lockKey=expectedStatus+':'+expectedRound;
+  const now=serverNow();
+  const token=devId+'_'+now+'_'+Math.floor(Math.random()*9999);
+  const tx=await lockRef.transaction(cur=>{
+    if(!cur) return {key:lockKey,ts:now,by:devId,token};
+    if(typeof cur==='string') return {key:lockKey,ts:now,by:devId,token};
+    if(cur.key===lockKey&&cur.ts&&now-cur.ts>8500) return {key:lockKey,ts:now,by:devId,token};
+    return undefined;
+  });
   if(!tx.committed) return;
   const room=await getCurrentRoom();
-  if(!room||room.status!==expectedStatus||(room.currentRound||0)!==expectedRound) return;
-  await doNextRound(room);
+  if(!room||room.status!==expectedStatus||(room.currentRound||0)!==expectedRound){
+    await clearAdvanceLockToken(token);
+    return;
+  }
+  try{
+    const ok=await doNextRound(room);
+    if(!ok) await clearAdvanceLockToken(token);
+  }catch(e){
+    console.warn('advanceRoundLocked fallo',e);
+    await clearAdvanceLockToken(token);
+  }
 }
 async function finishRoundLocked(reason,winner){
   if(!roomCode) return;
@@ -1833,18 +1867,27 @@ function handleRoom(room){
       document.getElementById('cdOverlay').style.display='none';cdRunning=false;
       showScreen('gameScreen');
       document.getElementById('solvedBanner').style.display='none';
-      if(room.challengeIdx!==lastIdx&&room.cData){
-        lastIdx=room.challengeIdx;curCh=normalizeChallenge(room.cData);
-        if(!curCh.p||curCh.p.length<4){console.warn('Reto multiplayer sin imagenes validas',room.cData);return;}
-        roundOver=false;hintUsed=0;
-        const dc=diffCfg(curCh.lv||1);
-        buildKB(room.letterSeed,dc.xtr);renderPhotos(dc.blur);renderAns();checkVetBanner(curCh.word);
-        document.getElementById('roundPill').textContent='Ronda '+room.currentRound+'/'+room.rounds;
-        document.getElementById('catTag').textContent=curCh.c;
-        const pct=Math.min(100,Math.round((curCh.lv||1)/50*100));
-        document.getElementById('diffFill').style.width=pct+'%';document.getElementById('diffFill').style.background=dc.clr;
-        document.getElementById('diffLbl').textContent=dc.lbl;document.getElementById('diffLbl').style.color=dc.clr;
-        startTimer(room.roundTime||30,room.roundStartedAt);renderPU();
+      const expectedWord=(room.correctWord||'').toString().toUpperCase();
+      if((room.challengeIdx!==lastIdx||!curCh||curCh.word!==expectedWord)&&room.cData){
+        const nextCh=normalizeChallenge(room.cData);
+        if(!nextCh.p||nextCh.p.length<4){
+          console.warn('Reto multiplayer aun incompleto, reintentando render',room.cData);
+          setTimeout(async()=>{
+            const latest=await getCurrentRoom();
+            if(latest&&latest.status==='playing'&&latest.challengeIdx===room.challengeIdx) handleRoom(latest);
+          },1200);
+        }else{
+          curCh=nextCh;lastIdx=room.challengeIdx;
+          roundOver=false;hintUsed=0;
+          const dc=diffCfg(curCh.lv||1);
+          buildKB(room.letterSeed,dc.xtr);renderPhotos(dc.blur);renderAns();checkVetBanner(curCh.word);
+          document.getElementById('roundPill').textContent='Ronda '+room.currentRound+'/'+room.rounds;
+          document.getElementById('catTag').textContent=curCh.c;
+          const pct=Math.min(100,Math.round((curCh.lv||1)/50*100));
+          document.getElementById('diffFill').style.width=pct+'%';document.getElementById('diffFill').style.background=dc.clr;
+          document.getElementById('diffLbl').textContent=dc.lbl;document.getElementById('diffLbl').style.color=dc.clr;
+          startTimer(room.roundTime||30,room.roundStartedAt);renderPU();
+        }
       }
       document.body.style.filter=(room.frozenUntil&&room.frozenUntil>serverNow())?'hue-rotate(180deg) brightness(.7)':'';
       renderPlayers(room.players);break;
@@ -1887,11 +1930,15 @@ async function doNextRound(room){
   const next=(room.currentRound||0)+1;
   const priorWords=Array.isArray(room.usedWords)?room.usedWords:[];
   priorWords.forEach(w=>usedGame.add(w));
-  if(next>room.rounds){await db.ref('rooms/'+roomCode).update({status:'finished'});return;}
+  if(next>room.rounds){await db.ref('rooms/'+roomCode).update({status:'finished'});return true;}
   const ps=room.players||{};
   const avgLv=Math.round(Object.values(ps).reduce((a,p)=>a+(p.level||1),0)/Math.max(1,Object.keys(ps).length));
   const ch=await pickBufferedChallenge(avgLv,next,room.rounds,room.minLv||1);
-  if(!ch){showToast('⚠️ No hay retos disponibles para esta sala','rgba(233,69,96,.95)');return;}
+  if(!ch){
+    showToast('No se pudo preparar el siguiente reto. Reintentando...','rgba(233,69,96,.95)');
+    await db.ref('rooms/'+roomCode).update({lastNotice:{ts:serverNow(),msg:'Preparando siguiente reto...'}}).catch(()=>{});
+    return false;
+  }
   usedGame.add(ch.word);
   const nextUsed=[...new Set([...priorWords,ch.word])];
   const dc=diffCfg(ch.lv||1);
@@ -1906,6 +1953,7 @@ async function doNextRound(room){
     roundWinner:'',correctWord:ch.word,roundPts:0,roundXp:0,frozenUntil:0,roundTime,usedWords:nextUsed,
     cData:challengeForFirebase(ch)});
   await db.ref('rooms/'+roomCode).update(u);
+  return true;
 }
 async function playAgain(){
   if(!isHost){showToast('Solo el anfitrión puede reiniciar','rgba(233,69,96,.9)');return;}
