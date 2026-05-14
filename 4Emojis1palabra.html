@@ -1453,7 +1453,7 @@ async function findPublicRoom(){
       if(r.host===devId) return;
       if(ps<=0||ps>=2) return;
       const hostP=r.players&&r.players[r.host];
-      if(hostP&&hostP.lastSeen&&(now-hostP.lastSeen)>45000) return;
+      if(hostP&&hostP.lastSeen&&(now-hostP.lastSeen)>90000) return;
       const created=r.createdAt||0;
       if(created<bestCreated){bestCreated=created;best=s.key;}
     });
@@ -1592,7 +1592,7 @@ async function markPrepared(room){
 }
 function allPrepared(room){
   const now=Date.now();
-  const entries=Object.entries(room.players||{}).filter(([,p])=>!p.lastSeen||(now-p.lastSeen)<60000);
+  const entries=Object.entries(room.players||{}).filter(([,p])=>!p.lastSeen||(now-p.lastSeen)<90000);
   if(!entries.length) return false;
   if(entries.every(([,p])=>p.readyForRound===room.prepareKey)) return true;
   const started=room.prepareStartedAt||0;
@@ -1624,23 +1624,23 @@ async function finishRoundLocked(reason,winner){
   await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundWinner:winner||'',correctWord:curCh&&curCh.word?curCh.word:(room.correctWord||''),lastNotice:reason?{ts:Date.now(),msg:reason}:null});
 }
 function hostPresenceGuard(room){
-  const activeStatuses=['countdown','playing','roundEnd'];
+  const activeStatuses=['playing','roundEnd'];
   if(!isRoomHost(room)||!room||!room.players||!activeStatuses.includes(room.status)) return;
   const now=Date.now(), updates={};
   Object.entries(room.players).forEach(([pid,p])=>{
     if(pid===devId) return;
-    const offline=p.lastSeen&&(now-p.lastSeen)>45000;
+    const offline=p.lastSeen&&(now-p.lastSeen)>90000;
     if(!offline){
       if(p.disconnectTries) updates['players/'+pid+'/disconnectTries']=0;if(p.disconnectCheckAt) updates['players/'+pid+'/disconnectCheckAt']=0;
       return;
     }
     const lastCheck=p.disconnectCheckAt||0;
-    if(now-lastCheck<15000) return;
+    if(now-lastCheck<30000) return;
     const tries=(p.disconnectTries||0)+1;
-    if(tries<=2){
+    if(tries<=3){
       updates['players/'+pid+'/disconnectTries']=tries;
       updates['players/'+pid+'/disconnectCheckAt']=now;
-      updates.lastNotice={ts:now,msg:(p.name||'Jugador')+' perdió conexión. Reintentando '+tries+'/2...'};
+      updates.lastNotice={ts:now,msg:(p.name||'Jugador')+' perdió conexión. Reintentando '+tries+'/3...'};
     }else{
       updates['players/'+pid]=null;
       updates.lastNotice={ts:now,msg:(p.name||'Jugador')+' fue expulsado por desconexión.'};
@@ -1648,7 +1648,7 @@ function hostPresenceGuard(room){
   });
   const remaining=Object.entries(room.players).filter(([pid,p])=>{
     if(updates['players/'+pid]===null) return false;
-    return !p.lastSeen||(now-p.lastSeen)<=90000||pid===devId;
+    return !p.lastSeen||(now-p.lastSeen)<=150000||pid===devId;
   });
   if(activeStatuses.includes(room.status)&&remaining.length<=1){
     updates.status='finished';
@@ -1992,14 +1992,14 @@ function renderAns(){
 function renderLobbyPlayers(ps){
   const ul=document.getElementById('lobbyPlayers');ul.innerHTML='';
   const entries=Object.entries(ps||{});
-  // filter online only (lastSeen within 20s)
+  // filter online only (mobile-friendly grace window)
   const now=Date.now();
-  const onlineEntries=entries.filter(([,p])=>!p.lastSeen||(now-p.lastSeen)<20000);
+  const onlineEntries=entries.filter(([,p])=>!p.lastSeen||(now-p.lastSeen)<90000);
   const oc=document.getElementById('onlineCount');
   if(oc) oc.textContent=onlineEntries.length+' online';
   entries.forEach(([pid,p],i)=>{
     const lv=p.level||1,rk=rankOf(lv);
-    const isOnline=!p.lastSeen||(now-p.lastSeen)<20000;
+    const isOnline=!p.lastSeen||(now-p.lastSeen)<90000;
     const li=document.createElement('div');li.className='lp'+(pid===devId?' me':'');
     li.innerHTML=`<div class="lp-av" style="background:${p.color||PCOLORS[i%PCOLORS.length]}33;border:2px solid ${p.color||PCOLORS[i%PCOLORS.length]};opacity:${isOnline?1:.4}">${rk.icon}</div>
       <div class="lp-info">
@@ -2220,7 +2220,7 @@ async function loadPublicRooms(){
     if(ps>=maxP) return; // full
     // Check host is online
     const hostP=r.players&&r.players[r.host];
-    if(hostP&&hostP.lastSeen&&(now-hostP.lastSeen)>30000) return;
+    if(hostP&&hostP.lastSeen&&(now-hostP.lastSeen)>90000) return;
     rooms.push({key,r,ps,maxP});
   });
 
@@ -2288,6 +2288,11 @@ function pingPresence(){
   presenceIv=setInterval(ping,5000);
 }
 
+
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&window.__emojiPingPresence)window.__emojiPingPresence();});
+window.addEventListener('focus',()=>{if(window.__emojiPingPresence)window.__emojiPingPresence();});
+window.addEventListener('online',()=>{if(window.__emojiPingPresence)window.__emojiPingPresence();});
+
 // ════════ AUTO-CLEANUP STALE ROOMS ════════
 async function cleanStaleRooms(){
   try{
@@ -2313,11 +2318,8 @@ async function cleanStaleRooms(){
 
 // Schedule auto-delete of current room if abandoned
 function scheduleRoomCleanup(){
-  if(!isHost||!roomCode) return;
-  // If host leaves, mark room for deletion
-  window.addEventListener('beforeunload',()=>{
-    if(roomCode&&isHost) db.ref('rooms/'+roomCode).remove().catch(()=>{});
-  });
+  // En móviles antiguos el navegador puede disparar beforeunload al pausar la app.
+  // No borramos la sala aquí; cleanStaleRooms la limpia cuando realmente queda abandonada.
 }
 
 // ════════ createScreen load ════════
