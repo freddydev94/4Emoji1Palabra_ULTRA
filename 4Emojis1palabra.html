@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>4 Emojis 1 Palabra ⚡ ULTRA</title>
+<title>4 Emojis 1 Palabra âš¡ ULTRA</title>
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@400;700;800;900&family=Bungee&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -218,9 +218,9 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;heig
 @keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 ::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
-/* ─ VETERAN / SEEN WORD ─ */
+/* â”€ VETERAN / SEEN WORD â”€ */
 .vet-banner{background:linear-gradient(135deg,rgba(245,166,35,.12),rgba(199,125,255,.1));border:1px solid rgba(245,166,35,.35);border-radius:10px;padding:7px 12px;font-size:.75rem;color:var(--gold);font-weight:700;display:flex;align-items:center;gap:7px;width:100%;max-width:400px;flex-shrink:0;}
-/* ─ MATCHMAKING OVERLAY ─ */
+/* â”€ MATCHMAKING OVERLAY â”€ */
 #mmOverlay{position:fixed;inset:0;z-index:350;background:rgba(0,0,0,.92);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
 .mm-icon{font-size:4rem;animation:spin 2s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -232,9 +232,9 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;heig
 .mm-dot:nth-child(2){animation-delay:.2s;background:var(--gold);}
 .mm-dot:nth-child(3){animation-delay:.4s;background:var(--green);}
 @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
-/* ─ PUBLIC ROOM INDICATOR IN LOBBY ─ */
+/* â”€ PUBLIC ROOM INDICATOR IN LOBBY â”€ */
 .pub-pill{display:inline-flex;align-items:center;gap:4px;background:rgba(78,204,163,.12);border:1px solid rgba(78,204,163,.3);border-radius:20px;padding:2px 9px;font-size:.62rem;font-weight:800;color:var(--green);}
-/* ─ SOLO MODE ─ */
+/* â”€ SOLO MODE â”€ */
 .solo-progress{width:100%;max-width:400px;flex-shrink:0;}
 .solo-track-wrap{display:flex;align-items:center;gap:8px;}
 .solo-track{flex:1;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
@@ -252,7 +252,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;heig
 /* XP only for new words notice */
 .xp-new-only{background:rgba(78,204,163,.08);border:1px solid rgba(78,204,163,.25);border-radius:9px;padding:7px 12px;font-size:.72rem;color:var(--green);line-height:1.6;width:100%;max-width:400px;flex-shrink:0;display:none;}
 
-/* ─ MY ROOMS LIST ─ */
+/* â”€ MY ROOMS LIST â”€ */
 .my-rooms-list{width:100%;max-width:420px;display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow-y:auto;}
 .my-room-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;}
 .mri-info{flex:1;min-width:0;}
@@ -263,15 +263,15 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;heig
 .mri-status.playing{background:rgba(245,166,35,.15);color:var(--gold);border:1px solid rgba(245,166,35,.3);}
 .mri-btn-del{background:rgba(233,69,96,.15);border:1px solid rgba(233,69,96,.3);border-radius:8px;color:var(--accent);font-size:.7rem;font-weight:800;padding:5px 9px;cursor:pointer;white-space:nowrap;}
 .mri-btn-join{background:rgba(77,150,255,.15);border:1px solid rgba(77,150,255,.3);border-radius:8px;color:var(--blue);font-size:.7rem;font-weight:800;padding:5px 9px;cursor:pointer;white-space:nowrap;margin-right:4px;}
-/* ─ LOBBY TIMER PICKER ─ */
+/* â”€ LOBBY TIMER PICKER â”€ */
 .timer-picker{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0;}
 .tp-btn{padding:6px 11px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--muted);font-family:'Nunito',sans-serif;font-weight:800;font-size:.75rem;cursor:pointer;transition:all .2s;}
 .tp-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(245,166,35,.1);}
-/* ─ PRESENCE DOT ─ */
+/* â”€ PRESENCE DOT â”€ */
 .online-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;box-shadow:0 0 5px var(--green);animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* ─ PUBLIC ROOMS BROWSER ─ */
+/* â”€ PUBLIC ROOMS BROWSER â”€ */
 .room-browser{display:flex;flex-direction:column;gap:5px;}
 .room-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:11px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .2s,transform .15s;}
 .room-card:hover{border-color:var(--blue);transform:translateY(-1px);}
@@ -609,7 +609,7 @@ body.theme-arcade .prep-player{background:#fff;border:3px solid var(--ink);box-s
 })();
 </script>
 <div id="loadingOverlay">
-  <div class="ld-logo">4 Emojis 1 Palabra ⚡</div>
+  <div class="ld-logo">4 Emojis 1 Palabra âš¡</div>
   <div class="ld-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div>
   <div class="ld-msg" id="ldMsg">Cargando perfil...</div>
 </div>
@@ -617,43 +617,43 @@ body.theme-arcade .prep-player{background:#fff;border:3px solid var(--ink);box-s
 <!-- MENU -->
 <div class="screen" id="menuScreen">
 <div class="theme-picker" id="themePicker" aria-label="Selector de tema">
-  <button type="button" data-theme="classic">Clásico</button>
+  <button type="button" data-theme="classic">ClÃ¡sico</button>
   <button type="button" data-theme="arcade">Arcade</button>
 </div>
   <div class="logo">4 Emojis 1 Palabra</div>
-  <div class="logo-badge">⚡ Ultra</div>
+  <div class="logo-badge">âš¡ Ultra</div>
   <div class="profile-banner" id="pfBanner">
     <div class="pf-avatar" id="pfAvatar"></div>
     <div class="pf-info">
-      <div class="pf-name" id="pfName">—</div>
-      <div class="pf-rank" id="pfRank">—</div>
+      <div class="pf-name" id="pfName">â€”</div>
+      <div class="pf-rank" id="pfRank">â€”</div>
       <div class="xp-wrap">
-        <div class="xp-lbl"><span id="xpCur">0 XP</span><span id="xpNxt">— XP</span></div>
+        <div class="xp-lbl"><span id="xpCur">0 XP</span><span id="xpNxt">â€” XP</span></div>
         <div class="xp-track"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
       </div>
     </div>
   </div>
   <div class="menu-grid">
-    <div class="mb featured" onclick="openCreateScreen()"><span class="mb-icon">🏠</span><span class="mb-title">Crear Sala</span><span class="mb-sub">Pública o privada</span></div>
-    <div class="mb" onclick="showScreen('joinScreen')"><span class="mb-icon">🔑</span><span class="mb-title">Unirse por Código</span><span class="mb-sub">Pública o privada</span></div>
-    <div class="mb featured" onclick="openPublicRooms()"><span class="mb-icon">🌍</span><span class="mb-title">Salas Públicas</span><span class="mb-sub">Únete ahora</span></div>
-    <div class="mb" onclick="findPublicRoom()"><span class="mb-icon">🔍</span><span class="mb-title">Partida Rápida</span><span class="mb-sub">Matchmaking 1v1</span></div>
-    <div class="mb featured" onclick="openSolo()"><span class="mb-icon">🎮</span><span class="mb-title">Modo Solitario</span><span class="mb-sub">Entrena y sube</span></div>
-    <div class="mb" onclick="showRanks()"><span class="mb-icon">🏅</span><span class="mb-title">Rangos</span><span class="mb-sub">20 niveles</span></div>
-    <div class="mb" onclick="loadLeaderboard()"><span class="mb-icon">🏆</span><span class="mb-title">Top Global</span><span class="mb-sub">Mejores jugadores</span></div>
-    <div class="mb" onclick="showProfileScreen()"><span class="mb-icon">✏️</span><span class="mb-title">Mi Perfil</span><span class="mb-sub">Stats y nombre</span></div>
+    <div class="mb featured" onclick="openCreateScreen()"><span class="mb-icon">ðŸ </span><span class="mb-title">Crear Sala</span><span class="mb-sub">PÃºblica o privada</span></div>
+    <div class="mb" onclick="showScreen('joinScreen')"><span class="mb-icon">ðŸ”‘</span><span class="mb-title">Unirse por CÃ³digo</span><span class="mb-sub">PÃºblica o privada</span></div>
+    <div class="mb featured" onclick="openPublicRooms()"><span class="mb-icon">ðŸŒ</span><span class="mb-title">Salas PÃºblicas</span><span class="mb-sub">Ãšnete ahora</span></div>
+    <div class="mb" onclick="findPublicRoom()"><span class="mb-icon">ðŸ”</span><span class="mb-title">Partida RÃ¡pida</span><span class="mb-sub">Matchmaking 1v1</span></div>
+    <div class="mb featured" onclick="openSolo()"><span class="mb-icon">ðŸŽ®</span><span class="mb-title">Modo Solitario</span><span class="mb-sub">Entrena y sube</span></div>
+    <div class="mb" onclick="showRanks()"><span class="mb-icon">ðŸ…</span><span class="mb-title">Rangos</span><span class="mb-sub">20 niveles</span></div>
+    <div class="mb" onclick="loadLeaderboard()"><span class="mb-icon">ðŸ†</span><span class="mb-title">Top Global</span><span class="mb-sub">Mejores jugadores</span></div>
+    <div class="mb" onclick="showProfileScreen()"><span class="mb-icon">âœï¸</span><span class="mb-title">Mi Perfil</span><span class="mb-sub">Stats y nombre</span></div>
   </div>
 </div>
 
 <!-- NAME SETUP -->
 <div class="screen" id="nameScreen">
-  <div class="logo" style="font-size:2rem;">👤 Mi Perfil</div>
+  <div class="logo" style="font-size:2rem;">ðŸ‘¤ Mi Perfil</div>
   <div class="card"><h2>Mi cuenta</h2>
     <input class="inp" id="nameInp" placeholder="Tu nombre de jugador" maxlength="18" onkeydown="if(event.key==='Enter')saveName()">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px;font-size:.78rem;">
       <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:8px;text-align:center;">
-        <div style="font-size:1.3rem;" id="pfStatRank">—</div>
-        <div id="pfStatLv" style="font-weight:800;font-size:.8rem;margin-top:2px;">—</div>
+        <div style="font-size:1.3rem;" id="pfStatRank">â€”</div>
+        <div id="pfStatLv" style="font-weight:800;font-size:.8rem;margin-top:2px;">â€”</div>
       </div>
       <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:8px;text-align:center;">
         <div style="font-size:1.1rem;font-weight:800;color:var(--gold);" id="pfStatXP">0 XP</div>
@@ -661,44 +661,44 @@ body.theme-arcade .prep-player{background:#fff;border:3px solid var(--ink);box-s
       </div>
     </div>
     <div style="background:rgba(199,125,255,.08);border:1px solid rgba(199,125,255,.2);border-radius:9px;padding:8px 11px;margin-bottom:9px;font-size:.75rem;color:var(--purple);display:flex;justify-content:space-between;align-items:center;">
-      <span>Prestige</span><span id="pfStatPrestige" style="font-weight:800;">—</span>
+      <span>Prestige</span><span id="pfStatPrestige" style="font-weight:800;">â€”</span>
     </div>
     <div style="background:rgba(77,150,255,.08);border:1px solid rgba(77,150,255,.2);border-radius:9px;padding:8px 11px;margin-bottom:9px;font-size:.72rem;color:var(--muted);line-height:1.6;">
-      📱 <strong style="color:var(--blue)">Tu perfil es por dispositivo.</strong> Se guarda automáticamente en este navegador. Si cambias de dispositivo, empieza nuevo.
+      ðŸ“± <strong style="color:var(--blue)">Tu perfil es por dispositivo.</strong> Se guarda automÃ¡ticamente en este navegador. Si cambias de dispositivo, empieza nuevo.
     </div>
-    <button class="btn btn-primary" onclick="saveName()">✅ Guardar nombre</button>
-    <button class="btn btn-outline" onclick="showScreen('menuScreen')">← Volver</button>
+    <button class="btn btn-primary" onclick="saveName()">âœ… Guardar nombre</button>
+    <button class="btn btn-outline" onclick="showScreen('menuScreen')">â† Volver</button>
   </div>
 </div>
 
 <!-- CREATE -->
 <div class="screen" id="createScreen">
-  <div class="logo" style="font-size:1.8rem;">🏠 Crear Sala</div>
+  <div class="logo" style="font-size:1.8rem;">ðŸ  Crear Sala</div>
   <div class="card" style="max-width:420px;">
-    <h2>⚙️ Configuración</h2>
+    <h2>âš™ï¸ ConfiguraciÃ³n</h2>
     <div class="inp-row">
-      <div><span class="inp-label">🏆 Rondas</span>
+      <div><span class="inp-label">ðŸ† Rondas</span>
         <input class="inp" type="number" id="cfgRounds" value="8" min="3" max="30" style="margin:0;text-align:center;"></div>
-      <div><span class="inp-label">⭐ Nivel mínimo</span>
+      <div><span class="inp-label">â­ Nivel mÃ­nimo</span>
         <input class="inp" type="number" id="cfgMinLv" value="1" min="1" max="50" style="margin:0;text-align:center;"></div>
     </div>
     <div class="inp-row">
-      <div><span class="inp-label">⏱️ Tiempo por ronda (seg)</span>
+      <div><span class="inp-label">â±ï¸ Tiempo por ronda (seg)</span>
         <input class="inp" type="number" id="cfgTime" value="30" min="5" max="600" style="margin:0;text-align:center;" placeholder="ej: 45"></div>
-      <div><span class="inp-label">👥 Límite de jugadores</span>
+      <div><span class="inp-label">ðŸ‘¥ LÃ­mite de jugadores</span>
         <input class="inp" type="number" id="cfgMaxP" value="4" min="2" max="10" style="margin:0;text-align:center;"></div>
     </div>
-    <span class="inp-label">🔒 Tipo de sala</span>
+    <span class="inp-label">ðŸ”’ Tipo de sala</span>
     <div style="display:flex;gap:8px;margin-bottom:10px;">
-      <button class="tp-btn active" id="btnPublic" onclick="setSalaType('public',this)">🌍 Pública</button>
-      <button class="tp-btn" id="btnPrivate" onclick="setSalaType('private',this)">🔒 Privada</button>
+      <button class="tp-btn active" id="btnPublic" onclick="setSalaType('public',this)">ðŸŒ PÃºblica</button>
+      <button class="tp-btn" id="btnPrivate" onclick="setSalaType('private',this)">ðŸ”’ Privada</button>
     </div>
     <div id="salaTypeNote" style="font-size:.72rem;color:var(--green);margin-bottom:8px;padding:6px 10px;background:rgba(78,204,163,.08);border:1px solid rgba(78,204,163,.2);border-radius:8px;">
-      🌍 Aparecerá en la lista pública — cualquiera de tu rango puede unirse
+      ðŸŒ AparecerÃ¡ en la lista pÃºblica â€” cualquiera de tu rango puede unirse
     </div>
     <input type="hidden" id="cfgSalaType" value="public">
-    <button class="btn btn-primary" onclick="createRoom()">🚀 Crear sala</button>
-    <button class="btn btn-outline" onclick="showScreen('menuScreen')">← Volver</button>
+    <button class="btn btn-primary" onclick="createRoom()">ðŸš€ Crear sala</button>
+    <button class="btn btn-outline" onclick="showScreen('menuScreen')">â† Volver</button>
   </div>
   <div style="font-size:.7rem;color:var(--muted);text-align:center;font-weight:700;width:100%;max-width:420px;">Mis salas anteriores</div>
   <div class="my-rooms-list" id="myRoomsList"></div>
@@ -707,18 +707,18 @@ body.theme-arcade .prep-player{background:#fff;border:3px solid var(--ink);box-s
 
 <!-- JOIN -->
 <div class="screen" id="joinScreen">
-  <div class="logo" style="font-size:1.8rem;">🔑 Unirse a Sala</div>
+  <div class="logo" style="font-size:1.8rem;">ðŸ”‘ Unirse a Sala</div>
   <div class="card" style="max-width:400px;">
     <div style="font-size:.78rem;color:var(--muted);text-align:center;margin-bottom:10px;line-height:1.6;">
-      Introduce el código para unirte a cualquier sala,<br>
-      <span style="color:var(--green);font-weight:800;">🌍 pública</span> o <span style="color:var(--purple);font-weight:800;">🔒 privada</span>
+      Introduce el cÃ³digo para unirte a cualquier sala,<br>
+      <span style="color:var(--green);font-weight:800;">ðŸŒ pÃºblica</span> o <span style="color:var(--purple);font-weight:800;">ðŸ”’ privada</span>
     </div>
-    <input class="inp" id="codeInp" placeholder="Código (ej: ABC12)" maxlength="6"
+    <input class="inp" id="codeInp" placeholder="CÃ³digo (ej: ABC12)" maxlength="6"
       oninput="this.value=this.value.toUpperCase()"
       onkeydown="if(event.key==='Enter')joinRoom()"
       style="text-align:center;font-family:'Boogaloo',cursive;font-size:1.6rem;letter-spacing:6px;">
-    <button class="btn btn-primary" onclick="joinRoom()">🚀 Entrar</button>
-    <button class="btn btn-outline" onclick="showScreen('menuScreen')">← Volver</button>
+    <button class="btn btn-primary" onclick="joinRoom()">ðŸš€ Entrar</button>
+    <button class="btn btn-outline" onclick="showScreen('menuScreen')">â† Volver</button>
   </div>
   <div class="err" id="errJoin"></div>
 </div>
@@ -726,13 +726,13 @@ body.theme-arcade .prep-player{background:#fff;border:3px solid var(--ink);box-s
 <!-- LOBBY -->
 <div class="screen" id="lobbyScreen">
   <div class="lobby-card">
-    <h2>🎮 Sala de espera</h2>
-    <div class="room-code" id="lobbyCode">—</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:5px;"><span id="lobbyTypeBadge" style="font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:10px;">—</span><span style="color:var(--muted);font-size:.7rem;" id="lobbySlotsInfo">—</span></div>
-    <div style="text-align:center;margin-bottom:7px;"><span class="pub-pill" id="pubPill" style="display:none">🌍 Sala Pública</span></div>
+    <h2>ðŸŽ® Sala de espera</h2>
+    <div class="room-code" id="lobbyCode">â€”</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:5px;"><span id="lobbyTypeBadge" style="font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:10px;">â€”</span><span style="color:var(--muted);font-size:.7rem;" id="lobbySlotsInfo">â€”</span></div>
+    <div style="text-align:center;margin-bottom:7px;"><span class="pub-pill" id="pubPill" style="display:none">ðŸŒ Sala PÃºblica</span></div>
     <div class="share-row">
       <input class="share-inp" id="shareLink" readonly>
-      <button class="btn-copy" id="copyBtn" onclick="copyLink()">📋 Copiar</button>
+      <button class="btn-copy" id="copyBtn" onclick="copyLink()">ðŸ“‹ Copiar</button>
     </div>
     <div class="lby-title" style="display:flex;align-items:center;justify-content:space-between;">
       <span>Jugadores en sala</span>
@@ -740,10 +740,10 @@ body.theme-arcade .prep-player{background:#fff;border:3px solid var(--ink);box-s
     </div>
     <div id="lobbyPlayers"></div>
     <div style="margin-top:11px;">
-      <div id="lobbyTimerInfo" style="text-align:center;font-size:.72rem;color:var(--muted);margin-bottom:6px;display:none;">⏱️ Tiempo por ronda: <strong id="lobbyTimerVal" style="color:var(--gold)">30s</strong></div>
-      <button class="btn btn-primary" id="startBtn" onclick="startGame()" style="display:none;margin-bottom:7px;">🚀 ¡Iniciar!</button>
-      <div id="waitHost">⏳ Esperando al anfitrión...</div>
-      <button class="btn btn-outline" onclick="leaveRoom()" style="width:100%;margin-top:7px;">← Salir</button>
+      <div id="lobbyTimerInfo" style="text-align:center;font-size:.72rem;color:var(--muted);margin-bottom:6px;display:none;">â±ï¸ Tiempo por ronda: <strong id="lobbyTimerVal" style="color:var(--gold)">30s</strong></div>
+      <button class="btn btn-primary" id="startBtn" onclick="startGame()" style="display:none;margin-bottom:7px;">ðŸš€ Â¡Iniciar!</button>
+      <div id="waitHost">â³ Esperando al anfitriÃ³n...</div>
+      <button class="btn btn-outline" onclick="leaveRoom()" style="width:100%;margin-top:7px;">â† Salir</button>
     </div>
   </div>
 </div>
@@ -757,41 +757,41 @@ body.theme-arcade .prep-player{background:#fff;border:3px solid var(--ink);box-s
         <circle class="bg-c" cx="23" cy="23" r="18"/>
         <circle class="fg-c" id="timerArc" cx="23" cy="23" r="18" stroke-dasharray="113.1" stroke-dashoffset="0"/>
       </svg>
-      <div class="t-num" id="timerNum">—</div>
+      <div class="t-num" id="timerNum">â€”</div>
     </div>
     <div class="scores-wrap" id="scoresWrap"></div>
   </div>
   <div class="diff-bar-row">
     <div class="diff-track"><div class="diff-fill" id="diffFill" style="width:0%;background:var(--green)"></div></div>
-    <span class="diff-lbl" id="diffLbl" style="color:var(--green)">😊 Fácil</span>
+    <span class="diff-lbl" id="diffLbl" style="color:var(--green)">ðŸ˜Š FÃ¡cil</span>
   </div>
   <div class="mid-bar">
-    <span class="cat-tag" id="catTag">—</span>
+    <span class="cat-tag" id="catTag">â€”</span>
     <span class="combo" id="comboLbl"></span>
   </div>
   <div class="photos-grid" id="photosGrid"></div>
-  <div class="xp-new-only" id="xpNewOnly">⭐ Palabra nueva — ¡este XP sí cuenta para tu rango!</div>
-  <div class="vet-banner" id="vetBanner" style="display:none">⭐ ¡Ya conoces esta palabra! La viste antes — buena suerte de todas formas.</div>
+  <div class="xp-new-only" id="xpNewOnly">â­ Palabra nueva â€” Â¡este XP sÃ­ cuenta para tu rango!</div>
+  <div class="vet-banner" id="vetBanner" style="display:none">â­ Â¡Ya conoces esta palabra! La viste antes â€” buena suerte de todas formas.</div>
   <div class="answer-boxes" id="ansBoxes"></div>
   <div class="rxn-bar">
-    <button class="rxn" onclick="sendRxn('🔥')">🔥</button>
-    <button class="rxn" onclick="sendRxn('😂')">😂</button>
-    <button class="rxn" onclick="sendRxn('😤')">😤</button>
-    <button class="rxn" onclick="sendRxn('👀')">👀</button>
-    <button class="rxn" onclick="sendRxn('🤯')">🤯</button>
-    <button class="rxn" onclick="sendRxn('💀')">💀</button>
+    <button class="rxn" onclick="sendRxn('ðŸ”¥')">ðŸ”¥</button>
+    <button class="rxn" onclick="sendRxn('ðŸ˜‚')">ðŸ˜‚</button>
+    <button class="rxn" onclick="sendRxn('ðŸ˜¤')">ðŸ˜¤</button>
+    <button class="rxn" onclick="sendRxn('ðŸ‘€')">ðŸ‘€</button>
+    <button class="rxn" onclick="sendRxn('ðŸ¤¯')">ðŸ¤¯</button>
+    <button class="rxn" onclick="sendRxn('ðŸ’€')">ðŸ’€</button>
   </div>
   <div class="letter-keyboard" id="letterKeyboard"></div>
   <div class="pu-bar">
-    <button class="pu pu-del" onclick="delLetter()"><span class="pu-icon">⌫</span><span>Borrar</span></button>
-    <button class="pu pu-hint" id="btnHint" onclick="giveHint()"><span class="pu-icon">💡</span><span>Pista</span><span class="pu-cnt" id="hintCnt">×2</span></button>
-    <button class="pu pu-freeze" id="btnFreeze" onclick="useFreeze()"><span class="pu-icon">🧊</span><span>Congelar</span><span class="pu-cnt" id="freezeCnt">×1</span></button>
-    <button class="pu pu-bomb" id="btnBomb" onclick="useBomb()"><span class="pu-icon">💣</span><span>Eliminar</span><span class="pu-cnt" id="bombCnt">×1</span></button>
-    <button class="pu pu-leave" onclick="leaveRoom()"><span class="pu-icon">🚪</span><span>Salir</span></button>
+    <button class="pu pu-del" onclick="delLetter()"><span class="pu-icon">âŒ«</span><span>Borrar</span></button>
+    <button class="pu pu-hint" id="btnHint" onclick="giveHint()"><span class="pu-icon">ðŸ’¡</span><span>Pista</span><span class="pu-cnt" id="hintCnt">Ã—2</span></button>
+    <button class="pu pu-freeze" id="btnFreeze" onclick="useFreeze()"><span class="pu-icon">ðŸ§Š</span><span>Congelar</span><span class="pu-cnt" id="freezeCnt">Ã—1</span></button>
+    <button class="pu pu-bomb" id="btnBomb" onclick="useBomb()"><span class="pu-icon">ðŸ’£</span><span>Eliminar</span><span class="pu-cnt" id="bombCnt">Ã—1</span></button>
+    <button class="pu pu-leave" onclick="leaveRoom()"><span class="pu-icon">ðŸšª</span><span>Salir</span></button>
   </div>
   <div id="solvedBanner">
-    <div class="sb-emoji" id="sbEmoji">🎉</div>
-    <div class="sb-title" id="sbTitle">¡Correcto!</div>
+    <div class="sb-emoji" id="sbEmoji">ðŸŽ‰</div>
+    <div class="sb-title" id="sbTitle">Â¡Correcto!</div>
     <div class="sb-lbl">La palabra era</div>
     <div class="sb-word" id="sbWord"></div>
     <div class="sb-pts" id="sbPts"></div>
@@ -802,123 +802,124 @@ body.theme-arcade .prep-player{background:#fff;border:3px solid var(--ink);box-s
 
 <!-- RESULTS -->
 <div class="screen" id="resultsScreen">
-  <div class="res-title">🏆 Resultados</div>
+  <div class="res-title">ðŸ† Resultados</div>
   <div class="podium" id="podium"></div>
   <div class="final-lb" id="finalLb"></div>
   <div class="res-btns">
-    <button class="btn-res primary" onclick="playAgain()">🔄 Revancha</button>
-    <button class="btn-res sec" onclick="goMenu()">🏠 Menú</button>
+    <button class="btn-res primary" onclick="playAgain()">ðŸ”„ Revancha</button>
+    <button class="btn-res sec" onclick="goMenu()">ðŸ  MenÃº</button>
   </div>
 </div>
 
 <!-- RANKS -->
 <div class="screen" id="rankScreen">
-  <div style="font-family:'Boogaloo',cursive;font-size:1.9rem;color:var(--gold);">🏅 Sistema de Rangos</div>
+  <div style="font-family:'Boogaloo',cursive;font-size:1.9rem;color:var(--gold);">ðŸ… Sistema de Rangos</div>
   <div class="rank-list" id="rankList"></div>
-  <button class="btn btn-outline" onclick="showScreen('menuScreen')" style="max-width:420px;width:100%;">← Volver</button>
+  <button class="btn btn-outline" onclick="showScreen('menuScreen')" style="max-width:420px;width:100%;">â† Volver</button>
 </div>
 
 <!-- LEADERBOARD -->
 <div class="screen" id="lbScreen">
-  <div style="font-family:'Boogaloo',cursive;font-size:1.9rem;color:var(--gold);">🌍 Top Global</div>
+  <div style="font-family:'Boogaloo',cursive;font-size:1.9rem;color:var(--gold);">ðŸŒ Top Global</div>
   <div class="global-lb" id="globalLb"></div>
-  <button class="btn btn-outline" onclick="showScreen('menuScreen')" style="max-width:420px;width:100%;">← Volver</button>
+  <button class="btn btn-outline" onclick="showScreen('menuScreen')" style="max-width:420px;width:100%;">â† Volver</button>
 </div>
 
 <!-- SOLO MODE CONFIG -->
 <div class="screen" id="soloScreen">
-  <div class="logo" style="font-size:2rem;">🎮 Modo Solitario</div>
+  <div class="logo" style="font-size:2rem;">ðŸŽ® Modo Solitario</div>
   <div class="profile-banner" id="soloPfBanner" style="max-width:420px;">
     <div class="pf-avatar" id="soloPfAv"></div>
     <div class="pf-info">
-      <div class="pf-name" id="soloPfName">—</div>
-      <div class="pf-rank" id="soloPfRank">—</div>
+      <div class="pf-name" id="soloPfName">â€”</div>
+      <div class="pf-rank" id="soloPfRank">â€”</div>
       <div class="xp-wrap">
-        <div class="xp-lbl"><span id="soloXpCur">0 XP</span><span id="soloXpNxt">—</span></div>
+        <div class="xp-lbl"><span id="soloXpCur">0 XP</span><span id="soloXpNxt">â€”</span></div>
         <div class="xp-track"><div class="xp-fill" id="soloXpFill" style="width:0%"></div></div>
       </div>
     </div>
   </div>
   <div class="card" style="max-width:420px;">
-    <h2>⚙️ Configurar partida</h2>
+    <h2>âš™ï¸ Configurar partida</h2>
     <div class="inp-row">
-      <div><span class="inp-label">🏆 Rondas</span>
+      <div><span class="inp-label">ðŸ† Rondas</span>
         <input class="inp" type="number" id="soloRounds" value="10" min="3" max="30" style="margin:0;text-align:center;"></div>
-      <div><span class="inp-label">📊 Desde nivel</span>
+      <div><span class="inp-label">ðŸ“Š Desde nivel</span>
         <input class="inp" type="number" id="soloStartLv" value="1" min="1" style="margin:0;text-align:center;">
-        <div style="font-size:.6rem;color:var(--muted);text-align:center;margin-top:2px;" id="soloLvHint">Máx: tu nivel actual</div>
+        <div style="font-size:.6rem;color:var(--muted);text-align:center;margin-top:2px;" id="soloLvHint">MÃ¡x: tu nivel actual</div>
       </div>
     </div>
     <div style="background:rgba(78,204,163,.08);border:1px solid rgba(78,204,163,.25);border-radius:10px;padding:9px 12px;margin-bottom:9px;font-size:.75rem;color:var(--green);line-height:1.7;">
-      ⭐ <strong>Solo ganas XP de rango con palabras nuevas.</strong><br>
-      Si ya resolviste una palabra antes, igual puedes ganar puntos en partida — pero ese XP <em>no</em> cuenta para subir de rango.
+      â­ <strong>Solo ganas XP de rango con palabras nuevas.</strong><br>
+      Si ya resolviste una palabra antes, igual puedes ganar puntos en partida â€” pero ese XP <em>no</em> cuenta para subir de rango.
     </div>
-    <button class="btn btn-green" onclick="startSolo()">🚀 ¡Jugar solo!</button>
-    <button class="btn btn-outline" onclick="showScreen('menuScreen')">← Volver</button>
+    <button class="btn btn-green" onclick="startSolo()">ðŸš€ Â¡Jugar solo!</button>
+    <button class="btn btn-outline" onclick="showScreen('menuScreen')">â† Volver</button>
   </div>
 </div>
 
 <!-- SOLO RESULTS -->
 <div class="screen" id="soloResultsScreen">
-  <div class="res-title">🎮 Resultado</div>
+  <div class="res-title">ðŸŽ® Resultado</div>
   <div class="solo-result-card" id="soloResultCard"></div>
   <div class="res-btns" style="max-width:420px;width:100%;">
-    <button class="btn-res primary" onclick="startSolo()">🔄 Otra vez</button>
-    <button class="btn-res sec" onclick="goMenu()">🏠 Menú</button>
+    <button class="btn-res primary" onclick="startSolo()">ðŸ”„ Otra vez</button>
+    <button class="btn-res sec" onclick="goMenu()">ðŸ  MenÃº</button>
   </div>
 </div>
 
 <!-- PUBLIC ROOMS BROWSER -->
 <div class="screen" id="publicRoomsScreen">
-  <div class="logo" style="font-size:1.8rem;">🌍 Salas Públicas</div>
+  <div class="logo" style="font-size:1.8rem;">ðŸŒ Salas PÃºblicas</div>
   <div style="width:100%;max-width:460px;display:flex;gap:7px;align-items:center;">
     <div style="flex:1;font-size:.72rem;color:var(--muted);font-weight:700;" id="pubRoomsCount">Buscando...</div>
-    <button class="refresh-btn" onclick="loadPublicRooms()">🔄 Actualizar</button>
+    <button class="refresh-btn" onclick="loadPublicRooms()">ðŸ”„ Actualizar</button>
   </div>
   <div class="room-browser" id="publicRoomsBrowser" style="width:100%;max-width:460px;display:flex;flex-direction:column;gap:6px;max-height:60vh;overflow-y:auto;"></div>
   <div style="display:flex;gap:7px;width:100%;max-width:460px;align-items:center;">
-    <input class="inp" id="quickCodeInp" placeholder="Código directo..." maxlength="6"
+    <input class="inp" id="quickCodeInp" placeholder="CÃ³digo directo..." maxlength="6"
       oninput="this.value=this.value.toUpperCase()"
       onkeydown="if(event.key==='Enter')quickJoin()"
       style="margin:0;flex:1;text-align:center;font-family:'Boogaloo',cursive;font-size:1.1rem;letter-spacing:3px;padding:10px;">
-    <button onclick="quickJoin()" style="padding:10px 14px;background:linear-gradient(135deg,var(--blue),#0984e3);border:none;border-radius:11px;color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;cursor:pointer;white-space:nowrap;">🚀 Ir</button>
+    <button onclick="quickJoin()" style="padding:10px 14px;background:linear-gradient(135deg,var(--blue),#0984e3);border:none;border-radius:11px;color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;cursor:pointer;white-space:nowrap;">ðŸš€ Ir</button>
   </div>
   <div style="display:flex;gap:8px;width:100%;max-width:460px;">
     <button class="btn btn-primary" onclick="openCreateScreen()" style="flex:1;margin:0;">+ Crear sala</button>
-    <button class="btn btn-outline" onclick="showScreen('menuScreen')" style="flex:1;margin:0;">← Volver</button>
+    <button class="btn btn-outline" onclick="showScreen('menuScreen')" style="flex:1;margin:0;">â† Volver</button>
   </div>
 </div>
 
 <!-- MATCHMAKING OVERLAY -->
 <div id="mmOverlay">
-  <div class="mm-icon">🔍</div>
+  <div class="mm-icon">ðŸ”</div>
   <div class="mm-title">Buscando partida...</div>
   <div class="mm-rank" id="mmRankLabel"></div>
   <div class="mm-sub" id="mmSubLabel">Buscando jugadores de tu rango</div>
   <div class="mm-dots"><div class="mm-dot"></div><div class="mm-dot"></div><div class="mm-dot"></div></div>
-  <button class="btn btn-outline" onclick="cancelMM()" style="max-width:200px;margin-top:8px;">✕ Cancelar</button>
+  <button class="btn btn-outline" onclick="cancelMM()" style="max-width:200px;margin-top:8px;">âœ• Cancelar</button>
 </div>
 <div id="prepOverlay" style="display:none">
-  <div class="mm-icon">⏳</div>
+  <div class="mm-icon">â³</div>
   <div class="prep-title">Cargando partida...</div>
   <div class="prep-sub" id="prepSub">Esperando a que todos carguen los retos.</div>
   <div class="prep-list" id="prepList"></div>
+  <button class="btn btn-outline" onclick="leaveRoom()" style="max-width:220px;margin-top:8px;">Salir</button>
 </div>
 <!-- OVERLAYS -->
 <div id="cdOverlay">
   <div class="cd-num" id="cdNum">3</div>
-  <div class="cd-lbl" id="cdLbl">¡Prepárense!</div>
+  <div class="cd-lbl" id="cdLbl">Â¡PrepÃ¡rense!</div>
 </div>
 <div id="lvlUpOverlay">
-  <div class="lu-icon" id="luIcon">🎖️</div>
-  <div class="lu-title">¡SUBISTE DE NIVEL!</div>
+  <div class="lu-icon" id="luIcon">ðŸŽ–ï¸</div>
+  <div class="lu-title">Â¡SUBISTE DE NIVEL!</div>
   <div class="lu-rank" id="luRank"></div>
   <div class="lu-sub" id="luSub"></div>
 </div>
 <script>
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  FIREBASE CONFIG
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const FB={apiKey:"AIzaSyBkZmas5U0pgZs5gtei-5wrKAcROKOyp20",authDomain:"fotos1palabraia.firebaseapp.com",databaseURL:"https://fotos1palabraia-default-rtdb.firebaseio.com",projectId:"fotos1palabraia",storageBucket:"fotos1palabraia.firebasestorage.app",messagingSenderId:"562754711486",appId:"1:562754711486:web:1bc6e656f81e7a0fc513ef"};
 
 
@@ -966,7 +967,7 @@ firebase.auth().onAuthStateChanged(async (user)=>{
 
       if(!snap.exists()){
 
-         console.log('Perfil no existe aún');
+         console.log('Perfil no existe aÃºn');
 
          // FORCE NAME SCREEN
          const overlay = document.getElementById('loadingOverlay');
@@ -1016,38 +1017,38 @@ firebase.auth().onAuthStateChanged(async (user)=>{
 
    }
 
-});// ════════════════════════════════════════════════════
-//  RANK SYSTEM — 20 rangos épicos
-// ════════════════════════════════════════════════════
+});// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+//  RANK SYSTEM â€” 20 rangos Ã©picos
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const RANKS=[
-  {name:'Novato',       icon:'🥚', color:'#b2bec3', min:1,  max:3,  reward:'Acceso a palabras básicas'},
-  {name:'Aprendiz',     icon:'🐣', color:'#74b9ff', min:4,  max:6,  reward:'+1 pista por partida'},
-  {name:'Explorador',   icon:'🗺️', color:'#55efc4', min:7,  max:9,  reward:'Palabras de naturaleza desbloqueadas'},
-  {name:'Aventurero',   icon:'⚔️', color:'#55efc4', min:10, max:12, reward:'Reacciones extra desbloqueadas'},
-  {name:'Detective',    icon:'🔍', color:'#fdcb6e', min:13, max:15, reward:'Palabras de historia desbloqueadas'},
-  {name:'Sabio',        icon:'📚', color:'#fdcb6e', min:16, max:18, reward:'Power-up Bomba desbloqueado'},
-  {name:'Maestro',      icon:'🎓', color:'#f5a623', min:19, max:21, reward:'Palabras de ciencia desbloqueadas'},
-  {name:'Guardián',     icon:'🛡️', color:'#f5a623', min:22, max:24, reward:'Partidas de rango disponibles'},
-  {name:'Campeón',      icon:'🏆', color:'#e17055', min:25, max:27, reward:'Palabras de mitología desbloqueadas'},
-  {name:'Héroe',        icon:'🦸', color:'#e17055', min:28, max:30, reward:'Power-up Congelar mejorado'},
-  {name:'Leyenda',      icon:'⭐', color:'#e94560', min:31, max:33, reward:'Palabras legendarias desbloqueadas'},
-  {name:'Titán',        icon:'💥', color:'#e94560', min:34, max:36, reward:'Emblema Titán en perfil'},
-  {name:'Élite',        icon:'🔮', color:'#c77dff', min:37, max:39, reward:'Palabras de filosofía desbloqueadas'},
-  {name:'Espectro',     icon:'👻', color:'#c77dff', min:40, max:42, reward:'Modo Sin Pistas disponible'},
-  {name:'Inmortal',     icon:'💎', color:'#74b9ff', min:43, max:44, reward:'Palabras extremas desbloqueadas'},
-  {name:'Divino',       icon:'🌟', color:'#ffd700', min:45, max:46, reward:'Título dorado en lobby'},
-  {name:'Trascendente', icon:'🌌', color:'#ffd700', min:47, max:48, reward:'Palabras singulares desbloqueadas'},
-  {name:'Omnisciente',  icon:'🧠', color:'#ffd700', min:49, max:49, reward:'Acceso a todas las palabras'},
-  {name:'ABSOLUTO',     icon:'👑', color:'#ffd700', min:50, max:50, reward:'Prestige — reinicia con emblema'},
+  {name:'Novato',       icon:'ðŸ¥š', color:'#b2bec3', min:1,  max:3,  reward:'Acceso a palabras bÃ¡sicas'},
+  {name:'Aprendiz',     icon:'ðŸ£', color:'#74b9ff', min:4,  max:6,  reward:'+1 pista por partida'},
+  {name:'Explorador',   icon:'ðŸ—ºï¸', color:'#55efc4', min:7,  max:9,  reward:'Palabras de naturaleza desbloqueadas'},
+  {name:'Aventurero',   icon:'âš”ï¸', color:'#55efc4', min:10, max:12, reward:'Reacciones extra desbloqueadas'},
+  {name:'Detective',    icon:'ðŸ”', color:'#fdcb6e', min:13, max:15, reward:'Palabras de historia desbloqueadas'},
+  {name:'Sabio',        icon:'ðŸ“š', color:'#fdcb6e', min:16, max:18, reward:'Power-up Bomba desbloqueado'},
+  {name:'Maestro',      icon:'ðŸŽ“', color:'#f5a623', min:19, max:21, reward:'Palabras de ciencia desbloqueadas'},
+  {name:'GuardiÃ¡n',     icon:'ðŸ›¡ï¸', color:'#f5a623', min:22, max:24, reward:'Partidas de rango disponibles'},
+  {name:'CampeÃ³n',      icon:'ðŸ†', color:'#e17055', min:25, max:27, reward:'Palabras de mitologÃ­a desbloqueadas'},
+  {name:'HÃ©roe',        icon:'ðŸ¦¸', color:'#e17055', min:28, max:30, reward:'Power-up Congelar mejorado'},
+  {name:'Leyenda',      icon:'â­', color:'#e94560', min:31, max:33, reward:'Palabras legendarias desbloqueadas'},
+  {name:'TitÃ¡n',        icon:'ðŸ’¥', color:'#e94560', min:34, max:36, reward:'Emblema TitÃ¡n en perfil'},
+  {name:'Ã‰lite',        icon:'ðŸ”®', color:'#c77dff', min:37, max:39, reward:'Palabras de filosofÃ­a desbloqueadas'},
+  {name:'Espectro',     icon:'ðŸ‘»', color:'#c77dff', min:40, max:42, reward:'Modo Sin Pistas disponible'},
+  {name:'Inmortal',     icon:'ðŸ’Ž', color:'#74b9ff', min:43, max:44, reward:'Palabras extremas desbloqueadas'},
+  {name:'Divino',       icon:'ðŸŒŸ', color:'#ffd700', min:45, max:46, reward:'TÃ­tulo dorado en lobby'},
+  {name:'Trascendente', icon:'ðŸŒŒ', color:'#ffd700', min:47, max:48, reward:'Palabras singulares desbloqueadas'},
+  {name:'Omnisciente',  icon:'ðŸ§ ', color:'#ffd700', min:49, max:49, reward:'Acceso a todas las palabras'},
+  {name:'ABSOLUTO',     icon:'ðŸ‘‘', color:'#ffd700', min:50, max:50, reward:'Prestige â€” reinicia con emblema'},
 ];
 const XP_PER_LV=220;
 function rankOf(lv){return RANKS.find(r=>lv>=r.min&&lv<=r.max)||RANKS[0];}
 function lvOf(xp){return Math.min(50,Math.floor(xp/XP_PER_LV)+1);}
 function xpProg(xp){const lv=lvOf(xp),base=(lv-1)*XP_PER_LV;return{cur:xp-base,need:XP_PER_LV,pct:((xp-base)/XP_PER_LV)*100};}
 
-// ════════════════════════════════════════════════════
-//  100 CHALLENGES — organizada por nivel requerido
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+//  100 CHALLENGES â€” organizada por nivel requerido
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 let CH = [];
 let challengesReady=false, challengesLoading=null;
 
@@ -1058,8 +1059,8 @@ const LOCAL_CHALLENGES = [
     w:'CASA',
     category:'Objetos',
     c:'Objetos',
-    emojis:['🏠','🛏️','🚪','🪟'],
-    p:['🏠','🛏️','🚪','🪟'],
+    emojis:['ðŸ ','ðŸ›ï¸','ðŸšª','ðŸªŸ'],
+    p:['ðŸ ','ðŸ›ï¸','ðŸšª','ðŸªŸ'],
     level:1,
     lv:1
   }
@@ -1112,12 +1113,12 @@ async function ensureChallengesReady(){
     await loadChallenges();
     if(CH.length) return true;
   }catch(e){console.warn(e);}
-  showToast('⚠️ No se pudieron cargar los retos de Firebase. Revisa la conexión y recarga.','rgba(233,69,96,.95)');
+  showToast('âš ï¸ No se pudieron cargar los retos de Firebase. Revisa la conexiÃ³n y recarga.','rgba(233,69,96,.95)');
   return false;
 }
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  STATE
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const PCOLORS=['#e94560','#f5a623','#4ecca3','#4d96ff','#c77dff','#ff9f43'];
 let db;
 const devId=localStorage.getItem('4e1p_id')||(()=>{const id='d_'+Math.random().toString(36).substr(2,12);localStorage.setItem('4e1p_id',id);return id;})();
@@ -1128,27 +1129,27 @@ let hintUsed=0,roundOver=false,timerIv=null;
 let usedGame=new Set(),lastIdx=-99,lastCountdownKey='',roundEndAdvanceKey='',prepMarkedKey='',lastNoticeTs=0;
 let puH=2,puF=1,puB=1,myStreak=0,cdRunning=false;
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  DIFFICULTY CONFIG
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function diffCfg(lv){
-  if(lv<=5)  return{lbl:'😊 Fácil',   clr:'var(--green)', blur:false,xtr:5, tBase:38};
-  if(lv<=12) return{lbl:'😤 Normal',  clr:'var(--gold)',  blur:false,xtr:7, tBase:30};
-  if(lv<=25) return{lbl:'💀 Difícil', clr:'var(--accent)',blur:true, xtr:9, tBase:22};
-  if(lv<=40) return{lbl:'🔥 Experto', clr:'#ff6b35',      blur:true, xtr:11,tBase:16};
-  return         {lbl:'☠️ LEGENDARIO',clr:'var(--purple)',blur:true, xtr:13,tBase:11};
+  if(lv<=5)  return{lbl:'ðŸ˜Š FÃ¡cil',   clr:'var(--green)', blur:false,xtr:5, tBase:38};
+  if(lv<=12) return{lbl:'ðŸ˜¤ Normal',  clr:'var(--gold)',  blur:false,xtr:7, tBase:30};
+  if(lv<=25) return{lbl:'ðŸ’€ DifÃ­cil', clr:'var(--accent)',blur:true, xtr:9, tBase:22};
+  if(lv<=40) return{lbl:'ðŸ”¥ Experto', clr:'#ff6b35',      blur:true, xtr:11,tBase:16};
+  return         {lbl:'â˜ ï¸ LEGENDARIO',clr:'var(--purple)',blur:true, xtr:13,tBase:11};
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  INIT
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function waitForFirebase(cb, tries=0){
   if(typeof firebase !== 'undefined' && firebase.database){
     cb();
   } else if(tries < 30){
     setTimeout(()=>waitForFirebase(cb, tries+1), 200);
   } else {
-    document.getElementById('ldMsg').textContent='❌ No se pudo cargar Firebase';
+    document.getElementById('ldMsg').textContent='âŒ No se pudo cargar Firebase';
   }
 }
 
@@ -1160,7 +1161,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       document.getElementById('ldMsg').textContent='Cargando perfil...';
       await loadP();
       await loadChallenges();
-      document.getElementById('ldMsg').textContent='✅ ¡Listo!';
+      document.getElementById('ldMsg').textContent='âœ… Â¡Listo!';
       setTimeout(()=>{
         document.getElementById('loadingOverlay').style.display='none';
         const p=new URLSearchParams(location.search);
@@ -1168,13 +1169,13 @@ document.addEventListener('DOMContentLoaded',()=>{
         else if(myP.name==='Jugador') showScreen('nameScreen');
         else{renderPf();showScreen('menuScreen');cleanStaleRooms();}
       },600);
-    }catch(e){document.getElementById('ldMsg').textContent='❌ '+e.message;}
+    }catch(e){document.getElementById('ldMsg').textContent='âŒ '+e.message;}
   });
 });
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  PROFILE
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 async function loadP(){const s=await db.ref('profiles/'+devId).once('value');if(s.exists())myP={...myP,...s.val()};if(!myP.seen)myP.seen=[];}
 async function saveP(){
   await db.ref('profiles/'+devId).update({
@@ -1193,8 +1194,8 @@ function renderPf(){
   const lv=lvOf(myP.xp),rk=rankOf(lv),pr=xpProg(myP.xp),clr=rk.color;
   const av=document.getElementById('pfAvatar');
   av.textContent=rk.icon;av.style.background=clr+'22';av.style.borderColor=clr;
-  document.getElementById('pfName').textContent=myP.name+(myP.prestige>0?` ✦${myP.prestige}`:'');
-  document.getElementById('pfRank').textContent=rk.name+' — Nivel '+lv;
+  document.getElementById('pfName').textContent=myP.name+(myP.prestige>0?` âœ¦${myP.prestige}`:'');
+  document.getElementById('pfRank').textContent=rk.name+' â€” Nivel '+lv;
   document.getElementById('pfRank').style.color=clr;
   document.getElementById('xpCur').textContent=pr.cur+' XP';
   document.getElementById('xpNxt').textContent=pr.need+' XP hasta sgte';
@@ -1202,9 +1203,9 @@ function renderPf(){
   document.getElementById('nameInp').value=myP.name;
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  CHALLENGE SELECTOR
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function pickCh(avgLv,round,total,minAllowed=1){
   const pct=round/total;
   const minLv=Math.max(1,minAllowed||1,avgLv-4);
@@ -1265,9 +1266,9 @@ function normalizeChallenge(raw){
   };
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  ROOM
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:5},()=>c[Math.floor(Math.random()*c.length)]).join('');}
 function setSalaType(type, btn){
   document.getElementById('cfgSalaType').value=type;
@@ -1276,10 +1277,10 @@ function setSalaType(type, btn){
   const note=document.getElementById('salaTypeNote');
   if(type==='public'){
     note.style.color='var(--green)';note.style.borderColor='rgba(78,204,163,.2)';note.style.background='rgba(78,204,163,.08)';
-    note.textContent='🌍 Aparecerá en la lista pública — cualquiera de tu rango puede unirse';
+    note.textContent='ðŸŒ AparecerÃ¡ en la lista pÃºblica â€” cualquiera de tu rango puede unirse';
   } else {
     note.style.color='var(--purple)';note.style.borderColor='rgba(199,125,255,.2)';note.style.background='rgba(199,125,255,.08)';
-    note.textContent='🔒 Solo accesible con el código — no aparece en listas públicas';
+    note.textContent='ðŸ”’ Solo accesible con el cÃ³digo â€” no aparece en listas pÃºblicas';
   }
 }
 
@@ -1321,26 +1322,26 @@ async function loadMyRooms(){
   list.innerHTML='';
   let saved=[];
   try{saved=JSON.parse(localStorage.getItem('4e1p_myrooms')||'[]');}catch(e){}
-  if(!saved.length){list.innerHTML='<div style="text-align:center;color:var(--muted);font-size:.75rem;padding:12px;">No has creado salas aún</div>';return;}
+  if(!saved.length){list.innerHTML='<div style="text-align:center;color:var(--muted);font-size:.75rem;padding:12px;">No has creado salas aÃºn</div>';return;}
   for(const r of saved){
-    let status='—',playerCount=0;
+    let status='â€”',playerCount=0;
     try{
       const snap=await db.ref('rooms/'+r.code+'/status').once('value');
       status=snap.val()||'deleted';
       const ps=await db.ref('rooms/'+r.code+'/players').once('value');
       playerCount=ps.exists()?Object.keys(ps.val()).length:0;
-    }catch(e){status='sin conexión';}
+    }catch(e){status='sin conexiÃ³n';}
     const item=document.createElement('div');item.className='my-room-item';
     const statusClass=status==='lobby'?'lobby':status==='playing'?'playing':'';
-    const statusLabel=status==='lobby'?'🟢 Lobby':status==='playing'?'🟡 Jugando':status==='finished'?'⚫ Terminada':'❌ No existe';
+    const statusLabel=status==='lobby'?'ðŸŸ¢ Lobby':status==='playing'?'ðŸŸ¡ Jugando':status==='finished'?'âš« Terminada':'âŒ No existe';
     item.innerHTML=`<div class="mri-info">
       <div class="mri-code">${r.code}</div>
-      <div class="mri-meta">${r.rounds} rondas · ${r.time}s · Lv.mín ${r.minLv} · ${r.maxPlayers||4} máx · ${playerCount} jugadores</div>
+      <div class="mri-meta">${r.rounds} rondas Â· ${r.time}s Â· Lv.mÃ­n ${r.minLv} Â· ${r.maxPlayers||4} mÃ¡x Â· ${playerCount} jugadores</div>
     </div>
-    <span style="font-size:.6rem;font-weight:800;padding:2px 7px;border-radius:9px;margin-right:4px;${r.isPublic?'background:rgba(78,204,163,.15);color:var(--green);border:1px solid rgba(78,204,163,.3)':'background:rgba(199,125,255,.15);color:var(--purple);border:1px solid rgba(199,125,255,.3)'}">${r.isPublic?'🌍 Pública':'🔒 Privada'}</span>
+    <span style="font-size:.6rem;font-weight:800;padding:2px 7px;border-radius:9px;margin-right:4px;${r.isPublic?'background:rgba(78,204,163,.15);color:var(--green);border:1px solid rgba(78,204,163,.3)':'background:rgba(199,125,255,.15);color:var(--purple);border:1px solid rgba(199,125,255,.3)'}">${r.isPublic?'ðŸŒ PÃºblica':'ðŸ”’ Privada'}</span>
     <span class="mri-status ${statusClass}">${statusLabel}</span>
     ${status==='lobby'?`<button class="mri-btn-join" onclick="rejoinRoom('${r.code}')">Entrar</button>`:''}
-    ${(status==='lobby'||status==='deleted'||status==='finished')?`<button class="mri-btn-del" onclick="deleteMyRoom('${r.code}',this)">🗑️</button>`:''}`;
+    ${(status==='lobby'||status==='deleted'||status==='finished')?`<button class="mri-btn-del" onclick="deleteMyRoom('${r.code}',this)">ðŸ—‘ï¸</button>`:''}`;
     list.appendChild(item);
   }
 }
@@ -1366,26 +1367,26 @@ async function joinRoom(){
   roomCode=code;isHost=false;resetPU();usedGame=new Set();
   try{
     const snap=await db.ref('rooms/'+roomCode).once('value');
-    if(!snap.exists()){showErr('errJoin','❌ Sala "'+roomCode+'" no encontrada');return;}
+    if(!snap.exists()){showErr('errJoin','âŒ Sala "'+roomCode+'" no encontrada');return;}
     const r=snap.val();
-    if(r.status!=='lobby'){showErr('errJoin','⚠️ La partida ya inició');return;}
+    if(r.status!=='lobby'){showErr('errJoin','âš ï¸ La partida ya iniciÃ³');return;}
     const lv=lvOf(myP.xp);
-    if(lv<(r.minLv||1)){showErr('errJoin','⚠️ Necesitas nivel '+(r.minLv||1)+' (tienes '+lv+')');return;}
+    if(lv<(r.minLv||1)){showErr('errJoin','âš ï¸ Necesitas nivel '+(r.minLv||1)+' (tienes '+lv+')');return;}
     const n=Object.keys(r.players||{}).length;
-    if(n>=(r.maxPlayers||10)){showErr('errJoin','❌ Sala llena ('+n+'/'+(r.maxPlayers||10)+')');return;}
+    if(n>=(r.maxPlayers||10)){showErr('errJoin','âŒ Sala llena ('+n+'/'+(r.maxPlayers||10)+')');return;}
     await db.ref('rooms/'+roomCode+'/players/'+devId)
       .set({name:myP.name,score:0,solved:false,streak:0,xpGained:0,level:lv,color:PCOLORS[n%PCOLORS.length],rank:rankOf(lv).icon,online:true,lastSeen:Date.now()});
     attachLis();openLobby();
   }catch(e){showErr('errJoin','Error: '+e.message);}
 }
-// ════════════ MATCHMAKING ════════════
+// â•â•â•â•â•â•â•â•â•â•â•â• MATCHMAKING â•â•â•â•â•â•â•â•â•â•â•â•
 let mmInterval=null, mmTimeout=null, mmOwnRoom='';
 
 async function findPublicRoom(){
   if(!(await ensureChallengesReady()))return;
   const lv=lvOf(myP.xp), rk=rankOf(lv);
   clearInterval(mmInterval);clearTimeout(mmTimeout);mmOwnRoom='';
-  document.getElementById('mmRankLabel').textContent=rk.icon+' '+rk.name+' — Nivel '+lv;
+  document.getElementById('mmRankLabel').textContent=rk.icon+' '+rk.name+' â€” Nivel '+lv;
   document.getElementById('mmSubLabel').textContent='Buscando rival de tu rango...';
   document.getElementById('mmOverlay').style.display='flex';
 
@@ -1397,7 +1398,7 @@ async function findPublicRoom(){
     if(joining) return true;
     joining=true;
     clearInterval(mmInterval);clearTimeout(mmTimeout);
-    document.getElementById('mmSubLabel').textContent='✅ ¡Rival encontrado!';
+    document.getElementById('mmSubLabel').textContent='âœ… Â¡Rival encontrado!';
     try{
       if(mmOwnRoom&&mmOwnRoom!==code){
         await db.ref('rooms/'+mmOwnRoom).remove().catch(()=>{});
@@ -1419,7 +1420,7 @@ async function findPublicRoom(){
       document.getElementById('pubPill').style.display='inline-flex';
       return true;
     }catch(e){
-      console.warn('No se pudo unir a sala rápida',e);
+      console.warn('No se pudo unir a sala rÃ¡pida',e);
       joining=false;
       return false;
     }
@@ -1437,7 +1438,7 @@ async function findPublicRoom(){
     await db.ref('rooms/'+roomCode).set(room);
     attachLis(); openLobby();
     document.getElementById('mmOverlay').style.display='flex';
-    document.getElementById('mmSubLabel').textContent='Sala rápida creada. Esperando rival de tu rango...';
+    document.getElementById('mmSubLabel').textContent='Sala rÃ¡pida creada. Esperando rival de tu rango...';
   }
 
   async function tryFind(){
@@ -1469,7 +1470,7 @@ async function findPublicRoom(){
   mmInterval=setInterval(tryFind,2500);
   mmTimeout=setTimeout(()=>{
     const el=document.getElementById('mmSubLabel');
-    if(el) el.textContent='Aún esperando rival de tu rango... puedes cancelar cuando quieras';
+    if(el) el.textContent='AÃºn esperando rival de tu rango... puedes cancelar cuando quieras';
   },30000);
 }
 function mmCreateRoom(lv){
@@ -1503,10 +1504,10 @@ async function createPublicRoom(lv){
   await db.ref('rooms/'+roomCode).set(room);
   attachLis(); openLobby();
   document.getElementById('pubPill').style.display='inline-flex';
-  showToast('🌍 Sala pública creada — esperando jugadores de tu rango...','rgba(78,204,163,.9)');
+  showToast('ðŸŒ Sala pÃºblica creada â€” esperando jugadores de tu rango...','rgba(78,204,163,.9)');
 }
 
-// ════════════ VETERAN WORD DETECTION ════════════
+// â•â•â•â•â•â•â•â•â•â•â•â• VETERAN WORD DETECTION â•â•â•â•â•â•â•â•â•â•â•â•
 function checkVetBanner(word){
   const seen=myP.seen||[];
   const banner=document.getElementById('vetBanner');
@@ -1514,14 +1515,14 @@ function checkVetBanner(word){
   else{banner.style.display='none';}
 }
 
-// ════════════ PROFILE STATS SCREEN ════════════
+// â•â•â•â•â•â•â•â•â•â•â•â• PROFILE STATS SCREEN â•â•â•â•â•â•â•â•â•â•â•â•
 function showProfileScreen(){
   // Show name screen with extra stats
   const lv=lvOf(myP.xp),rk=rankOf(lv),pr=xpProg(myP.xp);
   document.getElementById('pfStatLv').textContent='Nivel '+lv;
   document.getElementById('pfStatRank').textContent=rk.icon+' '+rk.name;
   document.getElementById('pfStatWords').textContent=(myP.seen||[]).length+' palabras vistas';
-  document.getElementById('pfStatPrestige').textContent=myP.prestige>0?'✦ Prestige '+myP.prestige:'—';
+  document.getElementById('pfStatPrestige').textContent=myP.prestige>0?'âœ¦ Prestige '+myP.prestige:'â€”';
   document.getElementById('pfStatXP').textContent=myP.xp+' XP total';
   document.getElementById('nameInp').value=myP.name;
   showScreen('nameScreen');
@@ -1538,10 +1539,10 @@ function openLobby(){
     const typeBadge=document.getElementById('lobbyTypeBadge');
     const slotsInfo=document.getElementById('lobbySlotsInfo');
     if(typeBadge){
-      if(r.isPublic){typeBadge.textContent='🌍 Pública';typeBadge.style.cssText='font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:10px;background:rgba(78,204,163,.15);color:var(--green);border:1px solid rgba(78,204,163,.3)';}
-      else{typeBadge.textContent='🔒 Privada';typeBadge.style.cssText='font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:10px;background:rgba(199,125,255,.15);color:var(--purple);border:1px solid rgba(199,125,255,.3)';}
+      if(r.isPublic){typeBadge.textContent='ðŸŒ PÃºblica';typeBadge.style.cssText='font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:10px;background:rgba(78,204,163,.15);color:var(--green);border:1px solid rgba(78,204,163,.3)';}
+      else{typeBadge.textContent='ðŸ”’ Privada';typeBadge.style.cssText='font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:10px;background:rgba(199,125,255,.15);color:var(--purple);border:1px solid rgba(199,125,255,.3)';}
     }
-    if(slotsInfo){const ps=Object.keys(r.players||{}).length;slotsInfo.textContent=ps+'/'+(r.maxPlayers||4)+' jugadores · '+( r.fixedTime||30)+'s por ronda';}
+    if(slotsInfo){const ps=Object.keys(r.players||{}).length;slotsInfo.textContent=ps+'/'+(r.maxPlayers||4)+' jugadores Â· '+( r.fixedTime||30)+'s por ronda';}
     const tInfo=document.getElementById('lobbyTimerInfo');
     const tVal=document.getElementById('lobbyTimerVal');
     if(tInfo&&isHost){tInfo.style.display='block';if(tVal)tVal.textContent=(r.fixedTime||30)+'s';}
@@ -1555,9 +1556,9 @@ function attachLis(){
   roomLis=roomRef.on('value',s=>{if(s.exists())handleRoom(s.val());});
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  STATE MACHINE
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function hideMatchmakingOverlay(){
   const mm=document.getElementById('mmOverlay');
   if(mm) mm.style.display='none';
@@ -1578,21 +1579,24 @@ function showPrep(room){
   entries.forEach(([pid,p])=>{
     const row=document.createElement('div');row.className='prep-player';
     const ok=p.readyForRound===room.prepareKey;
-    row.innerHTML='<span>'+((p&&p.name)||'Jugador')+(pid===devId?' (tú)':'')+'</span><span class="'+(ok?'prep-ok':'prep-wait')+'">'+(ok?'Listo':'Cargando')+'</span>';
+    row.innerHTML='<span>'+((p&&p.name)||'Jugador')+(pid===devId?' (tÃº)':'')+'</span><span class="'+(ok?'prep-ok':'prep-wait')+'">'+(ok?'Listo':'Cargando')+'</span>';
     list.appendChild(row);
   });
 }
 async function markPrepared(room){
   if(!roomCode||!room||!room.prepareKey) return;
-  if(prepMarkedKey===room.prepareKey) return;
   const ok=await ensureChallengesReady();
   if(!ok) return;
   prepMarkedKey=room.prepareKey;
   await db.ref('rooms/'+roomCode+'/players/'+devId).update({readyForRound:room.prepareKey,lastSeen:Date.now(),online:true}).catch(()=>{});
 }
 function allPrepared(room){
-  const entries=Object.entries(room.players||{});
-  return entries.length>0&&entries.every(([,p])=>p.readyForRound===room.prepareKey);
+  const now=Date.now();
+  const entries=Object.entries(room.players||{}).filter(([,p])=>!p.lastSeen||(now-p.lastSeen)<60000);
+  if(!entries.length) return false;
+  if(entries.every(([,p])=>p.readyForRound===room.prepareKey)) return true;
+  const started=room.prepareStartedAt||0;
+  return started&&Date.now()-started>12000;
 }
 function isRoomHost(room){return !!room&&room.host===devId;}
 async function getCurrentRoom(){
@@ -1620,43 +1624,43 @@ async function finishRoundLocked(reason,winner){
   await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundWinner:winner||'',correctWord:curCh&&curCh.word?curCh.word:(room.correctWord||''),lastNotice:reason?{ts:Date.now(),msg:reason}:null});
 }
 function hostPresenceGuard(room){
-  if(!isRoomHost(room)||!room||!room.players||['finished'].includes(room.status)) return;
-  const now=Date.now(), updates={};
   const activeStatuses=['preparing','countdown','playing','roundEnd'];
+  if(!isRoomHost(room)||!room||!room.players||!activeStatuses.includes(room.status)) return;
+  const now=Date.now(), updates={};
   Object.entries(room.players).forEach(([pid,p])=>{
     if(pid===devId) return;
-    const offline=p.lastSeen&&(now-p.lastSeen)>18000;
+    const offline=p.lastSeen&&(now-p.lastSeen)>45000;
     if(!offline){
       if(p.disconnectTries) updates['players/'+pid+'/disconnectTries']=0;if(p.disconnectCheckAt) updates['players/'+pid+'/disconnectCheckAt']=0;
       return;
     }
     const lastCheck=p.disconnectCheckAt||0;
-    if(now-lastCheck<7000) return;
+    if(now-lastCheck<15000) return;
     const tries=(p.disconnectTries||0)+1;
     if(tries<=2){
       updates['players/'+pid+'/disconnectTries']=tries;
       updates['players/'+pid+'/disconnectCheckAt']=now;
-      updates.lastNotice={ts:now,msg:(p.name||'Jugador')+' perdió conexión. Reintentando '+tries+'/2...'};
+      updates.lastNotice={ts:now,msg:(p.name||'Jugador')+' perdiÃ³ conexiÃ³n. Reintentando '+tries+'/2...'};
     }else{
       updates['players/'+pid]=null;
-      updates.lastNotice={ts:now,msg:(p.name||'Jugador')+' fue expulsado por desconexión.'};
+      updates.lastNotice={ts:now,msg:(p.name||'Jugador')+' fue expulsado por desconexiÃ³n.'};
     }
   });
   const remaining=Object.entries(room.players).filter(([pid,p])=>{
     if(updates['players/'+pid]===null) return false;
-    return !p.lastSeen||(now-p.lastSeen)<=26000||pid===devId;
+    return !p.lastSeen||(now-p.lastSeen)<=90000||pid===devId;
   });
   if(activeStatuses.includes(room.status)&&remaining.length<=1){
     updates.status='finished';
     updates.endReason='Jugador desconectado. Partida terminada.';
-    updates.lastNotice={ts:now,msg:'La partida terminó porque solo queda un jugador.'};
+    updates.lastNotice={ts:now,msg:'La partida terminÃ³ porque solo queda un jugador.'};
   }
   if(Object.keys(updates).length) db.ref('rooms/'+roomCode).update(updates).catch(()=>{});
 }
 function showRoomNotice(room){
   if(room&&room.lastNotice&&room.lastNotice.ts&&room.lastNotice.ts!==lastNoticeTs){
     lastNoticeTs=room.lastNotice.ts;
-    showToast(room.lastNotice.msg||'Actualización de sala','rgba(245,166,35,.95)');
+    showToast(room.lastNotice.msg||'ActualizaciÃ³n de sala','rgba(245,166,35,.95)');
   }
 }
 function handleRoom(room){
@@ -1673,13 +1677,13 @@ function handleRoom(room){
       // Auto-start for 1v1 matchmaking rooms when full
       if(isRoomHost(room) && room.isPublic && maxP_room===2 && ps_count>=2){
         const mmSub=document.getElementById('mmSubLabel');
-        if(mmSub&&document.getElementById('mmOverlay').style.display!=='none')mmSub.textContent='✅ Rival encontrado. Preparando partida...';
+        if(mmSub&&document.getElementById('mmOverlay').style.display!=='none')mmSub.textContent='âœ… Rival encontrado. Preparando partida...';
         document.getElementById('startBtn').style.display='none';
         document.getElementById('waitHost').style.display='none';
         // Auto-start after 3 seconds so both players see each other
         if(!window._autoStartPending){
           window._autoStartPending=true;
-          showToast('🎮 ¡Jugador encontrado! Iniciando en 3s...','rgba(78,204,163,.9)');
+          showToast('ðŸŽ® Â¡Jugador encontrado! Iniciando en 3s...','rgba(78,204,163,.9)');
           setTimeout(()=>{window._autoStartPending=false; startGame();},3000);
         }
       } else {
@@ -1741,16 +1745,16 @@ function handleRoom(room){
   if(room.lastRxn&&room.lastRxn.ts>Date.now()-2000&&room.lastRxn.by!==devId) floatEmoji(room.lastRxn.emoji);
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  HOST FLOW
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 async function startGame(){
   if(!(await ensureChallengesReady()))return;usedGame=new Set();
   const snap=await db.ref('rooms/'+roomCode).once('value');
   const room=snap.val()||{};
   if(!isRoomHost(room))return;
   const prepareKey=Date.now()+'_'+Math.floor(Math.random()*9999);
-  const u={status:'preparing',prepareKey,lastNotice:{ts:Date.now(),msg:'Cargando retos para todos los jugadores...'}};
+  const u={status:'preparing',prepareKey,prepareStartedAt:Date.now(),lastNotice:{ts:Date.now(),msg:'Cargando retos para todos los jugadores...'}};
   Object.keys(room.players||{}).forEach(pid=>u['players/'+pid+'/readyForRound']='');
   await db.ref('rooms/'+roomCode).update(u);
 }
@@ -1762,7 +1766,7 @@ async function doNextRound(room){
   const ps=room.players||{};
   const avgLv=Math.round(Object.values(ps).reduce((a,p)=>a+(p.level||1),0)/Math.max(1,Object.keys(ps).length));
   const ch=pickCh(avgLv,next,room.rounds,room.minLv||1);
-  if(!ch){showToast('⚠️ No hay retos disponibles para esta sala','rgba(233,69,96,.95)');return;}
+  if(!ch){showToast('âš ï¸ No hay retos disponibles para esta sala','rgba(233,69,96,.95)');return;}
   usedGame.add(ch.word);
   const dc=diffCfg(ch.lv||1);
   const rndPct=next/room.rounds;
@@ -1778,7 +1782,7 @@ async function doNextRound(room){
   await db.ref('rooms/'+roomCode).update(u);
 }
 async function playAgain(){
-  if(!isHost){showToast('Solo el anfitrión puede reiniciar','rgba(233,69,96,.9)');return;}
+  if(!isHost){showToast('Solo el anfitriÃ³n puede reiniciar','rgba(233,69,96,.9)');return;}
   usedGame=new Set();
   const snap=await db.ref('rooms/'+roomCode+'/players').once('value');
   const ps=snap.val()||{};
@@ -1788,9 +1792,9 @@ async function playAgain(){
 }
 function goMenu(){leaveRoom();renderPf();showScreen('menuScreen');}
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  ANSWER + XP
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 async function submitAnswer(){
   if(roundOver)return;
   const typed=inpLetters.map(l=>l?l.letter:'').join('');
@@ -1832,26 +1836,26 @@ async function submitAnswer(){
   playS('correct');confetti(myStreak>=3?90:50);ptsPopup(pts,myStreak);
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  LEVEL UP
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function showLvlUp(lv){
   const rk=rankOf(lv);
   document.getElementById('luIcon').textContent=rk.icon;
   document.getElementById('luRank').textContent=rk.name;
-  document.getElementById('luSub').textContent='Nivel '+lv+' — '+rk.reward;
+  document.getElementById('luSub').textContent='Nivel '+lv+' â€” '+rk.reward;
   const ol=document.getElementById('lvlUpOverlay');ol.style.display='flex';confetti(80);
   setTimeout(()=>ol.style.display='none',4000);
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  POWER-UPS
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function resetPU(){puH=2;puF=1;puB=1;myStreak=0;}
 function renderPU(){
-  document.getElementById('hintCnt').textContent='×'+puH;
-  document.getElementById('freezeCnt').textContent='×'+puF;
-  document.getElementById('bombCnt').textContent='×'+puB;
+  document.getElementById('hintCnt').textContent='Ã—'+puH;
+  document.getElementById('freezeCnt').textContent='Ã—'+puF;
+  document.getElementById('bombCnt').textContent='Ã—'+puB;
   document.getElementById('btnHint').disabled=puH<=0;
   document.getElementById('btnFreeze').disabled=puF<=0;
   document.getElementById('btnBomb').disabled=puB<=0;
@@ -1870,17 +1874,17 @@ function giveHint(){
 async function useFreeze(){
   if(roundOver||puF<=0)return;puF--;
   await db.ref('rooms/'+roomCode).update({frozenUntil:Date.now()+8000});
-  renderPU();showToast('🧊 Tiempo congelado 8s!','rgba(77,150,255,.9)');
+  renderPU();showToast('ðŸ§Š Tiempo congelado 8s!','rgba(77,150,255,.9)');
 }
 function useBomb(){
   if(roundOver||puB<=0||!curCh)return;puB--;
   const w=curCh.word;lkeys.filter(k=>!k.used&&!w.includes(k.letter)).slice(0,4).forEach(k=>k.used=true);
-  renderKB();renderPU();showToast('💣 4 letras eliminadas!','rgba(199,125,255,.9)');
+  renderKB();renderPU();showToast('ðŸ’£ 4 letras eliminadas!','rgba(199,125,255,.9)');
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  KEYBOARD
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function buildKB(seed,extras){
   const word=curCh.word,needed=word.split(''),alpha='ABCDEFGHIJKLMNOPRSTUVZ',ex=[],rng=m32(seed);
   while(ex.length<extras){const c=alpha[Math.floor(rng()*alpha.length)];if(!ex.includes(c)&&!needed.includes(c))ex.push(c);}
@@ -1915,9 +1919,9 @@ function delLetter(){
   for(let i=inpLetters.length-1;i>=0;i--){if(inpLetters[i]){removeAt(i);break;}}
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  TIMER
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function startTimer(total,startedAt){
   clearInterval(timerIv);const circ=2*Math.PI*18;
   function tick(){
@@ -1938,9 +1942,9 @@ function startTimer(total,startedAt){
   tick();timerIv=setInterval(tick,500);
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  RENDER
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function renderPhotos(blur){
    const g=document.getElementById('photosGrid');
    g.innerHTML='';
@@ -1991,10 +1995,10 @@ function renderLobbyPlayers(ps){
     li.innerHTML=`<div class="lp-av" style="background:${p.color||PCOLORS[i%PCOLORS.length]}33;border:2px solid ${p.color||PCOLORS[i%PCOLORS.length]};opacity:${isOnline?1:.4}">${rk.icon}</div>
       <div class="lp-info">
         <div class="lp-name">${isOnline?'<span class="online-dot" style="width:5px;height:5px;margin-right:3px"></span>':''
-        }${p.name}${pid===devId?' (tú)':''}</div>
-        <div class="lp-rank">${rk.name} Lv.${lv}${!isOnline?' · desconectado':''}</div>
+        }${p.name}${pid===devId?' (tÃº)':''}</div>
+        <div class="lp-rank">${rk.name} Lv.${lv}${!isOnline?' Â· desconectado':''}</div>
       </div>
-      ${i===0?'<span style="font-size:.65rem;color:var(--gold);margin-left:auto">👑 Host</span>':''}`;
+      ${i===0?'<span style="font-size:.65rem;color:var(--gold);margin-left:auto">ðŸ‘‘ Host</span>':''}`;
     ul.appendChild(li);
   });
 }
@@ -2004,33 +2008,33 @@ function renderPlayers(ps){
     const s=p.streak||0;
     const chip=document.createElement('div');
     chip.className='sc'+(p.solved?' solved':'')+(pid===devId?' me':'')+(s>=3?' s3':s>=2?' s2':'');
-    chip.innerHTML=(s>=2?'<span>'+(s>=3?'🔥🔥':'🔥')+'</span>':'')+p.name+': <strong>'+p.score+'</strong>'+(p.solved?' ✓':'');
+    chip.innerHTML=(s>=2?'<span>'+(s>=3?'ðŸ”¥ðŸ”¥':'ðŸ”¥')+'</span>':'')+p.name+': <strong>'+p.score+'</strong>'+(p.solved?' âœ“':'');
     bar.appendChild(chip);
   });
-  document.getElementById('comboLbl').textContent=myStreak>=2?'×'+(myStreak>=3?2:1)+' COMBO':'';
+  document.getElementById('comboLbl').textContent=myStreak>=2?'Ã—'+(myStreak>=3?2:1)+' COMBO':'';
 }
 function showBanner(wId,ps,word,pts,xp){
   const b=document.getElementById('solvedBanner');b.style.display='flex';
   const isMe=wId===devId;
-  document.getElementById('sbEmoji').textContent=wId?'🎉':'⏰';
+  document.getElementById('sbEmoji').textContent=wId?'ðŸŽ‰':'â°';
   const t=document.getElementById('sbTitle');
-  if(wId&&ps&&ps[wId]){t.textContent=isMe?'🎉 ¡Lo adivinaste!':'🎉 ¡'+ps[wId].name+' lo adivinó!';t.style.color='var(--green)';}
-  else{t.textContent='⏰ Nadie lo adivinó';t.style.color='var(--accent)';}
+  if(wId&&ps&&ps[wId]){t.textContent=isMe?'ðŸŽ‰ Â¡Lo adivinaste!':'ðŸŽ‰ Â¡'+ps[wId].name+' lo adivinÃ³!';t.style.color='var(--green)';}
+  else{t.textContent='â° Nadie lo adivinÃ³';t.style.color='var(--accent)';}
   document.getElementById('sbWord').textContent=word||'';
-  document.getElementById('sbPts').textContent=isMe&&pts?'+'+pts+' pts'+(myStreak>=3?' 🔥':''):'';
-  document.getElementById('sbXp').textContent=isMe&&xp?'+'+xp+' XP'+(myStreak>=2?' Racha×'+myStreak:''):'';
+  document.getElementById('sbPts').textContent=isMe&&pts?'+'+pts+' pts'+(myStreak>=3?' ðŸ”¥':''):'';
+  document.getElementById('sbXp').textContent=isMe&&xp?'+'+xp+' XP'+(myStreak>=2?' RachaÃ—'+myStreak:''):'';
 }
 function renderResults(ps){
   const ranked=Object.entries(ps||{}).map(([pid,p])=>({...p,pid})).sort((a,b)=>b.score-a.score);
   const pod=document.getElementById('podium');pod.innerHTML='';
   const order=ranked.length>=3?[ranked[1],ranked[0],ranked[2]]:ranked;
   const cls=ranked.length>=3?['p2','p1','p3']:['p1'];
-  const medals=['🥇','🥈','🥉'];
+  const medals=['ðŸ¥‡','ðŸ¥ˆ','ðŸ¥‰'];
   order.forEach((p,i)=>{
     const pos=ranked.indexOf(p);const rk=rankOf(p.level||1);
     const d=document.createElement('div');d.className='pod '+cls[i];
     d.innerHTML=`<div class="pod-av" style="background:${p.color||'#444'}33;border:3px solid ${p.color||'#444'}">${rk.icon}</div>
-      <div class="pod-name">${p.name}${p.pid===devId?' (tú)':''}</div>
+      <div class="pod-name">${p.name}${p.pid===devId?' (tÃº)':''}</div>
       <div class="pod-score">${p.score}</div>
       ${p.xpGained?`<div class="pod-xp">+${p.xpGained} XP</div>`:''}
       <div class="pod-bar">${medals[pos]||pos+1}</div>`;
@@ -2042,17 +2046,17 @@ function renderResults(ps){
     const row=document.createElement('div');row.className='lb-row'+(p.pid===devId?' me-row':'');
     row.innerHTML=`<div class="lb-rn">${i+1}</div>
       <div class="lb-av-sm" style="background:${p.color||'#444'}33;border:2px solid ${p.color||'#444'}">${rk.icon}</div>
-      <div class="lb-info"><div class="lb-pname">${p.name}${p.pid===devId?' (tú)':''}</div>
-        <div class="lb-prank">${rk.name} • ${(p.streak||0)>=2?'🔥 Racha '+p.streak:''}</div></div>
+      <div class="lb-info"><div class="lb-pname">${p.name}${p.pid===devId?' (tÃº)':''}</div>
+        <div class="lb-prank">${rk.name} â€¢ ${(p.streak||0)>=2?'ðŸ”¥ Racha '+p.streak:''}</div></div>
       <div style="text-align:right"><div class="lb-pts">${p.score}</div>${p.xpGained?`<div class="lb-xp">+${p.xpGained} XP</div>`:''}</div>`;
     lb.appendChild(row);
   });
   confetti(90);
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  RANKS SCREEN
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function showRanks(){
   const lv=lvOf(myP.xp);
   const list=document.getElementById('rankList');list.innerHTML='';
@@ -2063,18 +2067,18 @@ function showRanks(){
     item.className='rank-item'+(current?' current-rank':locked?' locked-rank':'');
     item.innerHTML=`<div class="ri-icon">${r.icon}</div>
       <div class="ri-info">
-        <div class="ri-name" style="color:${r.color}">${r.name}${current?' ← TÚ':''}</div>
-        <div class="ri-range">Niveles ${r.min}–${r.max}</div>
-        <div class="ri-reward">🎁 ${r.reward}</div>
+        <div class="ri-name" style="color:${r.color}">${r.name}${current?' â† TÃš':''}</div>
+        <div class="ri-range">Niveles ${r.min}â€“${r.max}</div>
+        <div class="ri-reward">ðŸŽ ${r.reward}</div>
       </div>`;
     list.appendChild(item);
   });
   showScreen('rankScreen');
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  LEADERBOARD
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 async function loadLeaderboard(){
   showScreen('lbScreen');
   const glb=document.getElementById('globalLb');glb.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted)">Cargando...</div>';
@@ -2082,22 +2086,22 @@ async function loadLeaderboard(){
   const players=[];
   snap.forEach(s=>{const d=s.val();if(d.name&&d.name!=='Jugador')players.unshift({...d,id:s.key});});
   glb.innerHTML='';
-  if(!players.length){glb.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted)">Sin jugadores aún</div>';return;}
+  if(!players.length){glb.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted)">Sin jugadores aÃºn</div>';return;}
   players.forEach((p,i)=>{
     const lv=p.level||lvOf(p.xp||0);const rk=rankOf(lv);
     const row=document.createElement('div');row.className='lb-row'+(p.id===devId?' me-row':'');
     row.innerHTML=`<div class="lb-rn">${i+1}</div>
       <div class="lb-av-sm" style="background:${p.color||PCOLORS[0]}33;border:2px solid ${p.color||PCOLORS[0]}">${rk.icon}</div>
-      <div class="lb-info"><div class="lb-pname">${p.name}${p.id===devId?' (tú)':''}</div>
-        <div class="lb-prank">${rk.name} — Nivel ${lv}${p.prestige>0?' ✦'+p.prestige:''}</div></div>
+      <div class="lb-info"><div class="lb-pname">${p.name}${p.id===devId?' (tÃº)':''}</div>
+        <div class="lb-prank">${rk.name} â€” Nivel ${lv}${p.prestige>0?' âœ¦'+p.prestige:''}</div></div>
       <div class="lb-pts">${p.xp||0} XP</div>`;
     glb.appendChild(row);
   });
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  COUNTDOWN
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function runCountdown(n){
   if(cdRunning)return;cdRunning=true;
   const ol=document.getElementById('cdOverlay'),num=document.getElementById('cdNum');
@@ -2105,9 +2109,9 @@ function runCountdown(n){
   const iv=setInterval(()=>{n--;if(n<=0){clearInterval(iv);ol.style.display='none';cdRunning=false;}else num.textContent=n;},1000);
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  REACTIONS
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function sendRxn(e){db.ref('rooms/'+roomCode+'/lastRxn').set({emoji:e,by:devId,ts:Date.now()});floatEmoji(e);}
 function floatEmoji(e){
   const el=document.createElement('div');el.className='rxn-float';el.textContent=e;
@@ -2115,9 +2119,9 @@ function floatEmoji(e){
   document.body.appendChild(el);setTimeout(()=>el.remove(),1900);
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  SOUND
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 let actx;
 function getAC(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();return actx;}
 function playS(t){
@@ -2129,12 +2133,12 @@ function playS(t){
   }catch(e){}
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  UTILS
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function ptsPopup(pts,s){
   const el=document.createElement('div');el.className='pts-pop';
-  el.textContent='+'+pts+(s>=3?' 🔥×2':'');el.style.color=s>=3?'var(--purple)':'var(--gold)';
+  el.textContent='+'+pts+(s>=3?' ðŸ”¥Ã—2':'');el.style.color=s>=3?'var(--purple)':'var(--gold)';
   el.style.left=Math.random()*50+25+'vw';el.style.top='40%';
   document.body.appendChild(el);setTimeout(()=>el.remove(),1300);
 }
@@ -2145,7 +2149,7 @@ function showToast(msg,bg){
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
 function shake(id){const el=document.getElementById(id);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),500);}
-function copyLink(){const el=document.getElementById('shareLink');el.select();document.execCommand('copy');const b=document.getElementById('copyBtn');b.textContent='✓ ¡Copiado!';setTimeout(()=>b.textContent='📋 Copiar',2000);}
+function copyLink(){const el=document.getElementById('shareLink');el.select();document.execCommand('copy');const b=document.getElementById('copyBtn');b.textContent='âœ“ Â¡Copiado!';setTimeout(()=>b.textContent='ðŸ“‹ Copiar',2000);}
 async function leaveRoom(){
   clearInterval(timerIv);clearInterval(presenceIv);document.body.style.filter='';
   window._autoStartPending=false;
@@ -2159,9 +2163,9 @@ async function leaveRoom(){
 
   if(wasHost&&code){
     if(status==='lobby') db.ref('rooms/'+code).remove().catch(()=>{});
-    else if(active) db.ref('rooms/'+code).update({status:'finished',endReason:'El anfitrión salió de la partida.',lastNotice:{ts:Date.now(),msg:'El anfitrión salió. Partida terminada.'}}).catch(()=>{});
+    else if(active) db.ref('rooms/'+code).update({status:'finished',endReason:'El anfitriÃ³n saliÃ³ de la partida.',lastNotice:{ts:Date.now(),msg:'El anfitriÃ³n saliÃ³. Partida terminada.'}}).catch(()=>{});
   } else if(code){
-    db.ref('rooms/'+code).update({lastNotice:{ts:Date.now(),msg:(myP.name||'Jugador')+' salió de la partida.'}}).catch(()=>{});
+    db.ref('rooms/'+code).update({lastNotice:{ts:Date.now(),msg:(myP.name||'Jugador')+' saliÃ³ de la partida.'}}).catch(()=>{});
     db.ref('rooms/'+code+'/players/'+devId).remove().catch(()=>{});
   }
 
@@ -2174,16 +2178,16 @@ async function leaveRoom(){
   for(let i=0;i<n;i++){setTimeout(()=>{const c=document.createElement('div');c.className='cp';const s=Math.random()*12+5;c.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;background:${cols[Math.floor(Math.random()*cols.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${Math.random()*2+1}s;`;document.body.appendChild(c);c.addEventListener('animationend',()=>c.remove());},i*18);}
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  SOLO MODE
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 let soloMode=false, soloRoundsTotal=0, soloCurrentRound=0;
 let soloScore=0, soloNewWords=0, soloSeenWords=0, soloXpGained=0, soloRankXpGained=0;
 let soloUsed=new Set(), soloStartLv=1;
 
 
 
-// ════════ PUBLIC ROOMS LIST ════════
+// â•â•â•â•â•â•â•â• PUBLIC ROOMS LIST â•â•â•â•â•â•â•â•
 async function openPublicRooms(){
   showScreen('publicRoomsScreen');
   loadPublicRooms();
@@ -2192,7 +2196,7 @@ async function openPublicRooms(){
 async function loadPublicRooms(){
   const browser=document.getElementById('publicRoomsBrowser');
   const countEl=document.getElementById('pubRoomsCount');
-  browser.innerHTML='<div class="no-rooms">🔄 Buscando salas...</div>';
+  browser.innerHTML='<div class="no-rooms">ðŸ”„ Buscando salas...</div>';
   countEl.textContent='Buscando...';
   const lv=lvOf(myP.xp);
   const snap=await db.ref('rooms').orderByChild('status').equalTo('lobby').limitToFirst(50).once('value');
@@ -2213,7 +2217,7 @@ async function loadPublicRooms(){
 
   browser.innerHTML='';
   if(!rooms.length){
-    browser.innerHTML=`<div class="no-rooms">😴 No hay salas públicas abiertas ahora<br><br>¡Crea la primera y espera jugadores!<br><button class="btn btn-primary" onclick="openCreateScreen()" style="max-width:220px;margin-top:8px;">+ Crear sala pública</button></div>`;
+    browser.innerHTML=`<div class="no-rooms">ðŸ˜´ No hay salas pÃºblicas abiertas ahora<br><br>Â¡Crea la primera y espera jugadores!<br><button class="btn btn-primary" onclick="openCreateScreen()" style="max-width:220px;margin-top:8px;">+ Crear sala pÃºblica</button></div>`;
     countEl.textContent='Sin salas disponibles';
     return;
   }
@@ -2237,9 +2241,9 @@ async function loadPublicRooms(){
     card.innerHTML=`
       <div class="rc-icon">${hostRank.icon}</div>
       <div class="rc-info">
-        <div class="rc-host">${r.hostName||'Jugador'} <span style="font-size:.62rem;color:var(--muted);font-weight:400">— ${hostRank.name}</span></div>
-        <div class="rc-meta">⏱️ ${r.fixedTime||30}s · 🏆 ${r.rounds||8} rondas · Lv.mín ${r.minLv||1} · <span style="font-family:'Boogaloo',cursive;letter-spacing:2px;color:var(--blue)">${key}</span></div>
-        <div class="rc-meta" style="margin-top:2px;">${isMatch?'✅ Tu rango':(!levelOk?'⚠️ Nivel insuficiente':'🔵 Rango distinto')}</div>
+        <div class="rc-host">${r.hostName||'Jugador'} <span style="font-size:.62rem;color:var(--muted);font-weight:400">â€” ${hostRank.name}</span></div>
+        <div class="rc-meta">â±ï¸ ${r.fixedTime||30}s Â· ðŸ† ${r.rounds||8} rondas Â· Lv.mÃ­n ${r.minLv||1} Â· <span style="font-family:'Boogaloo',cursive;letter-spacing:2px;color:var(--blue)">${key}</span></div>
+        <div class="rc-meta" style="margin-top:2px;">${isMatch?'âœ… Tu rango':(!levelOk?'âš ï¸ Nivel insuficiente':'ðŸ”µ Rango distinto')}</div>
       </div>
       <span class="rc-slots ${slotsLeft<=1?'almost':'open'}">${ps}/${maxP}</span>
       <button class="rc-join-btn" onclick="joinFromBrowser('${key}')" ${!levelOk?'disabled style="opacity:.4"':''}>Unirse</button>`;
@@ -2251,12 +2255,12 @@ async function joinFromBrowser(code){
   document.getElementById('codeInp').value=code;
   roomCode=code; isHost=false; resetPU(); usedGame=new Set();
   const snap=await db.ref('rooms/'+roomCode).once('value');
-  if(!snap.exists()){showToast('❌ Sala ya no existe','rgba(233,69,96,.9)');loadPublicRooms();return;}
+  if(!snap.exists()){showToast('âŒ Sala ya no existe','rgba(233,69,96,.9)');loadPublicRooms();return;}
   const r=snap.val();
   const lv=lvOf(myP.xp);
-  if(lv<(r.minLv||1)){showToast('⚠️ Nivel insuficiente','rgba(233,69,96,.9)');return;}
+  if(lv<(r.minLv||1)){showToast('âš ï¸ Nivel insuficiente','rgba(233,69,96,.9)');return;}
   const ps=Object.keys(r.players||{}).length;
-  if(ps>=(r.maxPlayers||4)){showToast('❌ Sala llena','rgba(233,69,96,.9)');loadPublicRooms();return;}
+  if(ps>=(r.maxPlayers||4)){showToast('âŒ Sala llena','rgba(233,69,96,.9)');loadPublicRooms();return;}
   const n=ps;
   await db.ref('rooms/'+roomCode+'/players/'+devId)
     .set({name:myP.name,score:0,solved:false,streak:0,xpGained:0,
@@ -2265,17 +2269,17 @@ async function joinFromBrowser(code){
   attachLis(); openLobby();
 }
 
-// ════════ PRESENCE ════════
+// â•â•â•â•â•â•â•â• PRESENCE â•â•â•â•â•â•â•â•
 let presenceIv=null;
 function pingPresence(){
   clearInterval(presenceIv);
   if(!roomCode) return;
-  const ping=()=>db.ref('rooms/'+roomCode+'/players/'+devId+'/lastSeen').set(Date.now()).catch(()=>{});
+  const ping=()=>db.ref('rooms/'+roomCode+'/players/'+devId).update({lastSeen:Date.now(),online:true,disconnectTries:0,disconnectCheckAt:0}).catch(()=>{});
   ping();
-  presenceIv=setInterval(ping,8000);
+  presenceIv=setInterval(ping,5000);
 }
 
-// ════════ AUTO-CLEANUP STALE ROOMS ════════
+// â•â•â•â•â•â•â•â• AUTO-CLEANUP STALE ROOMS â•â•â•â•â•â•â•â•
 async function cleanStaleRooms(){
   try{
     const snap=await db.ref('rooms').once('value');
@@ -2307,7 +2311,7 @@ function scheduleRoomCleanup(){
   });
 }
 
-// ════════ createScreen load ════════
+// â•â•â•â•â•â•â•â• createScreen load â•â•â•â•â•â•â•â•
 function openCreateScreen(){
   showScreen('createScreen');
   loadMyRooms();
@@ -2323,8 +2327,8 @@ function openSolo(){
   // fill solo profile banner
   const av=document.getElementById('soloPfAv');
   av.textContent=rk.icon; av.style.background=clr+'22'; av.style.borderColor=clr;
-  document.getElementById('soloPfName').textContent=myP.name+(myP.prestige>0?` ✦${myP.prestige}`:'');
-  document.getElementById('soloPfRank').textContent=rk.name+' — Nivel '+lv;
+  document.getElementById('soloPfName').textContent=myP.name+(myP.prestige>0?` âœ¦${myP.prestige}`:'');
+  document.getElementById('soloPfRank').textContent=rk.name+' â€” Nivel '+lv;
   document.getElementById('soloPfRank').style.color=clr;
   document.getElementById('soloXpCur').textContent=pr.cur+' XP';
   document.getElementById('soloXpNxt').textContent=pr.need+' XP para sgte nivel';
@@ -2354,14 +2358,14 @@ async function doSoloRound(){
   const ch = pickChSolo(lv);
 
 if(!ch){
-   console.error('No se encontró reto para nivel:', lv);
-   showToast('⚠️ No hay retos disponibles para tu nivel','rgba(233,69,96,.95)');
+   console.error('No se encontrÃ³ reto para nivel:', lv);
+   showToast('âš ï¸ No hay retos disponibles para tu nivel','rgba(233,69,96,.95)');
    endSolo();return;
 }else{
    curCh=normalizeChallenge(ch);
    soloUsed.add(curCh.word || curCh.w || '');} hintUsed=0; roundOver=false;
   const dc=diffCfg(lv);
-  // No time limit in solo — just start stopwatch
+  // No time limit in solo â€” just start stopwatch
 
   // UI
   document.getElementById('roundPill').textContent='Ronda '+soloCurrentRound+'/'+soloRoundsTotal;
@@ -2401,7 +2405,7 @@ function pickChSolo(targetLv){
 let soloTimerIv=null;
 let soloRoundStartAt=0;
 function startSoloTimer(total){
-  // Solo mode: no countdown — show elapsed stopwatch instead
+  // Solo mode: no countdown â€” show elapsed stopwatch instead
   clearInterval(soloTimerIv);
   soloRoundStartAt=Date.now();
   const circ=2*Math.PI*18;
@@ -2460,13 +2464,13 @@ async function submitSoloAnswer(){
 
 function showSoloBanner(solved,word,pts,xp,isNew){
   const b=document.getElementById('solvedBanner'); b.style.display='flex';
-  document.getElementById('sbEmoji').textContent=solved?'🎉':'⏰';
+  document.getElementById('sbEmoji').textContent=solved?'ðŸŽ‰':'â°';
   const t=document.getElementById('sbTitle');
-  t.textContent=solved?'🎉 ¡Correcto!':'⏰ Tiempo agotado';
+  t.textContent=solved?'ðŸŽ‰ Â¡Correcto!':'â° Tiempo agotado';
   t.style.color=solved?'var(--green)':'var(--accent)';
   document.getElementById('sbWord').textContent=word||curCh.word||'';
-  document.getElementById('sbPts').textContent=solved?'+'+pts+' pts'+(myStreak>=3?' 🔥':''):'';
-  document.getElementById('sbXp').textContent=solved?(isNew?'⭐ +'+xp+' XP (cuenta para rango)':'👁️ +'+xp+' XP (no cuenta para rango)'):'';
+  document.getElementById('sbPts').textContent=solved?'+'+pts+' pts'+(myStreak>=3?' ðŸ”¥':''):'';
+  document.getElementById('sbXp').textContent=solved?(isNew?'â­ +'+xp+' XP (cuenta para rango)':'ðŸ‘ï¸ +'+xp+' XP (no cuenta para rango)'):'';
 }
 
 async function endSolo(){
@@ -2485,20 +2489,20 @@ async function endSolo(){
     <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);margin-bottom:8px;">
       <span>${pr.cur} XP</span><span>${pr.need} XP</span>
     </div>
-    <div class="solo-stat-row"><span class="solo-stat-label">🏆 Puntuación</span><span class="solo-stat-val" style="color:var(--gold)">${soloScore} pts</span></div>
-    <div class="solo-stat-row"><span class="solo-stat-label">⭐ Palabras nuevas</span><span class="solo-stat-val" style="color:var(--green)">${soloNewWords}</span></div>
-    <div class="solo-stat-row"><span class="solo-stat-label">👁️ Palabras ya vistas</span><span class="solo-stat-val" style="color:var(--muted)">${soloSeenWords}</span></div>
-    <div class="solo-stat-row"><span class="solo-stat-label">📈 XP de rango ganado</span><span class="solo-stat-val" style="color:var(--purple)">+${soloRankXpGained} XP</span></div>
-    <div class="solo-stat-row"><span class="solo-stat-label">🔥 Racha máxima</span><span class="solo-stat-val">${myStreak}</span></div>
-    ${soloRankXpGained===0?'<div style="background:rgba(233,69,96,.1);border:1px solid rgba(233,69,96,.2);border-radius:9px;padding:8px 12px;font-size:.72rem;color:var(--accent);">Jugaste solo con palabras que ya conocías. Juega más rondas con palabras nuevas para subir de rango.</div>':''}
+    <div class="solo-stat-row"><span class="solo-stat-label">ðŸ† PuntuaciÃ³n</span><span class="solo-stat-val" style="color:var(--gold)">${soloScore} pts</span></div>
+    <div class="solo-stat-row"><span class="solo-stat-label">â­ Palabras nuevas</span><span class="solo-stat-val" style="color:var(--green)">${soloNewWords}</span></div>
+    <div class="solo-stat-row"><span class="solo-stat-label">ðŸ‘ï¸ Palabras ya vistas</span><span class="solo-stat-val" style="color:var(--muted)">${soloSeenWords}</span></div>
+    <div class="solo-stat-row"><span class="solo-stat-label">ðŸ“ˆ XP de rango ganado</span><span class="solo-stat-val" style="color:var(--purple)">+${soloRankXpGained} XP</span></div>
+    <div class="solo-stat-row"><span class="solo-stat-label">ðŸ”¥ Racha mÃ¡xima</span><span class="solo-stat-val">${myStreak}</span></div>
+    ${soloRankXpGained===0?'<div style="background:rgba(233,69,96,.1);border:1px solid rgba(233,69,96,.2);border-radius:9px;padding:8px 12px;font-size:.72rem;color:var(--accent);">Jugaste solo con palabras que ya conocÃ­as. Juega mÃ¡s rondas con palabras nuevas para subir de rango.</div>':''}
   `;
   showScreen('soloResultsScreen');
   confetti(70);
 }
 
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  PATCH submitAnswer to route to solo when soloMode=true
-// ════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const _origSubmit=submitAnswer;
 // Override pressL to call soloSubmit when in solo mode
 const _origPressL=pressL;
@@ -2510,3 +2514,5 @@ const _origPressL=pressL;
 </div>
 </body>
 </html>
+
+
