@@ -1197,7 +1197,7 @@ let roomCode='',isHost=false,roomRef=null,roomLis=null;
 let curCh=null,inpLetters=[],lkeys=[];
 let hintUsed=0,roundOver=false,timerIv=null;
 let usedGame=new Set(),lastIdx=-99,lastCountdownKey='',roundEndAdvanceKey='',prepMarkedKey='',prepAdvanceKey='',lastNoticeTs=0;
-let puH=2,puF=1,puB=1,myStreak=0,cdRunning=false;
+let puH=2,puF=1,puB=1,myStreak=0,cdRunning=false,roomWatchIv=null,roomWatchBusy=false;
 
 // ════════════════════════════════════════════════════
 //  DIFFICULTY CONFIG
@@ -1622,6 +1622,7 @@ function attachLis(){
   if(roomLis) db.ref('rooms/'+roomCode).off('value',roomLis);
   roomRef=db.ref('rooms/'+roomCode);
   roomLis=roomRef.on('value',s=>{if(s.exists())handleRoom(s.val());});
+  startRoomWatchdog();
 }
 
 // ════════════════════════════════════════════════════
@@ -1674,6 +1675,42 @@ async function getCurrentRoom(){
   const snap=await db.ref('rooms/'+roomCode).once('value');
   return snap.exists()?snap.val():null;
 }
+function startRoomWatchdog(){
+  clearInterval(roomWatchIv);
+  if(!roomCode) return;
+  roomWatchIv=setInterval(roomWatchdogTick,1000);
+  roomWatchdogTick();
+}
+function stopRoomWatchdog(){
+  clearInterval(roomWatchIv);
+  roomWatchIv=null;
+}
+async function roomWatchdogTick(){
+  if(roomWatchBusy||!roomCode) return;
+  roomWatchBusy=true;
+  try{
+    const room=await getCurrentRoom();
+    if(!room) return;
+    const now=serverNow();
+    if(room.status==='preparing'&&allPrepared(room)){
+      await db.ref('rooms/'+roomCode).update({status:'countdown',countdownStartedAt:serverTs(),lastNotice:{ts:now,msg:'Todos listos. Iniciando partida...'}});
+      return;
+    }
+    if(room.status==='countdown'&&room.countdownStartedAt&&now-room.countdownStartedAt>=3300){
+      await advanceRoundLocked('countdown',room.currentRound||0);
+      return;
+    }
+    if(room.status==='playing'&&room.roundStartedAt&&now-room.roundStartedAt>=(room.roundTime||30)*1000+1200){
+      await finishRoundLocked('', '');
+      return;
+    }
+    if(room.status==='roundEnd'){
+      const started=room.roundEndStartedAt||(room.lastNotice&&room.lastNotice.ts)||0;
+      if(!started||now-started>=3800) await advanceRoundLocked('roundEnd',room.currentRound||0);
+    }
+  }catch(e){console.warn('room watchdog',e);}
+  finally{roomWatchBusy=false;}
+}
 async function advanceRoundLocked(expectedStatus,expectedRound){
   if(!roomCode) return;
   const lockRef=db.ref('rooms/'+roomCode+'/roundAdvanceLock');
@@ -1691,7 +1728,7 @@ async function finishRoundLocked(reason,winner){
   const key='finish:'+(room.currentRound||0)+':'+(room.challengeIdx||0);
   const tx=await db.ref('rooms/'+roomCode+'/roundFinishLock').transaction(cur=>cur?undefined:key);
   if(!tx.committed) return;
-  await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundWinner:winner||'',correctWord:curCh&&curCh.word?curCh.word:(room.correctWord||''),lastNotice:reason?{ts:serverNow(),msg:reason}:null});
+  await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundEndStartedAt:serverTs(),roundWinner:winner||'',correctWord:curCh&&curCh.word?curCh.word:(room.correctWord||''),lastNotice:reason?{ts:serverNow(),msg:reason}:null});
 }
 function hostPresenceGuard(room){
   const activeStatuses=['playing','roundEnd'];
@@ -1782,7 +1819,12 @@ function handleRoom(room){
       document.getElementById('prepOverlay').style.display='none';
       showScreen('gameScreen');
       const cdKey=roomCode+':'+(room.currentRound||0)+':'+(room.challengeIdx||-1);
-      if(lastCountdownKey!==cdKey){lastCountdownKey=cdKey;runCountdown(3,room.countdownStartedAt);setTimeout(()=>advanceRoundLocked('countdown',room.currentRound||0),3600);}
+      if(lastCountdownKey!==cdKey){
+        lastCountdownKey=cdKey;
+        runCountdown(3,room.countdownStartedAt);
+        const cdDelay=Math.max(0,(room.countdownStartedAt||serverNow())+3400-serverNow());
+        setTimeout(()=>advanceRoundLocked('countdown',room.currentRound||0),cdDelay);
+      }
       break;
     case 'playing':
       hideMatchmakingOverlay();
@@ -1811,7 +1853,12 @@ function handleRoom(room){
       clearInterval(timerIv);roundOver=true;document.body.style.filter='';
       renderPlayers(room.players);
       showBanner(room.roundWinner,room.players,room.correctWord,room.roundPts,room.roundXp);
-      {const advKey=roomCode+':'+(room.currentRound||0)+':'+(room.challengeIdx||0);if(roundEndAdvanceKey!==advKey){roundEndAdvanceKey=advKey;setTimeout(()=>advanceRoundLocked('roundEnd',room.currentRound||0),4200);}}
+      {const advKey=roomCode+':'+(room.currentRound||0)+':'+(room.challengeIdx||0);if(roundEndAdvanceKey!==advKey){
+        roundEndAdvanceKey=advKey;
+        const endStarted=room.roundEndStartedAt||serverNow();
+        const endDelay=Math.max(0,endStarted+3800-serverNow());
+        setTimeout(()=>advanceRoundLocked('roundEnd',room.currentRound||0),endDelay);
+      }}
       break;
     case 'finished':
       hideMatchmakingOverlay();
@@ -1909,7 +1956,7 @@ async function submitAnswer(){
   const finishKey='finish:'+(room.currentRound||0)+':'+(room.challengeIdx||0);
   const tx=await db.ref('rooms/'+roomCode+'/roundFinishLock').transaction(cur=>cur?undefined:finishKey);
   if(!tx.committed)return;
-  await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundWinner:devId,roundPts:pts,roundXp:xg,
+  await db.ref('rooms/'+roomCode).update({status:'roundEnd',roundEndStartedAt:serverTs(),roundWinner:devId,roundPts:pts,roundXp:xg,
     ['players/'+devId+'/score']:prev+pts,['players/'+devId+'/solved']:true,
     ['players/'+devId+'/streak']:myStreak,['players/'+devId+'/xpGained']:prevX+xg});
   playS('correct');confetti(myStreak>=3?90:50);ptsPopup(pts,myStreak);
@@ -2247,7 +2294,7 @@ async function cleanupRoomIfEmpty(code){
     if(Object.keys(room.players||{}).length===0) await db.ref('rooms/'+code).remove();
   }catch(e){}
 }async function leaveRoom(){
-  clearInterval(timerIv);clearInterval(presenceIv);document.body.style.filter='';
+  clearInterval(timerIv);clearInterval(presenceIv);stopRoomWatchdog();document.body.style.filter='';
   window._autoStartPending=false;
   const code=roomCode;
   const wasHost=isHost;
